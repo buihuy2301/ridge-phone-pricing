@@ -1,3 +1,5 @@
+"""Test session setup shared by every module in this directory."""
+
 import sys
 from pathlib import Path
 

@@ -33,6 +33,7 @@ BIB_ENTRY_RE = re.compile(r"^@\w+\{([^,]+),", re.MULTILINE)
 
 
 def read_report() -> str:
+    """Source of report.tex."""
     return REPORT_TEX.read_text(encoding="utf-8")
 
 
@@ -42,6 +43,7 @@ def declared_labels(text: str) -> list[str]:
 
 
 def test_labels_are_unique() -> None:
+    """A label declared twice makes every \\ref to it point at the wrong float."""
     labels = declared_labels(read_report())
     duplicates = {label for label in labels if labels.count(label) > 1}
     assert not duplicates, f"labels declared more than once: {sorted(duplicates)}"
@@ -63,6 +65,7 @@ def test_every_float_is_referenced() -> None:
 
 
 def test_every_reference_resolves() -> None:
+    """A \\ref to an undeclared label compiles to '??' without any error."""
     text = read_report()
     declared = set(declared_labels(text))
     dangling = sorted(set(REF_RE.findall(text)) - declared)
@@ -70,6 +73,7 @@ def test_every_reference_resolves() -> None:
 
 
 def test_no_figure_file_is_included_twice() -> None:
+    """The same figure under two labels is the mistake this rule guards against."""
     stems = [stem for stem, _ in RESULTFIG_RE.findall(read_report())]
     duplicates = {stem for stem in stems if stems.count(stem) > 1}
     assert not duplicates, f"figure files included more than once: {sorted(duplicates)}"
@@ -77,6 +81,7 @@ def test_no_figure_file_is_included_twice() -> None:
 
 @pytest.mark.skipif(not FIGURE_DIR.exists(), reason="figures have not been generated")
 def test_included_figures_exist_on_disk() -> None:
+    """Every included stem must have a PDF in results/figures."""
     missing = [
         stem
         for stem, _ in RESULTFIG_RE.findall(read_report())

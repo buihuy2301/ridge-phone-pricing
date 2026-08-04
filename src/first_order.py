@@ -84,7 +84,10 @@ def _label(prefix: str, step_rule: dict) -> str:
             f"beta={step_rule.get('beta', 0.8):g})"
         )
     if kind == "schedule":
-        return f"{prefix} ({step_rule.get('schedule', 'constant')}, eta0={step_rule.get('eta0', 0.1):.3g})"
+        return (
+            f"{prefix} ({step_rule.get('schedule', 'constant')}, "
+            f"eta0={step_rule.get('eta0', 0.1):.3g})"
+        )
     return prefix
 
 
@@ -182,7 +185,11 @@ def sgd(
     """
     rule = _default_step_rule(step_rule)
     if rule.get("kind") != "schedule":
-        rule = {"kind": "schedule", "schedule": "constant", "eta0": resolve_fixed_step(problem, rule)}
+        rule = {
+            "kind": "schedule",
+            "schedule": "constant",
+            "eta0": resolve_fixed_step(problem, rule),
+        }
 
     schedule = make_step_schedule(
         kind=str(rule.get("schedule", "constant")),
@@ -406,7 +413,9 @@ def heavy_ball(
     w = _init_w(problem, w0)
     w_prev = w.copy()
 
-    if rule.get("kind") == "optimal" or (rule.get("kind") == "fixed" and "t" not in rule and "multiple" not in rule):
+    kind = rule.get("kind")
+    step_left_open = "t" not in rule and "multiple" not in rule
+    if kind == "optimal" or (kind == "fixed" and step_left_open):
         t = 4.0 / (np.sqrt(problem.L) + np.sqrt(problem.mu)) ** 2
     else:
         t = resolve_fixed_step(problem, rule)

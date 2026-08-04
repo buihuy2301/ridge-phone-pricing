@@ -68,6 +68,7 @@ def set_style() -> None:
 
 
 def method_color(method: str) -> str:
+    """Fixed color of a method, or a neutral gray for an unlisted one."""
     return METHOD_COLORS.get(method, "#333333")
 
 
@@ -80,7 +81,10 @@ def _series_style(results: Sequence, color_by: str) -> list[dict]:
             index = seen.get(res.method, 0)
             seen[res.method] = index + 1
             styles.append(
-                {"color": method_color(res.method), "linestyle": LINESTYLES[index % len(LINESTYLES)]}
+                {
+                    "color": method_color(res.method),
+                    "linestyle": LINESTYLES[index % len(LINESTYLES)],
+                }
             )
     else:
         n = max(len(results), 2)
@@ -239,7 +243,7 @@ def summary_table(results: Iterable, f_star: float, threshold: float = 1e-6):
     Requires pandas, which is imported lazily so that plotting alone does not
     depend on it.
     """
-    import pandas as pd
+    import pandas as pd  # pylint: disable=import-outside-toplevel
 
     rows = []
     for result in results:

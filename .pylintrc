@@ -1,0 +1,52 @@
+[MAIN]
+
+# The package lives at the repository root, so `src` and `tests` resolve
+# without installing the project.
+init-hook = 'import sys; sys.path.insert(0, ".")'
+
+ignore = .venv,.git,report,results,data,notebooks
+
+jobs = 0
+
+
+[MESSAGES CONTROL]
+
+disable =
+    # The optimizers in src/first_order.py and src/second_order.py share the
+    # same iteration skeleton (record, check divergence, check the stopping
+    # test). Merging those blocks would hide the step that differs between
+    # methods, which is the part the report discusses.
+    duplicate-code
+
+
+[FORMAT]
+
+max-line-length = 100
+
+
+[BASIC]
+
+# Notation follows the report: capitals denote matrices (X, A, Hd, Xty) and L
+# is the Lipschitz constant of the gradient. Both clash with snake_case.
+good-names = i, j, k, m, n, d, t, w, v, b, p, r, f, g, e, X, y, A, B, L, ax, fig, df, _
+
+good-names-rgxs =
+    ^_?X[A-Za-z0-9_]*$,
+    ^_?L(_[a-z0-9_]+)?$,
+    ^H[a-z]$
+
+
+[DESIGN]
+
+# Every optimizer takes the problem, a starting point, an iteration budget, a
+# step rule, a tolerance, a recording cadence, a seed, and its own
+# hyperparameters. Splitting that signature would only move the arguments
+# somewhere else.
+max-args = 12
+max-positional-arguments = 12
+
+# An iteration loop keeps the iterate, the gradient, the step size, the
+# counters and the momentum state in scope at the same time.
+max-locals = 35
+max-statements = 60
+max-attributes = 15

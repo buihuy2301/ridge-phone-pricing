@@ -30,7 +30,9 @@ import numpy as np
 from sklearn.linear_model import LinearRegression, Ridge, SGDRegressor
 
 
-def _timed_fit(estimator, X: np.ndarray, y: np.ndarray, repeats: int = 3) -> tuple[np.ndarray, float]:
+def _timed_fit(
+    estimator, X: np.ndarray, y: np.ndarray, repeats: int = 3
+) -> tuple[np.ndarray, float]:
     """Fit an estimator `repeats` times and keep the median wall-clock time."""
     times = []
     coef = None
@@ -48,7 +50,9 @@ def ridge_baseline(problem, solver: str = "auto", repeats: int = 3, **kwargs) ->
     alpha = problem.lam * problem.n
     estimator = Ridge(alpha=alpha, solver=solver, fit_intercept=False, **kwargs)
     coef, elapsed = _timed_fit(estimator, problem.X, problem.y, repeats)
-    return _record(problem, f"Ridge(solver='{solver}')", coef, elapsed, {"alpha": alpha, "solver": solver})
+    return _record(
+        problem, f"Ridge(solver='{solver}')", coef, elapsed, {"alpha": alpha, "solver": solver}
+    )
 
 
 def sgd_regressor_baseline(problem, repeats: int = 3, **kwargs) -> dict:
@@ -117,8 +121,12 @@ def verify_conversions(problem, rtol: float = 1e-8) -> dict:
 
 
 def baselines_table(records: list[dict]):
-    """Assemble the library comparison table."""
-    import pandas as pd
+    """Assemble the library comparison table.
+
+    pandas is imported here rather than at the top of the module: the solver
+    baselines themselves do not need it, only this reporting helper does.
+    """
+    import pandas as pd  # pylint: disable=import-outside-toplevel
 
     return pd.DataFrame(
         [

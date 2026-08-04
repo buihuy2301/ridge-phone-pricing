@@ -15,6 +15,8 @@ converge in a single full step. Two variants are therefore provided:
 
 from __future__ import annotations
 
+from functools import partial
+
 import numpy as np
 from scipy.linalg import cho_factor, cho_solve
 
@@ -121,7 +123,9 @@ def newton(
 # ----------------------------------------------------------------------
 
 
-def _conjugate_gradient(hess_vec, b: np.ndarray, tol: float, max_iter: int) -> tuple[np.ndarray, int]:
+def _conjugate_gradient(
+    hess_vec, b: np.ndarray, tol: float, max_iter: int
+) -> tuple[np.ndarray, int]:
     """Solve H p = b approximately, using Hessian-vector products only."""
     p = np.zeros_like(b)
     r = b.copy()
@@ -187,7 +191,7 @@ def newton_cg(
 
     for k in range(1, max_iter + 1):
         p, products = _conjugate_gradient(
-            lambda v: problem.hess_vec(w, v), -g, cg_tol, cg_max_iter
+            partial(problem.hess_vec, w), -g, cg_tol, cg_max_iter
         )
         n_cg_products += products
         accesses += products * problem.n
@@ -279,7 +283,8 @@ def lbfgs(
     sits between the first-order methods and Newton in both cost and speed.
     """
     del seed
-    rule = dict(step_rule) if step_rule else {"kind": "backtracking", "alpha": 1e-4, "beta": 0.5, "t0": 1.0}
+    default_rule = {"kind": "backtracking", "alpha": 1e-4, "beta": 0.5, "t0": 1.0}
+    rule = dict(step_rule) if step_rule else default_rule
     rule.setdefault("kind", "backtracking")
 
     w = w0.copy() if w0 is not None else np.zeros(problem.d)

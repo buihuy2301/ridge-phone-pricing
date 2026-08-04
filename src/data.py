@@ -17,6 +17,7 @@ what it picked.
 from __future__ import annotations
 
 import argparse
+import hashlib
 import json
 import re
 from dataclasses import dataclass
@@ -24,6 +25,8 @@ from pathlib import Path
 
 import numpy as np
 import pandas as pd
+
+from .problem import RidgeProblem
 
 ROOT = Path(__file__).resolve().parents[1]
 RAW_DIR = ROOT / "data" / "raw"
@@ -167,8 +170,6 @@ def drop_duplicate_columns(X: np.ndarray, names: list[str]) -> tuple[np.ndarray,
     near-collinear columns are left in place on purpose, since they are what
     makes the condition number interesting.
     """
-    import hashlib
-
     seen: dict[bytes, int] = {}
     keep: list[int] = []
     for j in range(X.shape[1]):
@@ -178,6 +179,64 @@ def drop_duplicate_columns(X: np.ndarray, names: list[str]) -> tuple[np.ndarray,
             seen[key] = j
             keep.append(j)
     return X[:, keep], [names[j] for j in keep]
+
+
+def add_interaction_terms(numeric_block: pd.DataFrame, columns: list[str]) -> pd.DataFrame:
+    """Append pairwise products and squares of the given numeric columns.
+
+    The products are formed from standardized columns, not from the raw ones.
+    Multiplying columns whose scales differ by orders of magnitude (a price
+    near 1e5 against a screen size near 6) produces a design matrix with a much
+    larger leading eigenvalue and a far worse condition number, even though the
+    column span is the same. The scaling applied here is part of the feature
+    definition and is shared by the train and test halves; the standardization
+    in `build_design_matrix` is still fitted on the training rows only.
+    """
+    scaled = {}
+    for col in columns:
+        values = numeric_block[col].to_numpy(dtype=np.float64)
+        spread = values.std()
+        scaled[col] = (values - values.mean()) / (spread if spread > 1e-12 else 1.0)
+
+    products = {}
+    for i, a in enumerate(columns):
+        for b in columns[i + 1 :]:
+            products[f"{a}_x_{b}"] = scaled[a] * scaled[b]
+    for col in columns:
+        # Squaring a binary column reproduces it, so skip those.
+        if numeric_block[col].nunique() > 2:
+            products[f"{col}_sq"] = scaled[col] ** 2
+
+    return pd.concat([numeric_block, pd.DataFrame(products, index=numeric_block.index)], axis=1)
+
+
+def split_and_standardize(
+    X: np.ndarray, y: np.ndarray, test_size: float, seed: int
+) -> tuple[np.ndarray, np.ndarray, np.ndarray, np.ndarray]:
+    """Split into train and test, then center and scale using training rows.
+
+    Centering y removes the intercept from the problem, which is why the
+    objective in `RidgeProblem` has a single variable block.
+    """
+    rng = np.random.default_rng(seed)
+    order = rng.permutation(X.shape[0])
+    n_test = int(round(test_size * X.shape[0]))
+    test_idx, train_idx = order[:n_test], order[n_test:]
+
+    X_train_raw, X_test_raw = X[train_idx], X[test_idx]
+    y_train_raw, y_test_raw = y[train_idx], y[test_idx]
+
+    mean = X_train_raw.mean(axis=0)
+    std = X_train_raw.std(axis=0)
+    std[std < 1e-12] = 1.0
+
+    y_mean = y_train_raw.mean()
+    return (
+        (X_train_raw - mean) / std,
+        y_train_raw - y_mean,
+        (X_test_raw - mean) / std,
+        y_test_raw - y_mean,
+    )
 
 
 def build_design_matrix(
@@ -221,37 +280,14 @@ def build_design_matrix(
 
     if add_interactions and len(numeric) >= 2:
         # Pairwise products and squares, only to widen the design matrix.
-        #
-        # The products are formed from standardized columns, not from the raw
-        # ones. Multiplying columns whose scales differ by orders of magnitude
-        # (a price near 1e5 against a screen size near 6) produces a design
-        # matrix with a much larger leading eigenvalue and a far worse
-        # condition number, even though the column span is the same. The
-        # scaling here is part of the feature definition and is shared by the
-        # train and test halves; the final standardization below is still
-        # fitted on the training rows only.
         base = numeric if interaction_base is None else numeric[: max(2, interaction_base)]
-        scaled = {}
-        for col in base:
-            values = numeric_block[col].to_numpy(dtype=np.float64)
-            spread = values.std()
-            scaled[col] = (values - values.mean()) / (spread if spread > 1e-12 else 1.0)
-
-        products = {}
-        for i, a in enumerate(base):
-            for b in base[i + 1 :]:
-                products[f"{a}_x_{b}"] = scaled[a] * scaled[b]
-        for col in base:
-            # Squaring a binary column reproduces it, so skip those.
-            if numeric_block[col].nunique() > 2:
-                products[f"{col}_sq"] = scaled[col] ** 2
-        numeric_block = pd.concat(
-            [numeric_block, pd.DataFrame(products, index=numeric_block.index)], axis=1
-        )
+        numeric_block = add_interaction_terms(numeric_block, base)
 
     if categorical:
         dummies = pd.get_dummies(categorical_block, drop_first=True, dtype=float)
-        features = pd.concat([numeric_block.reset_index(drop=True), dummies.reset_index(drop=True)], axis=1)
+        features = pd.concat(
+            [numeric_block.reset_index(drop=True), dummies.reset_index(drop=True)], axis=1
+        )
     else:
         features = numeric_block.reset_index(drop=True)
 
@@ -268,24 +304,7 @@ def build_design_matrix(
     feature_names = [name for name, k in zip(feature_names, keep) if k]
     X, feature_names = drop_duplicate_columns(X, feature_names)
 
-    rng = np.random.default_rng(seed)
-    order = rng.permutation(X.shape[0])
-    n_test = int(round(test_size * X.shape[0]))
-    test_idx, train_idx = order[:n_test], order[n_test:]
-
-    X_train_raw, X_test_raw = X[train_idx], X[test_idx]
-    y_train_raw, y_test_raw = y[train_idx], y[test_idx]
-
-    # Standardization uses training statistics only.
-    mean = X_train_raw.mean(axis=0)
-    std = X_train_raw.std(axis=0)
-    std[std < 1e-12] = 1.0
-    X_train = (X_train_raw - mean) / std
-    X_test = (X_test_raw - mean) / std
-
-    y_mean = y_train_raw.mean()
-    y_train = y_train_raw - y_mean
-    y_test = y_test_raw - y_mean
+    X_train, y_train, X_test, y_test = split_and_standardize(X, y, test_size, seed)
 
     return DesignMatrix(
         X_train=np.ascontiguousarray(X_train),
@@ -392,8 +411,6 @@ def save_processed(design: DesignMatrix, lam: float, out_dir: Path | None = None
     np.save(directory / "y_test.npy", design.y_test)
     (directory / "feature_names.json").write_text(json.dumps(design.feature_names, indent=1))
 
-    from .problem import RidgeProblem
-
     problem = RidgeProblem(design.X_train, design.y_train, lam)
     config = problem.summary()
     config.update(
@@ -411,8 +428,6 @@ def save_processed(design: DesignMatrix, lam: float, out_dir: Path | None = None
 
 def load_problem(lam: float | None = None, directory: Path | None = None):
     """Rebuild the fixed problem instance from data/processed."""
-    from .problem import RidgeProblem
-
     path = Path(directory) if directory is not None else PROCESSED_DIR
     X_train = np.load(path / "X_train.npy")
     y_train = np.load(path / "y_train.npy")
@@ -421,6 +436,7 @@ def load_problem(lam: float | None = None, directory: Path | None = None):
 
 
 def load_test_set(directory: Path | None = None) -> tuple[np.ndarray, np.ndarray]:
+    """Read back the held-out split written by `save_processed`."""
     path = Path(directory) if directory is not None else PROCESSED_DIR
     return np.load(path / "X_test.npy"), np.load(path / "y_test.npy")
 
@@ -431,6 +447,7 @@ def load_test_set(directory: Path | None = None) -> tuple[np.ndarray, np.ndarray
 
 
 def main() -> None:
+    """Build the problem instance from a raw csv file and write it to disk."""
     parser = argparse.ArgumentParser(description="Prepare the fixed optimization problem.")
     parser.add_argument("--csv", required=True, help="path to the raw Kaggle csv file")
     parser.add_argument("--target", default=None, help="name of the target column")

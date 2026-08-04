@@ -8,10 +8,14 @@ from __future__ import annotations
 
 import matplotlib
 
+# The backend has to be selected before pyplot is imported anywhere, which is
+# why the imports below sit past the top of the module.
 matplotlib.use("Agg")
 
+# pylint: disable=wrong-import-position
 import numpy as np
 
+from src import runner as runner_module
 from src.baselines import (
     linear_regression_baseline,
     ridge_baseline,
@@ -32,6 +36,7 @@ from src.runner import (
 
 
 def test_ridge_alpha_conversion_is_exact() -> None:
+    """alpha = lambda * n makes sklearn's Ridge minimize the same objective."""
     problem = make_synthetic_ridge(n=200, d=10, lam=1e-2, seed=0)
     report = verify_conversions(problem)
     assert report["passed"], report
@@ -47,6 +52,7 @@ def test_sgd_regressor_objective_uses_the_same_units() -> None:
 
 
 def test_library_baselines_produce_records() -> None:
+    """Each baseline reports a finite objective, and the direct solver is exact."""
     problem = make_synthetic_ridge(n=200, d=10, lam=1e-2, seed=2)
     records = [
         ridge_baseline(problem, solver="cholesky", repeats=1),
@@ -61,12 +67,11 @@ def test_library_baselines_produce_records() -> None:
 
 
 def test_run_grid_and_persistence(tmp_path, monkeypatch) -> None:
+    """Runs saved to JSON reload with an identical objective history."""
     problem = make_synthetic_ridge(n=200, d=10, lam=1e-2, seed=3)
     specs = gd_fixed_step_grid(problem, max_iter=100)[:3]
     results = run_grid(problem, specs, repeats=2, verbose=False)
     assert len(results) == len(specs)
-
-    import src.runner as runner_module
 
     monkeypatch.setattr(runner_module, "RESULT_DIR", tmp_path)
     save_results(results, "smoke", extra=problem.summary())
@@ -78,6 +83,7 @@ def test_run_grid_and_persistence(tmp_path, monkeypatch) -> None:
 
 
 def test_best_result_prefers_the_fastest_to_threshold() -> None:
+    """The selected configuration comes from the grid it was given."""
     problem = make_synthetic_ridge(n=200, d=10, lam=1e-1, seed=4)
     results = run_grid(problem, agd_grid(problem, max_iter=500), repeats=1, verbose=False)
     chosen = best_result(results, problem.f_star, threshold=1e-8)
@@ -85,6 +91,7 @@ def test_best_result_prefers_the_fastest_to_threshold() -> None:
 
 
 def test_plot_comparison_writes_both_panels(tmp_path) -> None:
+    """One comparison produces an iteration panel and a time panel, in PDF and PNG."""
     set_style()
     problem = make_synthetic_ridge(n=200, d=10, lam=1e-2, seed=5)
     results = run_grid(problem, newton_grid(problem, max_iter=10), repeats=1, verbose=False)
@@ -105,6 +112,7 @@ def test_plot_comparison_writes_both_panels(tmp_path) -> None:
 
 
 def test_summary_table_and_rate_estimate() -> None:
+    """The table has one row per run, and a fitted rate lies in (0, 1]."""
     problem = make_synthetic_ridge(n=200, d=10, lam=1e-2, seed=6)
     results = run_grid(problem, gd_fixed_step_grid(problem, max_iter=400), repeats=1, verbose=False)
     table = summary_table(results, problem.f_star)

@@ -10,6 +10,8 @@ Covers the four checks listed in section 8 of the plan:
 
 from __future__ import annotations
 
+import json
+
 import numpy as np
 import pytest
 
@@ -17,11 +19,16 @@ from src.first_order import accelerated_gradient, adam, gradient_descent, heavy_
 from src.problem import RidgeProblem, make_synthetic_ridge
 from src.second_order import lbfgs, newton, newton_cg
 
+# The pytest fixtures below are named after the argument they fill in, so every
+# test that requests one shadows the fixture function.
+# pylint: disable=redefined-outer-name
+
 EPS = 1e-6
 
 
 @pytest.fixture
 def problem() -> RidgeProblem:
+    """Small well-conditioned instance, cheap enough to solve many times."""
     return make_synthetic_ridge(n=100, d=5, lam=1e-2, seed=0)
 
 
@@ -31,6 +38,7 @@ def problem() -> RidgeProblem:
 
 
 def test_gradient_matches_finite_differences(problem: RidgeProblem) -> None:
+    """Central differences of f must reproduce grad f to a relative 1e-6."""
     rng = np.random.default_rng(1)
     w = rng.standard_normal(problem.d)
     analytic = problem.grad(w)
@@ -46,6 +54,7 @@ def test_gradient_matches_finite_differences(problem: RidgeProblem) -> None:
 
 
 def test_hessian_matches_finite_differences(problem: RidgeProblem) -> None:
+    """Central differences of the gradient must reproduce the Hessian."""
     rng = np.random.default_rng(2)
     w = rng.standard_normal(problem.d)
     analytic = problem.hess(w)
@@ -61,6 +70,7 @@ def test_hessian_matches_finite_differences(problem: RidgeProblem) -> None:
 
 
 def test_hessian_vector_product(problem: RidgeProblem) -> None:
+    """`hess_vec` must agree with forming the Hessian and multiplying by it."""
     rng = np.random.default_rng(3)
     w = rng.standard_normal(problem.d)
     v = rng.standard_normal(problem.d)
@@ -68,6 +78,7 @@ def test_hessian_vector_product(problem: RidgeProblem) -> None:
 
 
 def test_stochastic_gradient_is_unbiased_on_full_batch(problem: RidgeProblem) -> None:
+    """On the whole index set the mini-batch estimate is the full gradient."""
     rng = np.random.default_rng(4)
     w = rng.standard_normal(problem.d)
     full_idx = np.arange(problem.n)
@@ -80,10 +91,12 @@ def test_stochastic_gradient_is_unbiased_on_full_batch(problem: RidgeProblem) ->
 
 
 def test_closed_form_is_stationary(problem: RidgeProblem) -> None:
+    """The gradient vanishes at w*, which is what makes f* a valid reference."""
     assert np.linalg.norm(problem.grad(problem.w_star)) < 1e-12
 
 
 def test_spectral_constants_are_consistent(problem: RidgeProblem) -> None:
+    """L and mu must be the extreme eigenvalues of the Hessian, and kappa >= 1."""
     hessian = problem.hess()
     eigvals = np.linalg.eigvalsh(hessian)
     assert np.isclose(problem.L, eigvals[-1])
@@ -92,6 +105,7 @@ def test_spectral_constants_are_consistent(problem: RidgeProblem) -> None:
 
 
 def test_f_star_is_the_minimum(problem: RidgeProblem) -> None:
+    """No point in a small neighbourhood of w* has an objective below f*."""
     rng = np.random.default_rng(5)
     for _ in range(20):
         w = problem.w_star + 1e-2 * rng.standard_normal(problem.d)
@@ -104,18 +118,28 @@ def test_f_star_is_the_minimum(problem: RidgeProblem) -> None:
 
 
 DETERMINISTIC_RUNS = {
-    "gd_fixed": (gradient_descent, {"max_iter": 5000, "step_rule": {"kind": "fixed", "multiple": 1.0}}),
+    "gd_fixed": (
+        gradient_descent,
+        {"max_iter": 5000, "step_rule": {"kind": "fixed", "multiple": 1.0}},
+    ),
     "gd_optimal": (
         gradient_descent,
         {"max_iter": 5000, "step_rule": {"kind": "fixed", "multiple": 1.0, "reference": "L+mu"}},
     ),
     "gd_backtracking": (
         gradient_descent,
-        {"max_iter": 5000, "step_rule": {"kind": "backtracking", "alpha": 0.3, "beta": 0.8, "t0": 1.0}},
+        {
+            "max_iter": 5000,
+            "step_rule": {"kind": "backtracking", "alpha": 0.3, "beta": 0.8, "t0": 1.0},
+        },
     ),
     "agd_strongly_convex": (
         accelerated_gradient,
-        {"max_iter": 5000, "step_rule": {"kind": "fixed", "multiple": 1.0}, "momentum": "strongly_convex"},
+        {
+            "max_iter": 5000,
+            "step_rule": {"kind": "fixed", "multiple": 1.0},
+            "momentum": "strongly_convex",
+        },
     ),
     "agd_sequence_restart": (
         accelerated_gradient,
@@ -130,7 +154,10 @@ DETERMINISTIC_RUNS = {
     "newton_full": (newton, {"max_iter": 20}),
     "newton_damped": (
         newton,
-        {"max_iter": 20, "step_rule": {"kind": "backtracking", "alpha": 0.3, "beta": 0.8, "t0": 1.0}},
+        {
+            "max_iter": 20,
+            "step_rule": {"kind": "backtracking", "alpha": 0.3, "beta": 0.8, "t0": 1.0},
+        },
     ),
     "newton_cg": (newton_cg, {"max_iter": 50, "cg_tol": 1e-8}),
     "lbfgs": (lbfgs, {"max_iter": 500}),
@@ -139,6 +166,7 @@ DETERMINISTIC_RUNS = {
 
 @pytest.mark.parametrize("name", sorted(DETERMINISTIC_RUNS))
 def test_deterministic_optimizers_reach_the_minimizer(problem: RidgeProblem, name: str) -> None:
+    """Every deterministic method lands on the same w*, to within 1e-6."""
     method, kwargs = DETERMINISTIC_RUNS[name]
     result = method(problem, **kwargs)
 
@@ -210,6 +238,7 @@ def test_sgd_with_constant_step_stalls_above_the_optimum(problem: RidgeProblem) 
 
 
 def test_adam_reduces_the_objective(problem: RidgeProblem) -> None:
+    """Adam closes the gap to below 1e-6 on this small instance."""
     result = adam(problem, max_iter=2000, step_rule={"eta0": 1e-2}, seed=0)
     assert result.f_final < result.f_hist[0]
     assert result.f_final - problem.f_star < 1e-6
@@ -221,6 +250,7 @@ def test_adam_reduces_the_objective(problem: RidgeProblem) -> None:
 
 
 def test_history_lengths_agree(problem: RidgeProblem) -> None:
+    """The five history arrays are filled at the same recorded points."""
     result = gradient_descent(problem, max_iter=50, record_every=5)
     lengths = {
         len(result.iter_hist),
@@ -233,6 +263,7 @@ def test_history_lengths_agree(problem: RidgeProblem) -> None:
 
 
 def test_recorded_time_is_monotone(problem: RidgeProblem) -> None:
+    """Pausing the clock for the recording must not make it run backwards."""
     result = gradient_descent(problem, max_iter=100)
     times = np.asarray(result.time_hist)
     assert np.all(np.diff(times) >= 0.0)
@@ -252,7 +283,6 @@ def test_monitoring_does_not_inflate_evaluation_counts(problem: RidgeProblem) ->
 
 
 def test_result_is_json_serializable(problem: RidgeProblem) -> None:
-    import json
-
+    """`to_dict` must survive json.dumps, since results are cached on disk."""
     result = gradient_descent(problem, max_iter=10)
     json.dumps(result.to_dict())

@@ -198,7 +198,12 @@ def gd_backtracking_grid(problem, max_iter: int = 250, record_every: int = 5) ->
                     "kwargs": {
                         "max_iter": max_iter,
                         "record_every": record_every,
-                        "step_rule": {"kind": "backtracking", "alpha": alpha, "beta": beta, "t0": 1.0},
+                        "step_rule": {
+                            "kind": "backtracking",
+                            "alpha": alpha,
+                            "beta": beta,
+                            "t0": 1.0,
+                        },
                     },
                     "label": f"GD bt (alpha={alpha:g}, beta={beta:g})",
                 }
@@ -283,7 +288,10 @@ def sgd_schedule_grid(problem, epochs: int = 30, batch_size: int = 64) -> list[d
         ({"kind": "schedule", "schedule": "constant", "eta0": eta0}, "constant"),
         ({"kind": "schedule", "schedule": "inverse", "eta0": eta0, "gamma": 0.5}, "eta0/(1+0.5k)"),
         ({"kind": "schedule", "schedule": "sqrt", "eta0": eta0}, "eta0/sqrt(k)"),
-        ({"kind": "schedule", "schedule": "staircase", "eta0": eta0, "period": 5}, "halving every 5 epochs"),
+        (
+            {"kind": "schedule", "schedule": "staircase", "eta0": eta0, "period": 5},
+            "halving every 5 epochs",
+        ),
     ]
     return [
         {

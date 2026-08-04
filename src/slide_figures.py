@@ -16,8 +16,11 @@ from pathlib import Path
 
 import matplotlib
 
+# The backend has to be selected before pyplot is imported, which is why the
+# imports below sit past the top of the module.
 matplotlib.use("Agg")
 
+# pylint: disable=wrong-import-position
 import matplotlib.pyplot as plt
 
 from .data import load_problem
@@ -31,9 +34,19 @@ SLIDE_FIGSIZE = (9.0, 4.0)
 # group name -> (stem, title, x axis of the first panel, how to colour series)
 SLIDE_FIGURES = {
     "gd_fixed": ("gd_fixed", "Gradient descent: fixed step sizes", "iter", "index"),
-    "gd_backtracking": ("gd_backtracking", "Gradient descent: Armijo backtracking", "iter", "index"),
+    "gd_backtracking": (
+        "gd_backtracking",
+        "Gradient descent: Armijo backtracking",
+        "iter",
+        "index",
+    ),
     "sgd_batch": ("sgd_batch", "SGD: batch size, step matched to each batch", "epoch", "index"),
-    "sgd_common_step": ("sgd_common_step", "SGD: one common step size for every batch size", "epoch", "index"),
+    "sgd_common_step": (
+        "sgd_common_step",
+        "SGD: one common step size for every batch size",
+        "epoch",
+        "index",
+    ),
     "sgd_schedule": ("sgd_schedule", "SGD: step size schedules", "epoch", "index"),
     "agd": ("agd", "Accelerated gradient descent", "iter", "index"),
     "newton": ("newton", "Newton variants", "iter", "index"),
@@ -58,6 +71,7 @@ def _style_for_slides() -> None:
 
 
 def render_group(problem, name: str, stem: str, title: str, xaxis: str, color_by: str) -> None:
+    """Redraw one comparison group at slide size, from its cached runs."""
     runs, _ = load_results(name)
     for axis, suffix in ((xaxis, xaxis), ("time", "time")):
         fig, ax = plt.subplots(figsize=SLIDE_FIGSIZE)
@@ -103,6 +117,7 @@ def render_all_methods(problem) -> None:
 
 
 def main() -> None:
+    """Render every slide figure for which cached results exist."""
     _style_for_slides()
     problem, _ = load_problem()
 
@@ -114,7 +129,7 @@ def main() -> None:
             print(f"[skip] {name}: no cached results")
 
     render_all_methods(problem)
-    print(f"[ok]   all_methods")
+    print("[ok]   all_methods")
     print(f"\nwritten to {SLIDE_DIR}")
 
 

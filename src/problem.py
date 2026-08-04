@@ -83,10 +83,16 @@ class RidgeProblem:
 
     def hess(self, w: np.ndarray | None = None) -> np.ndarray:
         """Hessian. Constant for this problem, so w is ignored."""
+        del w
         return self.gram + self.lam * np.eye(self.d)
 
     def hess_vec(self, w: np.ndarray | None, v: np.ndarray) -> np.ndarray:
-        """Hessian-vector product without forming the Hessian."""
+        """Hessian-vector product without forming the Hessian.
+
+        The Hessian does not depend on w either, but the argument is kept so
+        that the signature matches the general case the callers assume.
+        """
+        del w
         return self.X.T @ (self.X @ v) / self.n + self.lam * v
 
     # ------------------------------------------------------------------
@@ -201,6 +207,7 @@ class RidgeProblem:
     # ------------------------------------------------------------------
 
     def reset_counters(self) -> None:
+        """Zero the objective and gradient evaluation counters."""
         self.n_f_evals = 0
         self.n_grad_evals = 0
 

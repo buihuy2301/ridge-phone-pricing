@@ -23,10 +23,16 @@ from src.data import (
     save_processed,
     select_lambda,
 )
+from src.problem import RidgeProblem
+
+# The pytest fixtures below are named after the argument they fill in, so every
+# test that requests one shadows the fixture function.
+# pylint: disable=redefined-outer-name
 
 
 @pytest.fixture
 def raw_frame() -> pd.DataFrame:
+    """Synthetic table with the same awkward features as the Kaggle file."""
     rng = np.random.default_rng(0)
     n = 800
     brands = rng.choice(["Apple", "Samsung", "Xiaomi", "Oppo", "Vivo"], size=n)
@@ -67,6 +73,7 @@ def raw_frame() -> pd.DataFrame:
 
 
 def test_extract_number_handles_units() -> None:
+    """A leading number is recovered from '128GB'; plain text yields NaN."""
     assert extract_number("128GB") == 128.0
     assert extract_number("6.1 inch") == 6.1
     assert extract_number(42) == 42.0
@@ -75,6 +82,7 @@ def test_extract_number_handles_units() -> None:
 
 
 def test_coerce_numeric_like_converts_unit_columns(raw_frame: pd.DataFrame) -> None:
+    """Columns written with a unit become numeric; brand names stay categorical."""
     converted = coerce_numeric_like(raw_frame)
     assert pd.api.types.is_numeric_dtype(converted["ram"])
     assert pd.api.types.is_numeric_dtype(converted["storage"])
@@ -83,12 +91,14 @@ def test_coerce_numeric_like_converts_unit_columns(raw_frame: pd.DataFrame) -> N
 
 
 def test_group_rare_levels() -> None:
+    """Levels seen fewer than `threshold` times collapse into a single 'rare'."""
     series = pd.Series(["a"] * 20 + ["b"] * 3 + ["c"] * 2)
     grouped = group_rare_levels(series, threshold=10)
     assert set(grouped.unique()) == {"a", "rare"}
 
 
 def test_guess_target(raw_frame: pd.DataFrame) -> None:
+    """The resale price column is picked without being named explicitly."""
     assert guess_target(raw_frame) == "used_price"
 
 
@@ -98,6 +108,10 @@ def test_guess_target(raw_frame: pd.DataFrame) -> None:
 
 
 def test_design_matrix_is_standardized_and_centered(raw_frame: pd.DataFrame) -> None:
+    """Training columns have zero mean and unit variance, and y is centered.
+
+    Centering y is what removes the intercept from the objective.
+    """
     design = build_design_matrix(raw_frame, seed=0)
 
     assert design.target == "used_price"
@@ -110,6 +124,7 @@ def test_design_matrix_is_standardized_and_centered(raw_frame: pd.DataFrame) -> 
 
 
 def test_design_matrix_drops_identifier_columns(raw_frame: pd.DataFrame) -> None:
+    """Row identifiers carry no signal and must not reach the design matrix."""
     design = build_design_matrix(raw_frame, seed=0)
     assert not any(name == "id" for name in design.feature_names)
 
@@ -121,6 +136,7 @@ def test_one_hot_encoding_widens_the_problem(raw_frame: pd.DataFrame) -> None:
 
 
 def test_no_constant_columns_survive(raw_frame: pd.DataFrame) -> None:
+    """A constant column would make the Gram matrix singular after centering."""
     design = build_design_matrix(raw_frame, seed=0)
     assert np.all(design.X_train.std(axis=0) > 1e-12)
 
@@ -131,6 +147,7 @@ def test_no_constant_columns_survive(raw_frame: pd.DataFrame) -> None:
 
 
 def test_ridge_solution_matches_the_normal_equations(raw_frame: pd.DataFrame) -> None:
+    """The closed-form solution leaves a gradient of norm below 1e-8."""
     design = build_design_matrix(raw_frame, seed=0)
     X, y, lam = design.X_train, design.y_train, 1e-2
     w = ridge_solution(X, y, lam)
@@ -139,6 +156,7 @@ def test_ridge_solution_matches_the_normal_equations(raw_frame: pd.DataFrame) ->
 
 
 def test_select_lambda_returns_a_grid_point(raw_frame: pd.DataFrame) -> None:
+    """Cross-validation returns one of the candidate values, not an average."""
     design = build_design_matrix(raw_frame, seed=0)
     grid = np.logspace(-4, 1, 8)
     lam, records = select_lambda(design.X_train, design.y_train, grid=grid, seed=0)
@@ -148,6 +166,7 @@ def test_select_lambda_returns_a_grid_point(raw_frame: pd.DataFrame) -> None:
 
 
 def test_save_and_reload_round_trip(raw_frame: pd.DataFrame, tmp_path) -> None:
+    """A problem written to disk reloads with the same constants and optimum."""
     design = build_design_matrix(raw_frame, seed=0)
     config = save_processed(design, lam=1e-2, out_dir=tmp_path)
 
@@ -163,8 +182,6 @@ def test_save_and_reload_round_trip(raw_frame: pd.DataFrame, tmp_path) -> None:
 
 def test_larger_lambda_lowers_the_condition_number(raw_frame: pd.DataFrame) -> None:
     """The link between regularization and conditioning, used in section 5.6."""
-    from src.problem import RidgeProblem
-
     design = build_design_matrix(raw_frame, seed=0)
     small = RidgeProblem(design.X_train, design.y_train, 1e-4)
     large = RidgeProblem(design.X_train, design.y_train, 1e0)

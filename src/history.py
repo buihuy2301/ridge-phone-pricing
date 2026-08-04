@@ -35,6 +35,7 @@ class OptimizeResult:
 
     @property
     def f_final(self) -> float:
+        """Last recorded objective value."""
         return self.f_hist[-1]
 
     def suboptimality(self, f_star: float, floor: float = 1e-18) -> np.ndarray:
@@ -157,6 +158,7 @@ class Recorder:
     # ------------------------------------------------------------------
 
     def start(self) -> None:
+        """Start the clock, just before the first iteration."""
         self._clock_start = time.perf_counter()
 
     def _pause(self) -> None:
@@ -169,6 +171,7 @@ class Recorder:
 
     @property
     def elapsed(self) -> float:
+        """Running time so far, excluding the paused recording intervals."""
         if self._clock_start is None:
             return self._elapsed
         return self._elapsed + (time.perf_counter() - self._clock_start)
@@ -178,6 +181,7 @@ class Recorder:
     # ------------------------------------------------------------------
 
     def should_record(self, k: int) -> bool:
+        """True when iteration k falls on the recording grid."""
         return k % self.record_every == 0
 
     def record(self, k: int, w: np.ndarray, accesses: int, force: bool = False) -> None:
@@ -221,6 +225,7 @@ class Recorder:
         self._resume()
 
     def finish(self, w: np.ndarray, method: str, params: dict, status: str) -> OptimizeResult:
+        """Stop the clock and package the history into an OptimizeResult."""
         self._pause()
         return OptimizeResult(
             method=method,

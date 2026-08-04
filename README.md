@@ -91,6 +91,30 @@ là điểm dừng, mọi thuật toán cùng hội tụ về một nghiệm tr�
 descent phân kỳ khi vượt ngưỡng $2/L$, việc ghi log không làm tăng số lần đánh giá
 hàm, và quy đổi hệ số hiệu chỉnh giữa mã tự viết với scikit-learn là chính xác.
 
+## Kiểm tra mã nguồn
+
+```bash
+.venv/bin/python -m pylint src tests
+```
+
+Cấu hình nằm ở `.pylintrc`. Ba nhóm quy tắc được nới so với mặc định, mỗi nhóm
+kèm lý do ngay trong file: tên viết hoa cho ma trận và cho hằng số $L$, số tham
+số và số biến cục bộ của các hàm thuật toán, và phần khung lặp dùng chung giữa
+`src/first_order.py` với `src/second_order.py`. Ngoài ba nhóm đó, mã nguồn phải
+đạt 10,00/10 trước khi nộp.
+
+pylint không đọc được file `.ipynb`, nên phần mã trong notebook kiểm tra bằng
+lệnh riêng:
+
+```bash
+.venv/bin/python tools/lint_notebooks.py
+```
+
+Lệnh này ghép các ô mã của từng notebook thành một module tạm, chạy pylint trên
+đó, rồi quy các cảnh báo về đúng số thứ tự ô và số dòng trong ô. Bốn quy tắc bị
+tắt vì chúng bắt vào quy ước của notebook chứ không phải lỗi; lý do của từng
+quy tắc ghi trong docstring đầu file.
+
 ## Cấu trúc thư mục
 
 ```
