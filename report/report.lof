@@ -1,0 +1,30 @@
+\addvspace {10\p@ }
+\addvspace {10\p@ }
+\contentsline {figure}{\numberline {2.1}{\ignorespaces \xpg@aux {}{vietnamese}Ảnh hưởng của việc chuẩn hóa cột lên tốc độ hội tụ của gradient descent. Trục tung là $f(w_k) - f^{*}$ trên thang logarit.}}{10}{figure.2.1}%
+\addvspace {10\p@ }
+\addvspace {10\p@ }
+\addvspace {10\p@ }
+\contentsline {figure}{\numberline {5.1}{\ignorespaces \xpg@aux {}{vietnamese}Gradient descent với các độ dài bước cố định, theo số vòng lặp.}}{15}{figure.5.1}%
+\contentsline {figure}{\numberline {5.2}{\ignorespaces \xpg@aux {}{vietnamese}Gradient descent với các độ dài bước cố định, theo thời gian chạy.}}{16}{figure.5.2}%
+\contentsline {figure}{\numberline {5.3}{\ignorespaces \xpg@aux {}{vietnamese}Ảnh hưởng của $\alpha $ và $\beta $, theo số vòng lặp.}}{17}{figure.5.3}%
+\contentsline {figure}{\numberline {5.4}{\ignorespaces \xpg@aux {}{vietnamese}Ảnh hưởng của $\alpha $ và $\beta $, theo thời gian chạy.}}{17}{figure.5.4}%
+\contentsline {figure}{\numberline {5.5}{\ignorespaces \xpg@aux {}{vietnamese}SGD với các kích thước lô khác nhau, theo số lượt duyệt dữ liệu.}}{19}{figure.5.5}%
+\contentsline {figure}{\numberline {5.6}{\ignorespaces \xpg@aux {}{vietnamese}SGD với các kích thước lô khác nhau, theo thời gian chạy.}}{19}{figure.5.6}%
+\contentsline {figure}{\numberline {5.7}{\ignorespaces \xpg@aux {}{vietnamese}Cùng một độ dài bước $0.1/L$ cho mọi kích thước lô. Lô kích thước 1 phân kỳ.}}{19}{figure.5.7}%
+\contentsline {figure}{\numberline {5.8}{\ignorespaces \xpg@aux {}{vietnamese}Cùng một độ dài bước $0.1/L$, theo thời gian chạy.}}{20}{figure.5.8}%
+\contentsline {figure}{\numberline {5.9}{\ignorespaces \xpg@aux {}{vietnamese}Các lịch trình $\eta _k$, theo số lượt duyệt dữ liệu.}}{20}{figure.5.9}%
+\contentsline {figure}{\numberline {5.10}{\ignorespaces \xpg@aux {}{vietnamese}Các lịch trình $\eta _k$, theo thời gian chạy.}}{21}{figure.5.10}%
+\contentsline {figure}{\numberline {5.11}{\ignorespaces \xpg@aux {}{vietnamese}Các cấu hình momentum, có và không khởi động lại, theo số vòng lặp.}}{22}{figure.5.11}%
+\contentsline {figure}{\numberline {5.12}{\ignorespaces \xpg@aux {}{vietnamese}Các cấu hình momentum, có và không khởi động lại, theo thời gian chạy.}}{22}{figure.5.12}%
+\contentsline {figure}{\numberline {5.13}{\ignorespaces \xpg@aux {}{vietnamese}Các biến thể Newton, theo số vòng lặp.}}{24}{figure.5.13}%
+\contentsline {figure}{\numberline {5.14}{\ignorespaces \xpg@aux {}{vietnamese}Các biến thể Newton, theo thời gian chạy.}}{24}{figure.5.14}%
+\addvspace {10\p@ }
+\contentsline {figure}{\numberline {6.1}{\ignorespaces \xpg@aux {}{vietnamese}So sánh các thuật toán ở cấu hình tốt nhất, theo số vòng lặp.}}{26}{figure.6.1}%
+\contentsline {figure}{\numberline {6.2}{\ignorespaces \xpg@aux {}{vietnamese}So sánh các thuật toán ở cấu hình tốt nhất, theo thời gian chạy.}}{27}{figure.6.2}%
+\contentsline {figure}{\numberline {6.3}{\ignorespaces \xpg@aux {}{vietnamese}Đường hội tụ thực nghiệm đặt cạnh hai cận lý thuyết.}}{28}{figure.6.3}%
+\addvspace {10\p@ }
+\contentsline {figure}{\numberline {7.1}{\ignorespaces \xpg@aux {}{vietnamese}So sánh mã tự viết với thư viện, theo số vòng lặp.}}{30}{figure.7.1}%
+\contentsline {figure}{\numberline {7.2}{\ignorespaces \xpg@aux {}{vietnamese}So sánh mã tự viết với thư viện, theo thời gian chạy. Các cài đặt thư viện không có lịch sử vòng lặp nên được vẽ thành điểm trên mặt phẳng (thời gian, sai số).}}{31}{figure.7.2}%
+\addvspace {10\p@ }
+\contentsline {figure}{\numberline {8.1}{\ignorespaces \xpg@aux {}{vietnamese}Tốc độ hội tụ ứng với các giá trị $\lambda $ khác nhau, theo số vòng lặp và theo thời gian chạy.}}{32}{figure.8.1}%
+\addvspace {10\p@ }

@@ -1,0 +1,34 @@
+# Python
+.venv/
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.ipynb_checkpoints/
+
+# Data
+data/raw/*
+!data/raw/.gitkeep
+data/processed/*.npy
+
+# LaTeX build artifacts
+*.aux
+*.log
+*.out
+*.nav
+*.snm
+*.toc
+*.bbl
+*.bcf
+*.blg
+*.fdb_latexmk
+*.fls
+*.run.xml
+*.synctex.gz
+*.vrb
+*.xdv
+report/*.pdf
+_minted*/
+
+# macOS
+.DS_Store
+.claude

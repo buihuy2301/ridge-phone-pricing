@@ -1,0 +1,77 @@
+% Shared preamble for report.tex and slides.tex.
+% Compile both with XeLaTeX: latexmk -xelatex <file>.tex
+
+\usepackage{fontspec}
+\usepackage{polyglossia}
+\setmainlanguage{vietnamese}
+\setmainfont{texgyretermes}[
+  Extension      = .otf,
+  UprightFont    = *-regular,
+  BoldFont       = *-bold,
+  ItalicFont     = *-italic,
+  BoldItalicFont = *-bolditalic,
+]
+
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{amsthm}
+\usepackage{mathtools}
+\usepackage{graphicx}
+\usepackage{booktabs}
+\usepackage{siunitx}
+\usepackage{xcolor}
+
+% Vietnamese decimal marker, so that \num agrees with the decimals written by
+% hand in the prose (1{,}39 rather than 1.39).
+\sisetup{output-decimal-marker={,}}
+
+\graphicspath{{figures/}{../results/figures/slides/}{../results/figures/}}
+
+% ---------------------------------------------------------------------------
+% Notation, kept identical to KE_HOACH_TRIEN_KHAI.md
+% ---------------------------------------------------------------------------
+\newcommand{\R}{\mathbb{R}}
+\newcommand{\E}{\mathbb{E}}
+\newcommand{\wstar}{w^{*}}
+\newcommand{\fstar}{f^{*}}
+\newcommand{\bigO}{\mathcal{O}}
+\newcommand{\Batch}{\mathcal{B}}
+\newcommand{\trans}{^{\top}}
+\DeclareMathOperator*{\argmin}{arg\,min}
+\DeclareMathOperator{\sign}{sign}
+\DeclarePairedDelimiter{\norm}{\lVert}{\rVert}
+\DeclarePairedDelimiter{\abs}{\lvert}{\rvert}
+
+% ---------------------------------------------------------------------------
+% Figure inclusion that tolerates figures which have not been generated yet.
+% #1 = file stem in results/figures, #2 = caption, #3 = label
+% ---------------------------------------------------------------------------
+% The figure stems contain underscores, so the name has to be detokenized
+% before it is typeset.
+\newcommand{\missingfigbox}[1]{%
+  \fbox{\parbox[c][3.2cm][c]{0.86\linewidth}{\centering
+    \texttt{\detokenize{#1}.pdf}\par\vspace{4pt}
+    \small chưa được sinh ra từ notebook\par}}%
+}
+
+\newcommand{\resultfig}[3]{%
+  \begin{figure}[htbp]
+    \centering
+    \IfFileExists{../results/figures/#1.pdf}
+      {\includegraphics[width=0.92\linewidth]{#1.pdf}}
+      {\missingfigbox{#1}}
+    \caption{#2}
+    \label{#3}
+  \end{figure}%
+}
+
+% Figures are 6 by 4 inches, so a full-width copy is too tall for a slide that
+% also carries text. The height is capped as a fraction of the text height and
+% the aspect ratio is preserved; crowded frames pass a smaller fraction.
+\newcommand{\resultgraphic}[2][0.72]{%
+  \IfFileExists{../results/figures/slides/#2.pdf}
+    {\includegraphics[width=\linewidth,height=#1\textheight,keepaspectratio]{../results/figures/slides/#2.pdf}}
+    {\IfFileExists{../results/figures/#2.pdf}
+      {\includegraphics[width=\linewidth,height=#1\textheight,keepaspectratio]{../results/figures/#2.pdf}}
+      {\missingfigbox{#2}}}%
+}
