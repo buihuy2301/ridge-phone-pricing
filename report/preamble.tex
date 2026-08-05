@@ -57,8 +57,12 @@
 % The path is spelled out rather than left to \graphicspath, which lists the
 % slide directory first and would otherwise hand the report the wide, reduced
 % copies meant for Beamer.
+% Placement is [tp] rather than [htbp] on purpose. With 'h' a figure declared
+% between two paragraphs is typeset right there and cuts the argument in half,
+% and with 'b' it lands under a paragraph that continues on the next page, which
+% reads the same way. Top of page or a float page keeps the prose continuous.
 \newcommand{\resultfig}[3]{%
-  \begin{figure}[htbp]
+  \begin{figure}[tp]
     \centering
     \IfFileExists{../results/figures/#1.pdf}
       {\includegraphics[width=0.8\linewidth]{../results/figures/#1.pdf}}

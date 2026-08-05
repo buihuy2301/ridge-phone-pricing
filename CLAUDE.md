@@ -37,7 +37,7 @@ Ba mốc về nhịp, kiểm tra được bằng mắt sau khi viết xong:
 
 Quy tắc tách câu dài nhắm vào câu chứa từ ba ý độc lập trở lên nối bằng dấu phẩy, không nhắm vào câu ghép có mệnh đề phụ. Một câu 45 tiếng gồm một ý chính và hai mệnh đề bổ nghĩa thì giữ nguyên.
 
-Mọi kết luận phải kèm số liệu hoặc biểu đồ tương ứng; chưa có bằng chứng thì ghi rõ đó là dự đoán. Danh sách lỗi từ vựng và cú pháp cần rà sau khi viết nằm ở mục 6 của file văn phong.
+Mọi kết luận phải kèm số liệu hoặc biểu đồ tương ứng; chưa có bằng chứng thì ghi rõ đó là dự đoán. Danh sách lỗi từ vựng và cú pháp cần rà sau khi viết nằm ở mục 7 của file văn phong.
 
 ## 3. Biểu đồ
 

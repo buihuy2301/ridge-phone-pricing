@@ -74,6 +74,15 @@ liệu tham khảo.
   Anh theo quy tắc mục 1 của `CLAUDE.md`. Không dán mã Python nguyên khối vào báo
   cáo, chỉ trích đoạn ngắn bằng `listings` hoặc `minted` khi thật sự cần.
 - Bảng dùng `booktabs`. Không dùng đường kẻ dọc.
+- Tiêu đề chương in một dòng theo dạng `VII. So sánh với thư viện`, cỡ `\Large`,
+  số chương bằng chữ số La Mã qua `titlesec`. Mục, hình, bảng, công thức và
+  thuật toán vẫn lấy tiền tố chương bằng chữ số Ả Rập, tức `mục 7.1` và
+  `hình 7.2`. Ô số chương trong mục lục nới lên `2.8em` bằng `tocloft`, vì
+  `VIII` không vừa bề rộng mặc định.
+- Hình và bảng đặt `[tbp]`, không dùng `h` hay `H`. Với `h`, một hình khai báo
+  giữa hai đoạn của cùng một mạch lập luận sẽ chèn ngay vào đó và cắt đôi lập
+  luận; bỏ `h` thì hình lên đầu hoặc xuống cuối trang và phần văn xuôi liền
+  mạch.
 
 ## Quy ước trong slide Beamer
 

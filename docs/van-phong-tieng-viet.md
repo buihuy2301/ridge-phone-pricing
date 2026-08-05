@@ -4,8 +4,8 @@ File này là bản đầy đủ của quy tắc văn phong tóm tắt ở mục
 trước khi viết hoặc sửa bất kỳ đoạn văn tiếng Việt nào: báo cáo, slide, README, ô
 markdown trong notebook.
 
-Dùng theo hai lượt. Lượt viết bám mục 1 tới mục 4, tức bám vào mẫu và công thức.
-Lượt rà soát dùng mục 6, tức danh sách các lỗi đã gặp. Không dùng mục 6 làm tài
+Dùng theo hai lượt. Lượt viết bám mục 1 tới mục 5, tức bám vào mẫu và công thức.
+Lượt rà soát dùng mục 7, tức danh sách các lỗi đã gặp. Không dùng mục 7 làm tài
 liệu hướng dẫn viết: danh sách cấm chỉ thu hẹp vùng được phép, nó không chỉ ra
 văn đích trông như thế nào, và viết theo nó sẽ ra một chuỗi câu ngắn rời rạc.
 
@@ -24,7 +24,7 @@ luận nào. Sáu đặc điểm của thứ văn đó:
   vậy", "khi", "trong khi", "ngược lại", "đổi lại", "miễn là".
 - Con số luôn đi cùng mốc để so sánh, dạng "0,076 giây, ít hơn 10 lần so với
   gradient descent", không đứng trơ một mình.
-- Việc mình làm thì xưng "chúng tôi"; tính chất của bài toán thì để bài toán làm
+- Việc mình làm thì xưng "nhóm"; tính chất của bài toán thì để bài toán làm
   chủ ngữ.
 - Giới hạn của kết luận nêu ngay tại chỗ, thường bằng một mệnh đề điều kiện đóng
   đoạn: "nhận xét đó sẽ đảo chiều nếu $d$ lớn tới mức không tính được trị riêng
@@ -34,7 +34,7 @@ luận nào. Sáu đặc điểm của thứ văn đó:
 
 Bốn đoạn dưới đây lấy nguyên từ `report/report.tex`, là các đoạn đọc tự nhiên
 nhất trong bản hiện tại. Khi viết đoạn mới, đối chiếu nhịp và cách nối câu với
-các mẫu này trước, rồi mới rà theo mục 6.
+các mẫu này trước, rồi mới rà theo mục 7.
 
 **Mẫu 1, giải thích một quyết định về thiết kế thí nghiệm.**
 
@@ -46,7 +46,7 @@ các mẫu này trước, rồi mới rà theo mục 6.
 
 Câu đầu 24 tiếng đặt dữ kiện, câu sau 46 tiếng mang toàn bộ lập luận. Đúng một
 dấu hai chấm, dẫn vào phần định lượng cho mệnh đề đứng trước nó. Đoạn này dài hơn
-hạn 40 từ ở mục 6 nhưng vẫn dễ đọc, vì mệnh đề sau dấu hai chấm chỉ mở rộng ý đã
+hạn 40 từ ở mục 7 nhưng vẫn dễ đọc, vì mệnh đề sau dấu hai chấm chỉ mở rộng ý đã
 nêu chứ không thêm ý mới.
 
 **Mẫu 2, so sánh hai phương án bằng cấu trúc song song.**
@@ -69,9 +69,9 @@ chốt lại cơ chế.
 > cách khác $\lambda_{\min}(\tfrac{1}{n} X^{\top} X) \approx 0$, nên
 > $\mu = \lambda$ và $\kappa = L / \lambda$. Hệ số hiệu chỉnh là đại lượng duy
 > nhất quyết định số điều kiện của bài toán, chứ không phải cấu trúc của dữ liệu.
-> Mục 5 khai thác tính chất này.
+> Chương 8 khai thác tính chất này.
 
-Ba bậc rõ rệt: số đo, hệ quả toán học, phát biểu tổng quát. Câu cuối bốn tiếng
+Ba bậc rõ rệt: số đo, hệ quả toán học, phát biểu tổng quát. Câu cuối bảy tiếng
 làm nhiệm vụ chỉ đường, mang thông tin về vị trí nên hợp lệ.
 
 **Mẫu 4, giải thích một chênh lệch bất ngờ giữa hai phương pháp.**
@@ -86,7 +86,61 @@ Một câu dài mang cả hiện tượng lẫn nguyên nhân, nối bằng "vì
 thành hai câu rồi thêm "Nguyên nhân là". Câu sau nêu điều kiện mà kết luận đảo
 chiều.
 
-## 3. Công thức cho đoạn phân tích kết quả
+## 3. Trước khi viết
+
+Bảng số và hình vẽ không tự sinh ra đoạn văn. Trước câu đầu tiên, xác định ý mà
+đoạn cần chứng minh rồi mới chọn số liệu phục vụ ý đó; làm ngược lại, tức đọc
+bảng trước rồi thuật lại những gì nhìn thấy, sẽ ra một đoạn liệt kê không có
+trọng tâm.
+
+Mỗi đoạn trả lời đúng một câu hỏi, và trước khi viết cần trả lời được bốn câu sau
+về nó:
+
+- Con số nào trong bảng hoặc hình đáng chú ý nhất?
+- Con số đó dẫn tới kết luận gì?
+- Cơ chế nào giải thích kết luận đó?
+- Kết luận còn đúng trong điều kiện nào?
+
+Chưa trả lời được cả bốn thì chưa đủ nguyên liệu để viết, và việc cần làm là đọc
+lại kết quả hoặc chạy thêm thí nghiệm chứ không phải viết một đoạn mô tả bảng để
+lấp chỗ.
+
+Điểm xuất phát là kết luận cần rút ra, không phải hàng đầu tiên của bảng. Khi đã
+có kết luận, giữ lại đúng những số liệu đủ để người đọc kiểm chứng nó, còn các số
+liệu khác thì dành cho đoạn khác hoặc để nguyên trong bảng, vì bảng đã in đầy đủ
+và người đọc tra được. Một đoạn tốt thường bỏ qua nhiều số hơn số nó dùng.
+
+### 3.1. Mỗi đoạn chỉ chứng minh một ý
+
+Một đoạn gộp nhiều hiện tượng thì không chứng minh được hiện tượng nào.
+
+> Sai: Bảng 5 cho thấy Newton nhanh hơn gradient descent, Newton-CG chậm hơn
+> Newton, backtracking làm tăng số lần đánh giá hàm, và chuẩn hóa cải thiện số
+> điều kiện.
+
+Bốn mệnh đề trên cần bốn cơ chế khác nhau, nên bản đúng là bốn đoạn cùng đọc từ
+bảng 5 nhưng mỗi đoạn chỉ giữ các cột phục vụ ý của nó: một đoạn giải thích
+Newton, một đoạn giải thích Newton-CG, một đoạn giải thích backtracking, một đoạn
+giải thích chuẩn hóa.
+
+Mốc để quyết định tách hay không là số cơ chế chứ không phải số kết luận. Hai kết
+luận dựa trên cùng một cơ chế thì viết chung được, còn hai kết luận cần hai cơ
+chế khác nhau thì nằm ở hai đoạn, ngay cả khi cùng đọc từ một bảng.
+
+### 3.2. Viết theo chuỗi suy luận, không theo thứ tự đọc bảng
+
+Người đọc không cần biết nhóm đã nhìn bảng theo thứ tự nào, họ chỉ cần biết
+vì sao kết luận đúng. Thứ tự trong đoạn vì thế là thứ tự của lập luận: dữ kiện đủ
+để chứng minh, cơ chế nối dữ kiện với kết luận, rồi kết luận hoặc giới hạn của
+nó. Mục 4 khai triển ba phần này thành công thức viết đoạn.
+
+Thứ tự cần tránh là thứ tự đọc bảng, tức đọc số thứ nhất, số thứ hai, số thứ ba,
+cuối cùng mới tới kết luận. Đoạn viết theo thứ tự đó bắt người đọc giữ ba con số
+trong đầu khi còn chưa biết chúng dùng để làm gì, và dồn toàn bộ phần suy luận
+vào một câu cuối. Đoạn văn phải đọc như một lời giải thích, không phải lời thuyết
+minh bảng.
+
+## 4. Công thức cho đoạn phân tích kết quả
 
 Phần lớn báo cáo là các đoạn bình luận một bảng hoặc một hình. Một đoạn như vậy
 gồm ba phần, theo thứ tự:
@@ -107,7 +161,7 @@ Khi một bảng cho nhiều kết luận độc lập, mỗi kết luận là m
 phần, thay vì gộp thành một đoạn dài. Câu dẫn kiểu "Bảng 3 cho ba kết luận" chỉ
 dùng một lần cho cả cụm đoạn, và chỉ khi thật sự có ba đoạn theo sau.
 
-## 4. Nhịp câu và liên kết
+## 5. Nhịp câu và liên kết
 
 Lỗi nặng nhất của các bản nháp gần đây không còn là câu rườm mà là câu đều: một
 chuỗi câu trần thuật ngắn, mỗi câu một mệnh đề chính, không câu nào nối vào câu
@@ -148,12 +202,12 @@ Liên từ nên dùng, phân theo quan hệ:
 | Bổ sung | ngoài ra, hơn nữa, đồng thời |
 | Diễn giải | tức là, nói cách khác |
 
-Quy tắc tách câu dài ở mục 6 nhắm vào câu chứa ba ý độc lập nối bằng dấu phẩy,
+Quy tắc tách câu dài ở mục 7 nhắm vào câu chứa ba ý độc lập nối bằng dấu phẩy,
 không nhắm vào câu ghép có mệnh đề phụ. Mốc để quyết định là số ý, không phải số
 tiếng: một câu 45 tiếng gồm một ý chính và hai mệnh đề bổ nghĩa cho nó thì giữ
 nguyên, còn một câu 30 tiếng gồm ba ý ngang hàng thì tách.
 
-## 5. Trước và sau
+## 6. Trước và sau
 
 Ba cặp dưới đây là các lỗi lặp lại nhiều lần nhất trong bản nháp.
 
@@ -184,7 +238,7 @@ Ba cặp dưới đây là các lỗi lặp lại nhiều lần nhất trong b�
 > lời giải mất 0,076 giây, ít hơn 10 lần so với thời gian gradient descent cần để
 > đạt $10^{-6}$."
 
-## 6. Danh sách rà soát
+## 7. Danh sách rà soát
 
 Dùng sau khi đã viết xong đoạn, không dùng khi đang viết.
 
@@ -208,11 +262,11 @@ Dùng sau khi đã viết xong đoạn, không dùng khi đang viết.
   trước. Gộp vào câu trước, hoặc nêu đích danh danh từ được trỏ.
 - Không viết câu cụt thiếu vị ngữ: "Ba kết luận.", "Hai cách xử lý, cả hai đều
   hội tụ.". Viết đủ: "Từ bảng 3 có thể rút ra ba kết luận."
-- Chủ ngữ của việc cài đặt, chạy thí nghiệm, chọn tham số là "chúng tôi" hoặc
-  lược bỏ, không phải "báo cáo". Khi câu nói về nội dung của chính văn bản thì
+- Chủ ngữ của việc cài đặt, chạy thí nghiệm, chọn tham số là "nhóm" hoặc
+  lược bỏ, không phải "báo cáo" và không phải "chúng tôi". Khi câu nói về nội dung của chính văn bản thì
   lấy văn bản làm chủ ngữ lại đúng: "Báo cáo gồm tám mục", "Bảng 3 cho thấy ba
   kết luận".
-- Tách câu chứa từ ba ý độc lập trở lên nối bằng dấu phẩy. Xem mốc ở mục 4.
+- Tách câu chứa từ ba ý độc lập trở lên nối bằng dấu phẩy. Xem mốc ở mục 5.
 - Hạn chế bị động "được" khi đã có chủ thể rõ ràng: "Toàn bộ thí nghiệm được thực
   hiện trên một mẫu ngẫu nhiên" viết thành "Toàn bộ thí nghiệm chạy trên một mẫu
   ngẫu nhiên". Giữ "được" khi nó mang nghĩa khả năng: "tính được", "đo được",
@@ -264,7 +318,7 @@ Dùng sau khi đã viết xong đoạn, không dùng khi đang viết.
 - Mọi kết luận rút ra từ thí nghiệm phải kèm số liệu hoặc biểu đồ tương ứng. Chưa
   có bằng chứng thì ghi rõ đó là dự đoán.
 
-## 7. Ranh giới với mã nguồn
+## 8. Ranh giới với mã nguồn
 
 Quy tắc ngôn ngữ ở mục 1 của `CLAUDE.md` cấm tiếng Việt trong mã nguồn, kể cả
 comment và docstring.
