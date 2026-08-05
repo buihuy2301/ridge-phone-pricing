@@ -25,7 +25,7 @@
     "refactor": true,
     "n_factorizations": 1,
     "line_search_evals": 0,
-    "label": "Newton (t = 1, refactor each iteration)",
+    "label": "Newton ($t = 1$, refactor each iteration)",
     "repeats": 3,
     "time_all_runs": [
      0.08273096004268155,
@@ -355,7 +355,7 @@
     "refactor": false,
     "n_factorizations": 1,
     "line_search_evals": 0,
-    "label": "Newton (t = 1, cached factor)",
+    "label": "Newton ($t = 1$, cached factor)",
     "repeats": 3,
     "time_all_runs": [
      0.07650004094466567,
@@ -1017,7 +1017,7 @@
     "cg_tol": 0.01,
     "n_cg_products": 49,
     "line_search_evals": 0,
-    "label": "Newton-CG (cg_tol = 1e-2)",
+    "label": "Newton-CG (cg_tol $= 10^{-2}$)",
     "repeats": 3,
     "time_all_runs": [
      2.065925875038374,
@@ -1367,7 +1367,7 @@
     "cg_tol": 1e-06,
     "n_cg_products": 47,
     "line_search_evals": 0,
-    "label": "Newton-CG (cg_tol = 1e-6)",
+    "label": "Newton-CG (cg_tol $= 10^{-6}$)",
     "repeats": 3,
     "time_all_runs": [
      1.8311655409634113,

@@ -25,7 +25,7 @@
     "eta0": 0.019519588064817628,
     "batch_size": 64,
     "seed": 0,
-    "label": "SGD (B = 64, constant)",
+    "label": "SGD ($B = 64$, $\\eta_k = \\eta_0$ constant)",
     "n_updates": 75000,
     "repeats": 3,
     "time_all_runs": [
@@ -497,7 +497,7 @@
     "gamma": 0.5,
     "batch_size": 64,
     "seed": 0,
-    "label": "SGD (B = 64, eta0/(1+0.5k))",
+    "label": "SGD ($B = 64$, $\\eta_k = \\eta_0/(1 + 0.5k)$)",
     "n_updates": 75000,
     "repeats": 3,
     "time_all_runs": [
@@ -968,7 +968,7 @@
     "eta0": 0.019519588064817628,
     "batch_size": 64,
     "seed": 0,
-    "label": "SGD (B = 64, eta0/sqrt(k))",
+    "label": "SGD ($B = 64$, $\\eta_k = \\eta_0/\\sqrt{k+1}$)",
     "n_updates": 75000,
     "repeats": 3,
     "time_all_runs": [
@@ -1440,7 +1440,7 @@
     "period": 5,
     "batch_size": 64,
     "seed": 0,
-    "label": "SGD (B = 64, halving every 5 epochs)",
+    "label": "SGD ($B = 64$, $\\eta_k = \\eta_0 \\cdot 2^{-\\lfloor k/5 \\rfloor}$)",
     "n_updates": 75000,
     "repeats": 3,
     "time_all_runs": [

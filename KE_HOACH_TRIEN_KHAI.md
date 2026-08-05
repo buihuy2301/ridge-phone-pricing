@@ -101,7 +101,7 @@ Khởi tạo git để theo dõi thay đổi và chia việc:
 git init
 ```
 
-Về phần soạn thảo: báo cáo viết bằng LaTeX và slide làm bằng Beamer, biên dịch bằng XeLaTeX. Máy hiện tại đã có TeX Live 2025 với đầy đủ các gói cần dùng (`fontspec`, `polyglossia`, `beamer`, `booktabs`, `biblatex`, `algorithm`, `algpseudocode`, `listings`, `minted`, theme `metropolis`), và đã kiểm chứng biên dịch được văn bản tiếng Việt. Các thành viên khác cần cài TeX Live hoặc MacTeX bản đầy đủ. Quy ước chi tiết nằm ở mục 5 của `CLAUDE.md`.
+Về phần soạn thảo: báo cáo viết bằng LaTeX và slide làm bằng Beamer, biên dịch bằng XeLaTeX. Máy hiện tại đã có TeX Live 2025 với đầy đủ các gói cần dùng (`fontspec`, `polyglossia`, `beamer`, `booktabs`, `biblatex`, `algorithm`, `algpseudocode`, `listings`, `minted`, theme `metropolis`), và đã kiểm chứng biên dịch được văn bản tiếng Việt. Các thành viên khác cần cài TeX Live hoặc MacTeX bản đầy đủ. Quy ước chi tiết nằm ở `docs/quy-uoc-bao-cao.md`.
 
 ---
 
@@ -196,7 +196,7 @@ Hai điểm kỹ thuật cần làm đúng, nếu không toàn bộ biểu đồ
 | Gradient Descent | Cố định | Quét nhiều giá trị quanh $1/L$ và $2/(L+\mu)$ |
 | Gradient Descent | Backtracking (Armijo) | Tham số $\alpha$, $\beta$, bước khởi tạo $t_0$ |
 | SGD / mini-batch SGD | Cố định | Nhiều kích thước lô |
-| SGD / mini-batch SGD | Giảm dần theo lịch trình | Ít nhất $3$ lịch trình khác nhau |
+| SGD / mini-batch SGD | Giảm dần theo quy tắc định trước | Ít nhất $3$ quy tắc khác nhau |
 | Accelerated GD (Nesterov) | Cố định | Hai công thức momentum, xem 4.3 |
 | Accelerated GD (Nesterov) | Backtracking | Kèm điều kiện khởi động lại (restart) |
 | Newton | Bước đầy đủ $t = 1$ | Giải hệ tuyến tính bằng Cholesky, không nghịch đảo ma trận |
@@ -233,7 +233,7 @@ Cần lưu ý hai điều:
 - Vì mỗi vòng lặp SGD rẻ hơn nhiều so với một vòng lặp GD, việc vẽ theo trục "số vòng lặp" là **không công bằng**. Cần vẽ thêm theo trục "số epoch" hoặc "số lần truy cập dữ liệu", và theo trục thời gian.
 - SGD với độ dài bước hằng $\eta_k \equiv \eta$ **không hội tụ về $w^*$**, mà chỉ dao động trong một lân cận có bán kính cỡ $\mathcal{O}\!\left( \dfrac{\eta \sigma^2}{\mu} \right)$, với $\sigma^2$ là phương sai của gradient ngẫu nhiên. Trên biểu đồ thang log, hiện tượng này hiện ra thành một đường nằm ngang. Đây là kết quả cần được nêu rõ và giải thích, không phải lỗi cài đặt.
 
-Các lịch trình độ dài bước nên thử:
+Các quy tắc chọn độ dài bước nên thử (đều là công thức tất định theo $k$, không phải line search):
 
 $$
 \eta_k = \eta_0, \qquad
@@ -242,7 +242,7 @@ $$
 \eta_k = \eta_0 \cdot 2^{-\lfloor k / (10 n_{\text{epoch}}) \rfloor}
 $$
 
-trong đó lịch trình cuối là giảm theo bậc thang, chia đôi sau mỗi $10$ epoch.
+trong đó quy tắc cuối là giảm theo bậc thang, chia đôi sau mỗi $10$ epoch.
 
 **Accelerated Gradient Descent (Nesterov).**
 
@@ -335,7 +335,7 @@ Giá trị $2.1/L$ được đưa vào có chủ ý, để quan sát phân kỳ.
 
 **GD với backtracking.** $\alpha \in \{0.1,\, 0.3,\, 0.5\}$, $\beta \in \{0.5,\, 0.8,\, 0.9\}$, $t_0 \in \{1,\; 10/L\}$. Với mỗi cấu hình, ghi lại số lần đánh giá hàm trung bình trên mỗi vòng lặp.
 
-**SGD.** Kích thước lô $B \in \{1,\, 16,\, 64,\, 256,\, 1024\}$, kết hợp với các lịch trình độ dài bước ở mục 4.3, $\eta_0$ quét trên lưới logarit. Đây là phần có nhiều tổ hợp nhất, nên chia việc cho hai người.
+**SGD.** Kích thước lô $B \in \{1,\, 16,\, 64,\, 256,\, 1024\}$, kết hợp với các quy tắc chọn độ dài bước ở mục 4.3, $\eta_0$ quét trên lưới logarit. Đây là phần có nhiều tổ hợp nhất, nên chia việc cho hai người.
 
 **AGD.** Momentum theo hai công thức ở mục 4.3, có và không có restart, độ dài bước $t \in \{1/L,\; 0.5/L\}$, cộng thêm biến thể backtracking.
 
@@ -350,7 +350,7 @@ Giá trị $2.1/L$ được đưa vào có chủ ý, để quan sát phân kỳ.
 | A | GD, các độ dài bước cố định khác nhau | 2 |
 | B | GD, các cấu hình backtracking khác nhau | 2 |
 | C | SGD, các kích thước lô khác nhau | 2 |
-| D | SGD, các lịch trình độ dài bước khác nhau | 2 |
+| D | SGD, các quy tắc chọn độ dài bước khác nhau | 2 |
 | E | AGD, các cấu hình momentum, có và không restart | 2 |
 | F | Newton, bước đầy đủ và damped, hai cách xử lý Hessian | 2 |
 | G | **So sánh tổng hợp:** mỗi thuật toán dùng cấu hình tốt nhất tìm được ở A đến F | 2 |
@@ -551,7 +551,7 @@ Phân công theo vai trò, không theo mảng kín. Mỗi người phụ trách 
 |---|---|---|
 | A | Dữ liệu, `problem.py`, tính $L$, $\mu$, $\kappa$, $f^*$, thí nghiệm mục 5.6 và 5.7 | Toàn bộ |
 | B | GD và backtracking, nhóm biểu đồ A và B | Toàn bộ |
-| C | SGD và các lịch trình bước, nhóm biểu đồ C và D | Toàn bộ |
+| C | SGD và các quy tắc chọn bước, nhóm biểu đồ C và D | Toàn bộ |
 | D | AGD và Newton, nhóm biểu đồ E và F | Toàn bộ |
 | Cả nhóm | Nhóm biểu đồ G, H, phần so sánh lý thuyết, báo cáo, slide | Toàn bộ |
 
@@ -579,7 +579,7 @@ Thời lượng dự kiến $20$ phút, khoảng $20$ slide. Phân bổ thời g
 6. GD với backtracking: biểu đồ nhóm B, kèm số lần đánh giá hàm mỗi vòng lặp.
 7. Kết luận về chọn bước cho GD.
 8. SGD, ảnh hưởng của kích thước lô $B$: biểu đồ nhóm C.
-9. SGD, ảnh hưởng của lịch trình bước $\eta_k$: biểu đồ nhóm D, giải thích hiện tượng bão hòa khi bước hằng.
+9. SGD, ảnh hưởng của quy tắc chọn bước $\eta_k$: biểu đồ nhóm D, giải thích hiện tượng bão hòa khi bước hằng.
 10. AGD: biểu đồ nhóm E, so sánh hai công thức momentum, tác dụng của restart.
 11. Newton: biểu đồ nhóm F, giải thích vì sao hội tụ sau một vòng lặp trên hàm bậc hai, và chi phí $\mathcal{O}(d^3)$ mỗi vòng.
 12. (Nếu có) Newton trên bài toán Huber: hội tụ bậc hai ở giai đoạn cuối.

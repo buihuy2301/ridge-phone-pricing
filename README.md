@@ -5,7 +5,9 @@ so sánh các thuật toán tối ưu hóa bậc một và bậc hai trên bài 
 tính có hiệu chỉnh Ridge.
 
 Kế hoạch chi tiết: [`KE_HOACH_TRIEN_KHAI.md`](KE_HOACH_TRIEN_KHAI.md).
-Quy tắc làm việc trong thư mục: [`CLAUDE.md`](CLAUDE.md).
+Quy tắc làm việc trong thư mục: [`CLAUDE.md`](CLAUDE.md), kèm hai file chi tiết
+[`docs/van-phong-tieng-viet.md`](docs/van-phong-tieng-viet.md) và
+[`docs/quy-uoc-bao-cao.md`](docs/quy-uoc-bao-cao.md).
 
 ## Bài toán
 
@@ -121,7 +123,7 @@ quy tắc ghi trong docstring đầu file.
 src/
   problem.py        RidgeProblem: f, grad, hess, nghiệm đóng, L, mu, kappa
   data.py           xây ma trận thiết kế, chọn lambda, lưu bài toán cố định
-  line_search.py    backtracking Armijo, các lịch trình độ dài bước
+  line_search.py    backtracking Armijo, các quy tắc chọn độ dài bước
   history.py        cấu trúc lịch sử dùng chung, bộ ghi có tạm dừng đồng hồ
   first_order.py    GD, SGD, AGD (Nesterov), heavy ball, Adam
   second_order.py   Newton, Newton-CG, L-BFGS

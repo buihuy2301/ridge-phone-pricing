@@ -26,7 +26,7 @@
     "t0": 1.0,
     "memory": 3,
     "line_search_evals": 88,
-    "label": "L-BFGS (m = 3)",
+    "label": "L-BFGS ($m = 3$)",
     "repeats": 3,
     "time_all_runs": [
      3.187883120670449,
@@ -617,7 +617,7 @@
     "t0": 1.0,
     "memory": 5,
     "line_search_evals": 54,
-    "label": "L-BFGS (m = 5)",
+    "label": "L-BFGS ($m = 5$)",
     "repeats": 3,
     "time_all_runs": [
      2.584949539101217,
@@ -1188,7 +1188,7 @@
     "t0": 1.0,
     "memory": 10,
     "line_search_evals": 186,
-    "label": "L-BFGS (m = 10)",
+    "label": "L-BFGS ($m = 10$)",
     "repeats": 3,
     "time_all_runs": [
      3.9497947031632066,
@@ -1709,7 +1709,7 @@
     "t0": 1.0,
     "memory": 20,
     "line_search_evals": 74,
-    "label": "L-BFGS (m = 20)",
+    "label": "L-BFGS ($m = 20$)",
     "repeats": 3,
     "time_all_runs": [
      2.369351872941479,

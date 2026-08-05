@@ -22,7 +22,7 @@
    "params": {
     "kind": "fixed",
     "t": 0.7826806250278615,
-    "label": "GD (t = 2.1/L)",
+    "label": "GD ($t = 2.1/L$)",
     "line_search_evals": 0,
     "repeats": 3,
     "time_all_runs": [
@@ -455,7 +455,7 @@
    "params": {
     "kind": "fixed",
     "t": 0.7454101190741538,
-    "label": "GD (t = 2/L)",
+    "label": "GD ($t = 2/L$)",
     "line_search_evals": 0,
     "repeats": 3,
     "time_all_runs": [
@@ -883,7 +883,7 @@
    "params": {
     "kind": "fixed",
     "t": 0.708139613120446,
-    "label": "GD (t = 1.9/L)",
+    "label": "GD ($t = 1.9/L$)",
     "line_search_evals": 0,
     "repeats": 3,
     "time_all_runs": [
@@ -1311,7 +1311,7 @@
    "params": {
     "kind": "fixed",
     "t": 0.3727050595370769,
-    "label": "GD (t = 1/L)",
+    "label": "GD ($t = 1/L$)",
     "line_search_evals": 0,
     "repeats": 3,
     "time_all_runs": [
@@ -1804,7 +1804,7 @@
    "params": {
     "kind": "fixed",
     "t": 0.18635252976853844,
-    "label": "GD (t = 0.5/L)",
+    "label": "GD ($t = 0.5/L$)",
     "line_search_evals": 0,
     "repeats": 3,
     "time_all_runs": [
@@ -2427,7 +2427,7 @@
    "params": {
     "kind": "fixed",
     "t": 0.03727050595370769,
-    "label": "GD (t = 0.1/L)",
+    "label": "GD ($t = 0.1/L$)",
     "line_search_evals": 0,
     "repeats": 3,
     "time_all_runs": [
@@ -3345,7 +3345,7 @@
    "params": {
     "kind": "fixed",
     "t": 0.0037270505953707687,
-    "label": "GD (t = 0.01/L)",
+    "label": "GD ($t = 0.01/L$)",
     "line_search_evals": 0,
     "repeats": 3,
     "time_all_runs": [
@@ -4264,7 +4264,7 @@
     "kind": "fixed",
     "multiple": 1.0,
     "reference": "L+mu",
-    "label": "GD (t = 2/(L+mu))",
+    "label": "GD ($t = 2/(L+\\mu)$)",
     "line_search_evals": 0,
     "repeats": 3,
     "time_all_runs": [

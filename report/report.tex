@@ -155,10 +155,11 @@ và bậc hai trên bài toán hồi quy tuyến tính có hiệu chỉnh Ridge,
 định giá điện thoại đã qua sử dụng. Toàn bộ thí nghiệm dùng chung một hàm mục
 tiêu cố định, và hàm này có nghiệm đóng. Nhờ đó sai số $f(w_k) - \fstar$ đo được
 chính xác, và tốc độ hội tụ quan sát được có thể đối chiếu trực tiếp với cận lý
-thuyết. Nội dung gồm bốn phần: khảo sát ảnh hưởng của tham số tới từng thuật
-toán, so sánh các thuật toán ở cấu hình tốt nhất, đối chiếu với cài đặt mặc
-định của scikit-learn, và phân tích vai trò của hệ số hiệu chỉnh cùng việc
-chuẩn hóa dữ liệu đối với số điều kiện của bài toán.
+thuyết. Báo cáo gồm chín chương, trong đó bốn chương thí nghiệm lần lượt khảo
+sát ảnh hưởng của tham số tới từng thuật toán, so sánh các thuật toán ở cấu hình
+tốt nhất, đối chiếu với cài đặt mặc định của scikit-learn, và phân tích vai trò
+của hệ số hiệu chỉnh cùng việc chuẩn hóa dữ liệu đối với số điều kiện của bài
+toán.
 
 \tableofcontents
 \pagebreak
@@ -183,8 +184,8 @@ camera, và các cột nhị phân mô tả tình trạng máy), 6 cột là đ�
 2 mức), và cột còn lại là biến mục tiêu \texttt{resale\_price}.
 
 Giá bán lại lệch phải rõ rệt, trung vị \num{18555} so với trung bình
-\num{22598} và giá trị lớn nhất \num{160257}, nên biến mục tiêu được lấy
-logarit trước khi hồi quy.
+\num{22598} và giá trị lớn nhất \num{160257}, nên chúng tôi lấy logarit biến
+mục tiêu trước khi hồi quy.
 
 Toàn bộ thí nghiệm chạy trên một mẫu ngẫu nhiên \num{200000} bản
 ghi, chia thành \num{160000} điểm huấn luyện và \num{40000} điểm kiểm tra.
@@ -204,9 +205,9 @@ tiêu. Bài toán tối ưu hóa xét ở đây là
   f(w) = \frac{1}{2n} \norm{Xw - y}_{2}^{2} + \frac{\lambda}{2} \norm{w}_{2}^{2}.
 \end{equation}
 %
-Hệ số chặn được xử lý bằng cách chuẩn hóa $X$ theo cột và trừ trung bình khỏi
-$y$, nên bài toán chỉ còn một khối biến $w$ và không có tọa độ nào nằm ngoài
-thành phần hiệu chỉnh.
+Chúng tôi xử lý hệ số chặn bằng cách chuẩn hóa $X$ theo cột và trừ trung bình
+khỏi $y$, nên bài toán chỉ còn một khối biến $w$ và không có tọa độ nào nằm
+ngoài thành phần hiệu chỉnh.
 
 Gradient và Hessian của \eqref{eq:objective} là
 %
@@ -300,32 +301,45 @@ biểu diễn thay đổi, và số điều kiện giảm theo, 6{,}4 lần.
 
 Với cùng dữ liệu và cùng $\lambda$, số điều kiện là $\kappa = \num{268.3}$ sau
 khi chuẩn hóa cột, nhưng lên tới $\kappa = \num{46540}$ khi các cột giữ thang đo
-không đồng nhất, tức chênh nhau 173 lần. Hình~\ref{fig:normalization} cho thấy
-hệ quả lên tốc độ hội tụ của gradient descent.
+không đồng nhất, tức chênh nhau 173 lần. Hình~\ref{fig:normalization-iter}
+và~\ref{fig:normalization-time} cho thấy hệ quả lên tốc độ hội tụ của gradient
+descent.
 
 \resultfig{normalization_iter}
-  {Ảnh hưởng của việc chuẩn hóa cột lên tốc độ hội tụ của gradient descent.
-   Trục tung là $f(w_k) - \fstar$ trên thang logarit.}
-  {fig:normalization}
+  {Ảnh hưởng của việc chuẩn hóa cột lên tốc độ hội tụ của gradient descent, theo
+   số vòng lặp. Trục tung là $f(w_k) - \fstar$ trên thang logarit.}
+  {fig:normalization-iter}
+\resultfig{normalization_time}
+  {Ảnh hưởng của việc chuẩn hóa cột lên tốc độ hội tụ của gradient descent, theo
+   thời gian chạy.}
+  {fig:normalization-time}
 
 \section{Chọn hệ số hiệu chỉnh}
 \label{sec:choose-lambda}
 
-Đường cong cross-validation 5 fold phẳng trên một khoảng rộng: sai số trung bình
-giống nhau tới bốn chữ số thập phân với mọi $\lambda$ từ $10^{-6}$ đến
-$10^{-3}$, nên cross-validation không phân biệt được các giá trị này. Trong khi
-đó, theo \eqref{eq:mu-equals-lambda}, số điều kiện giữa hai đầu khoảng đó chênh
-nhau 1000 lần.
+Đường cong cross-validation 5 fold ở hình~\ref{fig:lambda-cv} phẳng trên một
+khoảng rộng: sai số trung bình giống nhau tới bốn chữ số thập phân với mọi
+$\lambda$ từ $10^{-6}$ đến $10^{-3}$, nên cross-validation không phân biệt được
+các giá trị này. Trong khi đó, theo \eqref{eq:mu-equals-lambda}, số điều kiện
+giữa hai đầu khoảng đó chênh nhau 1000 lần.
+
+\resultfig{lambda_cv}
+  {Sai số cross-validation 5 fold theo $\lambda$. Dải xám là một sai số chuẩn
+   quanh giá trị nhỏ nhất, đường chấm là điểm cực tiểu và đường gạch là giá trị
+   được chọn.}
+  {fig:lambda-cv}
 
 Lấy điểm cực tiểu của đường cong trong tình huống này là một lựa chọn tùy tiện.
 Chúng tôi dùng quy tắc một sai số chuẩn, tức chọn $\lambda$ lớn nhất mà sai số
 cross-validation của nó vẫn nằm trong một sai số chuẩn của giá trị tốt nhất.
-Quy tắc này cho $\lambda = \num{0.01}$, tức $\kappa = \num{268.3}$.
+Quy tắc này cho $\lambda = \num{0.01}$, tức $\kappa = \num{268.3}$, trong khi
+điểm cực tiểu nằm ở $\lambda = 10^{-4}$ ứng với $\kappa = \num{26831}$.
 
 Về mặt thống kê, cái giá phải trả không đáng kể: RMSE trên tập kiểm tra là
 \num{0.20601} tại $\lambda = \num{0.01}$ so với \num{0.20579} tại điểm cực tiểu
-cross-validation, kém đi 0{,}1\%. Đổi lại, $\kappa$ giảm 100 lần và toàn bộ các
-thuật toán bậc một trở nên so sánh được với nhau trong thời gian chạy hợp lý.
+cross-validation, kém đi 0{,}1\%. Đổi lại, $\kappa$ giảm đúng 100 lần theo tỉ lệ
+giữa hai giá trị $\lambda$, và toàn bộ các thuật toán bậc một trở nên so sánh
+được với nhau trong thời gian chạy hợp lý.
 
 % ===========================================================================
 \chapter{Các thuật toán đã cài đặt}
@@ -372,7 +386,7 @@ $f(w - t \nabla f(w)) \le f(w) - \alpha t \norm{\nabla f(w)}_{2}^{2}$.
   w_{k+1} = w_k - \eta_k g_k .
 \end{equation}
 
-Chúng tôi thử bốn lịch trình độ dài bước~\cite{bottou2018optimization}
+Chúng tôi thử bốn quy tắc chọn độ dài bước~\cite{bottou2018optimization}
 %
 \begin{equation}
   \label{eq:schedules}
@@ -381,6 +395,26 @@ Chúng tôi thử bốn lịch trình độ dài bước~\cite{bottou2018optimiz
   \eta_k = \frac{\eta_0}{\sqrt{k+1}}, \qquad
   \eta_k = \eta_0 \, 2^{-\lfloor k / p \rfloor}.
 \end{equation}
+
+Bốn quy tắc ở \eqref{eq:schedules} ấn định $\eta_k$ trước theo chỉ số vòng lặp
+và không đọc gì từ giá trị hàm mục tiêu, nên chúng là quy tắc tất định, không
+phải một dạng line search. Ở SGD chúng thay luôn vai trò của backtracking, trong
+khi ba thuật toán còn lại đều có một biến thể dùng backtracking. Điều kiện
+Armijo \eqref{eq:armijo} đòi hỏi đánh giá $f$ trên toàn bộ tập huấn luyện ở mỗi
+lần thử độ dài bước, trong khi với $B = 64$ một lượt duyệt dữ liệu (epoch) gồm
+\num{2500} lần cập nhật. Lấy \SI{39}{\milli\second} làm chi phí một lần quét
+toàn bộ dữ liệu thì riêng phần line search cần khoảng \SI{98}{\second} cho một
+lượt duyệt, còn cả lượt duyệt đo được chỉ mất \SI{0.082}{\second}, tức
+\SI{2.45}{\second} cho 30 lượt. Con số \SI{98}{\second} chỉ là ước lượng suy ra
+từ hai đại lượng đo được, và nó còn chưa tính số lần thu nhỏ bước trong mỗi lần
+gọi line search.
+
+Chi phí không phải trở ngại duy nhất. Áp \eqref{eq:armijo} lên $g_k$ chỉ bảo đảm
+giảm cho hàm mất mát của lô hiện tại, không bảo đảm giảm cho $f$, nên một độ dài
+bước được chấp nhận trên lô này vẫn có thể làm $f$ tăng. Vì vậy độ dài bước ban
+đầu lấy theo hằng số trơn của lô, $\eta_0 = 1/L_B$, và phần khảo sát tham số của
+SGD ở mục~\ref{sec:tuning} so sánh bốn quy tắc ở \eqref{eq:schedules} thay cho
+việc so sánh các tham số $\alpha$ và $\beta$ của backtracking.
 
 \section{Accelerated gradient descent}
 
@@ -480,6 +514,14 @@ Tất cả số liệu trong mục này dùng chung một tiêu chí: số vòng
 cần để đưa $f(w_k) - \fstar$ xuống dưới $10^{-6}$. Mỗi cấu hình chạy ba lần và
 lấy trung vị thời gian.
 
+Mọi số đo thời gian trong báo cáo lấy trên cùng một máy, chip Apple M1 Pro với
+16 GB bộ nhớ chạy macOS 26.5, Python 3.14.4, NumPy 2.5.1 liên kết với thư viện
+đại số tuyến tính Accelerate, SciPy 1.18.0 và scikit-learn 1.9.0. Giá trị tuyệt
+đối của các con số này phụ thuộc vào cấu hình đó, còn tỉ lệ giữa các thuật toán
+thì gần như không, nên phần bình luận bên dưới bám vào tỉ lệ nhiều hơn vào số
+giây. Mọi thành phần ngẫu nhiên dùng chung seed 0, gồm việc lấy mẫu
+\num{200000} bản ghi, phép chia train và test, và thứ tự lô của SGD.
+
 \section{Gradient descent với độ dài bước cố định}
 
 \resultfig{gd_fixed_iter}{Gradient descent với các độ dài bước cố định, theo số vòng lặp.}{fig:gd-fixed-iter}
@@ -500,7 +542,7 @@ lấy trung vị thời gian.
     $t = 2/(L+\mu)$  & 20        & \num{0.773}   & hội tụ \\
     $t = 1/L$        & 40        & \num{1.650}   & hội tụ \\
     $t = 0.5/L$      & 80        & \num{3.013}   & hội tụ \\
-    $t = 0.1/L$      & 380       & \num{15.926}  & chưa xong ở 1200 vòng \\
+    $t = 0.1/L$      & 380       & \num{15.926}  & hội tụ, chưa tới giới hạn số học \\
     $t = 0.01/L$     & không đạt & --            & dừng ở $\num{3.7e-4}$ \\
     \bottomrule
   \end{tabular}
@@ -508,9 +550,14 @@ lấy trung vị thời gian.
 
 Từ bảng~\ref{tab:gd-fixed} có thể rút ra ba kết luận.
 
-Ngưỡng $2/L$ là ranh giới thật, không phải một điều kiện hình thức. Với
-$t = 2.1/L$ hàm mục tiêu tăng lên $\num{5.4e11}$; với $t = 1.9/L$ phương pháp
-hội tụ bình thường. Khoảng cách giữa hai cấu hình chỉ là 10\% độ dài bước.
+Với $t = 2.1/L$ hàm mục tiêu tăng tới $\num{5.4e11}$, còn với $t = 1.9/L$
+phương pháp hội tụ sau 20 vòng lặp, dù hai độ dài bước chỉ cách nhau 10\%.
+Ngưỡng $2/L$ vì thế là một ranh giới thật: sai số của thành phần ứng với trị
+riêng $\lambda_i$ của Hessian tắt theo hệ số $\abs{1 - t\lambda_i}$ mỗi vòng
+lặp, nên hệ số của thành phần ứng với $\lambda_{\max} = L$ vượt quá 1 ngay khi
+$t$ vượt $2/L$. Đúng tại ngưỡng, hệ số đó bằng 1 nên thành phần này đứng yên,
+khiến $t = 2/L$ dừng ở sai số $\num{4.9e-8}$ thay vì đi tiếp tới giới hạn số
+học như các bước ngắn hơn.
 
 Số vòng lặp tỉ lệ nghịch với độ dài bước trong vùng ổn định: giảm $t$ đi một
 nửa thì số vòng lặp tăng gấp đôi, thấy rõ ở dãy 20, 40, 80 vòng lặp ứng với
@@ -524,50 +571,53 @@ thời gian chạy (hình~\ref{fig:gd-fixed-time}), vì mọi cấu hình ở đ
 phí mỗi vòng lặp.
 
 \section{Gradient descent với backtracking}
+\label{sec:gd-backtracking}
 
 \resultfig{gd_backtracking_iter}{Ảnh hưởng của $\alpha$ và $\beta$, theo số vòng lặp.}{fig:gd-bt-iter}
 \resultfig{gd_backtracking_time}{Ảnh hưởng của $\alpha$ và $\beta$, theo thời gian chạy.}{fig:gd-bt-time}
 
-Đại lượng cần báo cáo ở đây là số lần đánh giá hàm mục tiêu mà line search tiêu
-tốn trên mỗi vòng lặp. Phép đo phải thực hiện trong giai đoạn thuật toán còn
-tiến triển. Khi $f$ đã chạm giới hạn số học, không độ dài bước nào còn thỏa mãn
-điều kiện Armijo. Line search vì thế tiêu hết ngân sách ở mọi vòng lặp, làm con
-số đo được tăng lên gấp năm lần. Bảng~\ref{tab:gd-bt} lấy trong 100 vòng lặp
-đầu.
+Bảng~\ref{tab:gd-bt} đo số lần đánh giá hàm mục tiêu mà line search tiêu tốn
+trên mỗi vòng lặp, lấy trong 100 vòng lặp đầu. Phép đo chỉ có nghĩa trong giai
+đoạn thuật toán còn tiến triển, vì khi $f$ đã chạm giới hạn số học thì không độ
+dài bước nào còn thỏa mãn điều kiện Armijo, line search tiêu hết ngân sách ở mọi
+vòng lặp và con số đo được tăng lên gấp năm lần.
 
 \begin{table}[htbp]
   \centering
-  \caption{Chi phí của line search, đo trong 100 vòng lặp đầu. Cột giữa là số
-    lần đánh giá hàm mục tiêu trên mỗi vòng lặp.}
+  \caption{Chi phí của line search, đo trong 100 vòng lặp đầu. Ba cột giữa là số
+    lần đánh giá hàm mục tiêu trên mỗi vòng lặp, ứng với ba giá trị của
+    $\alpha$.}
   \label{tab:gd-bt}
-  \begin{tabular}{lrrr}
+  \begin{tabular}{lrrrr}
     \toprule
-    Cấu hình & Đánh giá hàm / vòng lặp & Vòng lặp đạt $10^{-6}$ & Thời gian (s) \\
+    & \multicolumn{3}{c}{Đánh giá hàm / vòng lặp} & \\
+    \cmidrule(lr){2-4}
+    & $\alpha = \num{0.1}$ & $\alpha = \num{0.3}$ & $\alpha = \num{0.5}$
+    & Vòng lặp đạt $10^{-6}$ \\
     \midrule
-    $\beta = 0.5$ & \num{1.39} & 15 & \num{0.852} \\
-    $\beta = 0.8$ & \num{2.43} & 20 & \num{1.384} \\
-    $\beta = 0.9$ & \num{4.08} & 20 & \num{1.765} \\
+    $\beta = \num{0.5}$ & \num{1.39} & \num{1.39} & \num{1.39} & 15 \\
+    $\beta = \num{0.8}$ & \num{2.46} & \num{2.47} & \num{2.37} & 20 \\
+    $\beta = \num{0.9}$ & \num{4.12} & \num{4.15} & \num{3.96} & 20 \\
     \bottomrule
   \end{tabular}
 \end{table}
 
-Số liệu trong bảng~\ref{tab:gd-bt} dẫn tới hai kết luận, cả hai đều phần nào
-trái với trực giác ban đầu.
-
-Tham số $\alpha$ gần như không ảnh hưởng tới chi phí. Với cả ba giá trị
-$\alpha \in \{0.1, 0.3, 0.5\}$, số lần đánh giá hàm mỗi vòng lặp chênh nhau dưới
-5\%. Với hàm bậc hai, điều kiện Armijo chấp nhận $t$ khi
+Tham số $\alpha$ gần như không ảnh hưởng tới chi phí: đọc theo hàng ngang, ba
+giá trị $\alpha \in \{0.1, 0.3, 0.5\}$ cho số lần đánh giá hàm chênh nhau nhiều
+nhất 4{,}8\%, và ở $\beta = 0.5$ thì cả ba trùng khớp tới hai chữ số thập phân.
+Với hàm bậc hai, điều kiện Armijo chấp nhận $t$ khi
 $t \le 2(1-\alpha) \norm{g}^{2} / (g\trans H g)$, nên thay đổi $\alpha$ trong
 khoảng này chỉ dịch ngưỡng đi một chút, thường không đủ để đổi số lần thu nhỏ.
 
-Tham số $\beta$ mới là thứ quyết định. $\beta$ càng gần 1 thì độ dài bước tìm
-được càng sát ngưỡng chấp nhận, nhưng số lần thu nhỏ tăng theo. Ở đây $\beta$
-nhỏ tỏ ra vượt trội rõ rệt: $\beta = 0.5$ tốn 1{,}39 lần đánh giá mỗi vòng lặp và đạt
-$10^{-6}$ sau 15 vòng, còn $\beta = 0.9$ tốn 4{,}08 lần và cần 20 vòng. Hai cấu
-hình $\beta = 0.8$ và $\beta = 0.9$ gần trùng nhau trên trục vòng lặp
-(hình~\ref{fig:gd-bt-iter}) nhưng tách hẳn nhau trên trục thời gian
-(hình~\ref{fig:gd-bt-time}), do chênh lệch nằm ở số lần đánh giá hàm trong mỗi
-vòng lặp chứ không ở số vòng lặp.
+Tham số $\beta$ mới là thứ quyết định. Đọc theo cột dọc, $\beta = 0.5$ tốn
+1{,}39 lần đánh giá mỗi vòng lặp và đạt $10^{-6}$ sau 15 vòng, còn $\beta = 0.9$
+tốn khoảng 4{,}1 lần và cần 20 vòng, vì $\beta$ càng gần 1 thì mỗi lần thu nhỏ
+càng ít và số lần thử tăng theo. Hai cấu hình $\beta = 0.8$ và $\beta = 0.9$ gần
+trùng nhau trên trục vòng lặp (hình~\ref{fig:gd-bt-iter}) nhưng tách hẳn nhau
+trên trục thời gian (hình~\ref{fig:gd-bt-time}), do chênh lệch nằm ở số lần đánh
+giá hàm trong mỗi vòng lặp chứ không ở số vòng lặp. Trên hình~\ref{fig:gd-bt-iter},
+ba đường cùng một màu ứng với ba giá trị $\alpha$ chồng lên nhau, còn ba nhóm
+màu ứng với ba giá trị $\beta$ thì tách rời, đúng như hai kết luận trên.
 
 So với bước cố định tốt nhất (\SI{0.773}{\second}), backtracking cần
 \SI{0.852}{\second}, tức chậm hơn 10\%. Đổi lại, nó không cần biết $L$. Trên bài
@@ -596,7 +646,7 @@ $1/L_B$ với
 
 Hình~\ref{fig:sgd-common-epoch} và~\ref{fig:sgd-common-time} là thí nghiệm đối
 chứng dùng chung một độ dài bước $0.1/L = \num{0.0373}$ cho mọi kích thước lô. Lô kích thước 1 phân kỳ thành
-\texttt{NaN} ngay trong lượt duyệt (epoch) đầu tiên, còn lô kích thước 1024 đạt
+\texttt{NaN} ngay trong lượt duyệt đầu tiên, còn lô kích thước 1024 đạt
 sai số $\num{1.1e-4}$, đúng như tỉ lệ 1159 lần nói trên dự báo.
 
 Khi mỗi kích thước lô nhận độ dài bước riêng, cả năm cấu hình đều về mức sai số
@@ -607,10 +657,14 @@ nhân không nằm ở số phép tính, mà ở chi phí cố định của m�
 Python: $B = 1$ thực hiện \num{160000} lần cập nhật mỗi lượt duyệt, mỗi lần chỉ
 xử lý một dòng dữ liệu.
 
-\section{SGD: lịch trình độ dài bước}
+\section{SGD: quy tắc chọn độ dài bước}
 
-\resultfig{sgd_schedule_epoch}{Các lịch trình $\eta_k$, theo số lượt duyệt dữ liệu.}{fig:sgd-sched-epoch}
-\resultfig{sgd_schedule_time}{Các lịch trình $\eta_k$, theo thời gian chạy.}{fig:sgd-sched-time}
+Bốn quy tắc so sánh ở đây là bốn công thức tất định cho $\eta_k$ theo chỉ số
+vòng lặp ở \eqref{eq:schedules}, không phải biến thể của backtracking như ở
+mục~\ref{sec:gd-backtracking}.
+
+\resultfig{sgd_schedule_epoch}{Các quy tắc chọn $\eta_k$, theo số lượt duyệt dữ liệu.}{fig:sgd-sched-epoch}
+\resultfig{sgd_schedule_time}{Các quy tắc chọn $\eta_k$, theo thời gian chạy.}{fig:sgd-sched-time}
 
 \begin{table}[htbp]
   \centering
@@ -618,7 +672,7 @@ xử lý một dòng dữ liệu.
   \label{tab:sgd-schedule}
   \begin{tabular}{lr}
     \toprule
-    Lịch trình & Sai số cuối \\
+    Quy tắc chọn $\eta_k$ & Sai số cuối \\
     \midrule
     $\eta_k = \eta_0$ (hằng)                 & \num{9.58e-4} \\
     $\eta_k = \eta_0 / \sqrt{k+1}$           & \num{1.46e-4} \\
@@ -628,23 +682,23 @@ xử lý một dòng dữ liệu.
   \end{tabular}
 \end{table}
 
-Bảng~\ref{tab:sgd-schedule} cho thấy kết quả của bốn lịch trình. Với độ dài bước
-hằng, SGD không hội tụ về $\wstar$. Nó đi vào một lân cận có bán
-kính cỡ $\bigO(\eta \sigma^{2} / \mu)$ rồi dao động quanh đó. Trên biểu đồ thang
-logarit theo lượt duyệt dữ liệu (hình~\ref{fig:sgd-sched-epoch}), hiện tượng này
-hiện ra thành một đường nằm ngang. Đường nằm ngang đó là
-hành vi đúng của phương pháp, không phải lỗi cài đặt.
+Với độ dài bước hằng, SGD dừng ở sai số \num{9.58e-4}
+(bảng~\ref{tab:sgd-schedule}) thay vì hội tụ về $\wstar$, vì nó đi vào một lân
+cận bán kính cỡ $\bigO(\eta \sigma^{2} / \mu)$ rồi dao động quanh đó. Trên thang
+logarit theo lượt duyệt dữ liệu (hình~\ref{fig:sgd-sched-epoch}), lân cận đó
+hiện ra thành một đường nằm ngang, đúng hành vi mà phép thử ở
+chương~\ref{sec:tests} đòi hỏi ở một cài đặt chạy đúng.
 
-Cả ba lịch trình có $\eta_k$ giảm dần đưa sai số xuống thấp hơn, và mức cải
+Cả ba quy tắc có $\eta_k$ giảm dần đưa sai số xuống thấp hơn, và mức cải
 thiện tỉ lệ với tốc độ giảm của $\eta_k$: giảm theo bậc thang cho kết quả tốt
-nhất, tốt hơn bước hằng 165 lần. Chi phí tính toán của cả bốn lịch trình như
+nhất, tốt hơn bước hằng 165 lần. Chi phí tính toán của cả bốn quy tắc như
 nhau, khoảng \SI{2.4}{\second}, nên bốn đường trên hình~\ref{fig:sgd-sched-time}
 kết thúc ở cùng một hoành độ và ở đây không có sự đánh đổi nào, bước hằng đơn
 thuần kém hơn.
 
-Ngay cả lịch trình tốt nhất cũng chưa đạt ngưỡng $10^{-6}$ sau 30 lượt duyệt dữ
-liệu. SGD phù hợp khi cần một nghiệm tạm được với chi phí thấp, không phù hợp khi
-cần độ chính xác cao.
+Ngay cả quy tắc tốt nhất cũng chỉ xuống tới \num{5.80e-6} sau 30 lượt duyệt dữ
+liệu, chưa chạm ngưỡng $10^{-6}$, nên SGD chỉ đáng dùng khi một nghiệm tạm được
+với chi phí thấp là đủ.
 
 \section{Accelerated gradient descent}
 
@@ -707,11 +761,11 @@ tức chính là bất đẳng thức mà chứng minh hội tụ của phương
 vào. Cách thứ hai là khởi tạo $t_0 = 1/L$, khi đó line search chỉ có thể thu nhỏ
 từ một giá trị vốn đã an toàn.
 
-Ngoài ra, momentum phải được tính theo độ dài bước thực tế chứ không theo $1/L$:
+Ngoài ra, momentum phải tính theo độ dài bước mà line search thực sự chọn:
 %
 \begin{equation}
   \label{eq:momentum-from-step}
-  \beta = \frac{1 - \sqrt{t\mu}}{1 + \sqrt{t\mu}},
+  \beta = \frac{1 - \sqrt{t\mu}}{1 + \sqrt{t\mu}}.
 \end{equation}
 %
 Công thức quen thuộc $(\sqrt{\kappa}-1)/(\sqrt{\kappa}+1)$ chỉ là trường hợp
@@ -758,12 +812,61 @@ chi phí một loạt tích Hessian nhân vector, mỗi tích tốn
 $\bigO(nd) \approx 4.5 \cdot 10^{7}$. Newton-CG chỉ có lợi khi $d$ lớn tới mức
 không lập được ma trận $d \times d$.
 
+\section{L-BFGS với các kích thước bộ nhớ}
+
+\resultfig{lbfgs_iter}{L-BFGS với các kích thước bộ nhớ $m$, theo số vòng lặp.}{fig:lbfgs-iter}
+\resultfig{lbfgs_time}{L-BFGS với các kích thước bộ nhớ $m$, theo thời gian chạy.}{fig:lbfgs-time}
+
+\begin{table}[htbp]
+  \centering
+  \caption{L-BFGS với bốn kích thước bộ nhớ. Hai cột cuối đo tới khi thuật toán
+    chạm giới hạn số học, không dừng ở ngưỡng $10^{-6}$.}
+  \label{tab:lbfgs}
+  \begin{tabular}{rrrrrr}
+    \toprule
+    $m$ & Vòng lặp đạt $10^{-6}$ & Thời gian (s) & Vòng lặp & Đánh giá hàm & Tổng thời gian (s) \\
+    \midrule
+    3  & 8 & \num{0.448} & 54 & 143 & \num{3.18} \\
+    5  & 8 & \num{0.448} & 50 & 105 & \num{2.58} \\
+    10 & 8 & \num{0.448} & 40 & 227 & \num{3.95} \\
+    20 & 8 & \num{0.449} & 37 & 112 & \num{2.37} \\
+    \bottomrule
+  \end{tabular}
+\end{table}
+
+Cả bốn kích thước bộ nhớ đạt ngưỡng $10^{-6}$ sau đúng 8 vòng lặp và
+\SI{0.448}{\second}, và trên hình~\ref{fig:lbfgs-iter} bốn đường chồng khít nhau
+cho tới quãng sai số $10^{-10}$. Trong giai đoạn đầu, số cặp $(s_k, y_k)$ tích
+lũy được còn ít nên cả bốn cấu hình dựng lên gần như cùng một xấp xỉ nghịch đảo
+Hessian. Chọn $m$ vì thế gần như không ảnh hưởng gì khi chỉ cần độ chính xác vừa
+phải.
+
+Khác biệt chỉ hiện ra ở phần đuôi, nơi $m = 3$ cần 54 vòng lặp để chạm giới hạn
+số học còn $m = 20$ chỉ cần 37, vì càng giữ nhiều cặp $(s_k, y_k)$ thì xấp xỉ
+nghịch đảo Hessian càng bao được nhiều hướng riêng của bài toán.
+Bảng~\ref{tab:lbfgs} cho thấy xu hướng này đều đặn theo $m$, từ 54 xuống 50, 40
+rồi 37.
+
+Tổng thời gian chạy lại không giảm đều theo $m$ trên hình~\ref{fig:lbfgs-time},
+vì $m = 10$ tốn
+\SI{3.95}{\second} trong khi $m = 3$ chỉ tốn \SI{3.18}{\second} dù cần nhiều hơn
+14 vòng lặp. Chênh lệch đến từ line search, vốn tiêu 227 lần đánh giá hàm mục
+tiêu ở $m = 10$ so với 105 lần ở $m = 5$, trong khi chi phí $\bigO(md)$ của đệ
+quy hai vòng với $m \le 20$ trên bài toán $d = 280$ nhỏ hơn hẳn chi phí một lần
+đánh giá $f$. Bảng so sánh tổng hợp lấy $m = 3$ vì nó nhanh nhất tới ngưỡng
+$10^{-6}$, nhưng bốn cấu hình chỉ cách nhau khoảng một phần nghìn giây ở ngưỡng
+đó, tức nằm trong dao động của phép đo thời gian.
+
 % ===========================================================================
 \chapter{So sánh tổng hợp}
 \label{sec:comparison}
 
-\resultfig{all_methods_iter}{So sánh các thuật toán ở cấu hình tốt nhất, theo số vòng lặp.}{fig:all-iter}
-\resultfig{all_methods_time}{So sánh các thuật toán ở cấu hình tốt nhất, theo thời gian chạy.}{fig:all-time}
+\resultfig{all_methods_iter}{So sánh các thuật toán ở cấu hình tốt nhất, theo số
+  vòng lặp. Trục hoành cắt ở 200 vòng lặp cho dễ đọc; gradient descent với bước
+  cố định chạy tiếp theo đúng đường thẳng đó tới vòng lặp 1200.}{fig:all-iter}
+\resultfig{all_methods_time}{So sánh các thuật toán ở cấu hình tốt nhất, theo
+  thời gian chạy. Trục hoành cắt ở 6 giây; gradient descent với bước cố định
+  chạy tiếp tới \SI{44.3}{\second}.}{fig:all-time}
 
 \begin{table}[htbp]
   \centering
@@ -819,8 +922,9 @@ Với hàm bậc hai lồi mạnh và độ dài bước $t = 2/(L+\mu)$,
 %
 còn phương pháp tăng tốc có hệ số co rút cỡ $1 - \kappa^{-1/2}$.
 
-Hệ số co rút thực nghiệm được ước lượng bằng cách khớp đường thẳng vào phần tuyến
-tính ở đuôi của đồ thị $\log_{10}\bigl(f(w_k) - \fstar\bigr)$ theo $k$.
+Chúng tôi ước lượng hệ số co rút thực nghiệm bằng cách khớp đường thẳng vào phần
+tuyến tính ở đuôi của đồ thị $\log_{10}\bigl(f(w_k) - \fstar\bigr)$ theo $k$,
+rồi đối chiếu với cận lý thuyết trong bảng~\ref{tab:rates}.
 
 \begin{table}[htbp]
   \centering
@@ -862,8 +966,8 @@ thấy nó nói rất ít về giai đoạn đầu.
 \chapter{So sánh với thư viện}
 \label{sec:sklearn}
 
-Để phép so sánh có ý nghĩa, hàm mục tiêu của thư viện phải được quy về cùng dạng với
-\eqref{eq:objective}. Với
+Để phép so sánh có ý nghĩa, chúng tôi quy hàm mục tiêu của thư viện về cùng
+dạng với \eqref{eq:objective}. Với
 \texttt{sklearn.\allowbreak linear\_model.\allowbreak Ridge}~\cite{pedregosa2011scikit},
 vốn cực tiểu
 hóa $\norm{Xw-y}_{2}^{2} + \alpha \norm{w}_{2}^{2}$, quan hệ là
@@ -871,13 +975,13 @@ $\alpha = \lambda n$. Với \texttt{SGDRegressor} dùng
 \texttt{loss="squared\_error"} và \texttt{penalty="l2"}, hàm mục tiêu trùng
 với \eqref{eq:objective} khi $\alpha = \lambda$.
 
-Quy đổi được kiểm chứng bằng số chứ không dựa vào suy luận trên giấy. Với
-$\alpha = \lambda n = \num{1600}$, nghiệm mà \texttt{Ridge} với solver
+Với $\alpha = \lambda n = \num{1600}$, nghiệm mà \texttt{Ridge} với solver
 \texttt{cholesky} trả về cách nghiệm đóng \eqref{eq:closed-form} một khoảng
 $\num{1.06e-14}$, sai số tương đối $\num{1.36e-14}$, và chênh lệch hàm mục tiêu
-bằng đúng 0 trong số học dấu phẩy động. Nếu phép kiểm tra này thất bại thì mọi
-so sánh phía sau đều vô nghĩa, nên nó được viết thành một khẳng định trong
-notebook, không phải một dòng in ra để đọc bằng mắt.
+bằng đúng 0 trong số học dấu phẩy động. Phép quy đổi vì thế kiểm chứng được
+bằng số chứ không chỉ bằng suy luận trên giấy, và vì mọi so sánh phía sau sẽ vô
+nghĩa nếu phép kiểm tra này thất bại, chúng tôi viết nó thành một khẳng định
+trong notebook thay vì một dòng in ra để đọc bằng mắt.
 
 \begin{table}[htbp]
   \centering
@@ -906,8 +1010,9 @@ khó có phương pháp lặp nào sánh được, và phương pháp Newton t�
 chất làm đúng việc đó (mục~\ref{sec:algorithms}).
 
 Thứ hai, \texttt{SGDRegressor} ở tham số mặc định dừng lại cách $\fstar$ một
-khoảng $\num{1.16e-3}$, kém hơn ba bậc so với cấu hình SGD tự cài đặt sau khi
-điều chỉnh lịch trình độ dài bước, và RMSE trên tập kiểm tra cũng kém hơn
+khoảng $\num{1.16e-3}$, cao gấp 200 lần sai số $\num{5.80e-6}$ mà cấu hình SGD
+tự cài đặt đạt được sau khi điều chỉnh quy tắc chọn độ dài bước
+(bảng~\ref{tab:sgd-schedule}), và RMSE trên tập kiểm tra cũng kém hơn
 (\num{0.21202} so với \num{0.20601}). Riêng với bộ ước lượng này, tham số mặc
 định của thư viện chưa phù hợp với bài toán đang xét.
 
@@ -923,20 +1028,24 @@ các bộ giải trực tiếp của thư viện không có lịch sử vòng l�
 
 \resultfig{sklearn_iter}{So sánh mã tự viết với thư viện, theo số vòng lặp.}{fig:sklearn-iter}
 \resultfig{sklearn_time}{So sánh mã tự viết với thư viện, theo thời gian chạy.
-  Các cài đặt thư viện không có lịch sử vòng lặp nên được vẽ thành điểm trên mặt
-  phẳng (thời gian, sai số).}{fig:sklearn-time}
+  Các cài đặt thư viện không có lịch sử vòng lặp nên hiện ra thành một điểm trên
+  mặt phẳng (thời gian, sai số).}{fig:sklearn-time}
 
 % ===========================================================================
 \chapter{Ảnh hưởng của hệ số hiệu chỉnh}
 \label{sec:lambda}
 
 \resultfig{lambda_effect_iter}{Tốc độ hội tụ ứng với các giá trị $\lambda$ khác
-  nhau, theo số vòng lặp và theo thời gian chạy.}{fig:lambda-iter}
+  nhau, theo số vòng lặp. Cả ba lần chạy dùng gradient descent với
+  $t = 1/L$.}{fig:lambda-iter}
+\resultfig{lambda_effect_time}{Tốc độ hội tụ ứng với các giá trị $\lambda$ khác
+  nhau, theo thời gian chạy.}{fig:lambda-time}
 
 \begin{table}[htbp]
   \centering
   \caption{Hệ số hiệu chỉnh vừa quyết định số điều kiện, vừa quyết định chất
-    lượng dự báo.}
+    lượng dự báo. Cả ba lần chạy dùng gradient descent với $t = 1/L$, nên cột số
+    vòng lặp đặt cạnh được với dòng $t = 1/L$ của bảng~\ref{tab:gd-fixed}.}
   \label{tab:lambda}
   \begin{tabular}{rrrrrr}
     \toprule
@@ -949,10 +1058,10 @@ các bộ giải trực tiếp của thư viện không có lịch sử vòng l�
   \end{tabular}
 \end{table}
 
-Bảng~\ref{tab:lambda} và hình~\ref{fig:lambda-iter} tổng hợp kết quả ứng với ba
-mức hiệu chỉnh. Vì
-$\mu = \lambda$ trên bài toán này, tăng $\lambda$ lên 10 lần thì giảm $\kappa$
-đúng 10 lần. Hiệu chỉnh Ridge do đó có hai vai trò tách biệt: một vai trò thống
+Vì $\mu = \lambda$ trên bài toán này, tăng $\lambda$ lên 10 lần thì giảm
+$\kappa$ đúng 10 lần, đúng như ba dòng của bảng~\ref{tab:lambda} và ba đường
+trên hình~\ref{fig:lambda-iter} và~\ref{fig:lambda-time}. Hiệu chỉnh Ridge do đó
+có hai vai trò tách biệt: một vai trò thống
 kê là chống quá khớp, và một vai trò tối ưu hóa là cải thiện điều kiện của bài
 toán.
 
@@ -986,9 +1095,9 @@ thông thường không đủ; cần $\alpha = 1/2$ để điều kiện trùng 
 hoặc cần khởi tạo $t_0 = 1/L$.
 
 \paragraph{SGD.} Độ dài bước phải theo kích thước lô, vì hằng số Lipschitz
-của mất mát một mẫu lớn hơn $L$ tới 1159 lần trên bộ dữ liệu này. Độ dài bước
-hằng không đưa nghiệm về $\wstar$ mà dừng ở một lân cận, nên muốn sai số tiếp
-tục giảm thì phải hạ dần $\eta_k$. Trong bốn lịch trình đã thử, giảm theo bậc
+của mất mát một mẫu lớn hơn $L$ tới 1159 lần trên bộ dữ liệu này. Giữ $\eta_k$
+cố định thì nghiệm dừng ở một lân cận quanh $\wstar$, nên muốn sai số tiếp tục
+giảm thì phải hạ dần $\eta_k$. Trong bốn quy tắc đã thử, giảm theo bậc
 thang cho kết quả tốt nhất, hơn bước hằng 165 lần với cùng chi phí tính toán.
 Dù vậy SGD không đạt được ngưỡng $10^{-6}$ trong ngân sách 30 lượt duyệt dữ liệu.
 

@@ -17,6 +17,8 @@ data/processed/*.npy
 *.nav
 *.snm
 *.toc
+*.lof
+*.lot
 *.bbl
 *.bcf
 *.blg

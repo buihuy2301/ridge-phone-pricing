@@ -72,6 +72,21 @@ def method_color(method: str) -> str:
     return METHOD_COLORS.get(method, "#333333")
 
 
+def mathtext_number(value: float, digits: int = 4) -> str:
+    """Format a number for use inside a mathtext label.
+
+    Plain `%g` writes a large value as `4.654e+04`, and inside `$...$`
+    mathtext reads that `+` as a binary operator and sets it with spaces on
+    both sides, which prints as `4.654e + 04`. The exponent is therefore
+    written out as a power of ten instead.
+    """
+    text = f"{value:.{digits}g}"
+    if "e" not in text:
+        return text
+    mantissa, exponent = text.split("e")
+    return rf"{mantissa} \times 10^{{{int(exponent)}}}"
+
+
 def _series_style(results: Sequence, color_by: str) -> list[dict]:
     """Color and line style for each run in a comparison."""
     styles = []
@@ -91,6 +106,25 @@ def _series_style(results: Sequence, color_by: str) -> list[dict]:
         for i, _ in enumerate(results):
             styles.append({"color": SHADE_CYCLE(i / (n - 1) * 0.85), "linestyle": "-"})
     return styles
+
+
+def styles_from_keys(color_keys: Sequence, style_keys: Sequence) -> list[dict]:
+    """Color runs by one parameter and set their line style by another.
+
+    A sweep over two parameters draws every combination on one panel, and
+    giving each curve its own shade hides which of the two parameters the
+    spread belongs to. Passing the parameter that matters as `color_keys`
+    makes that visible at a glance.
+    """
+    colors = sorted(set(color_keys), key=str)
+    dashes = sorted(set(style_keys), key=str)
+    return [
+        {
+            "color": SHADE_CYCLE(colors.index(c) / max(len(colors) - 1, 1) * 0.85),
+            "linestyle": LINESTYLES[dashes.index(s) % len(LINESTYLES)],
+        }
+        for c, s in zip(color_keys, style_keys)
+    ]
 
 
 def _x_values(result, xaxis: str, n_samples: int | None) -> np.ndarray:
@@ -126,12 +160,21 @@ def plot_convergence(
     n_samples: int | None = None,
     floor: float = 1e-16,
     ylabel: str = r"$f(w_k) - f^*$",
+    styles: Sequence[dict] | None = None,
+    xlim: tuple[float, float] | None = None,
 ):
-    """Draw one convergence panel on a logarithmic vertical axis."""
+    """Draw one convergence panel on a logarithmic vertical axis.
+
+    `styles` overrides the automatic color and line style, one dict of
+    matplotlib keywords per run. `xlim` clips the horizontal axis, which is
+    what keeps a single slow run from squeezing every other curve against the
+    left edge; the caption then has to say where the clipped run ends.
+    """
     if ax is None:
         _, ax = plt.subplots()
 
-    styles = _series_style(results, color_by)
+    if styles is None:
+        styles = _series_style(results, color_by)
     for result, style, index in zip(results, styles, range(len(results))):
         x = _x_values(result, xaxis, n_samples)
         y = result.suboptimality(f_star, floor=floor)
@@ -142,6 +185,8 @@ def plot_convergence(
 
     ax.set_xlabel(X_LABELS[xaxis])
     ax.set_ylabel(ylabel)
+    if xlim is not None:
+        ax.set_xlim(*xlim)
     if title:
         ax.set_title(title)
     ax.legend(loc="best")
@@ -159,11 +204,14 @@ def plot_comparison(
     first_axis: str = "iter",
     save: bool = True,
     figure_dir: Path | None = None,
+    styles: Sequence[dict] | None = None,
+    xlims: dict[str, tuple[float, float]] | None = None,
 ):
     """Build the iteration panel and the time panel for one comparison.
 
     Returns the two figures. Files are written as `<stem>_iter.{pdf,png}` and
-    `<stem>_time.{pdf,png}`.
+    `<stem>_time.{pdf,png}`. `xlims` clips one or both panels, keyed by the
+    axis name of the panel.
     """
     figures = []
     for xaxis, suffix in ((first_axis, first_axis), ("time", "time")):
@@ -177,6 +225,8 @@ def plot_comparison(
             labels=labels,
             color_by=color_by,
             n_samples=n_samples,
+            styles=styles,
+            xlim=None if xlims is None else xlims.get(xaxis),
         )
         fig.tight_layout()
         if save:

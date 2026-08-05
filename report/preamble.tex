@@ -54,11 +54,14 @@
     \small chưa được sinh ra từ notebook\par}}%
 }
 
+% The path is spelled out rather than left to \graphicspath, which lists the
+% slide directory first and would otherwise hand the report the wide, reduced
+% copies meant for Beamer.
 \newcommand{\resultfig}[3]{%
   \begin{figure}[htbp]
     \centering
     \IfFileExists{../results/figures/#1.pdf}
-      {\includegraphics[width=0.92\linewidth]{#1.pdf}}
+      {\includegraphics[width=0.8\linewidth]{../results/figures/#1.pdf}}
       {\missingfigbox{#1}}
     \caption{#2}
     \label{#3}

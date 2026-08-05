@@ -24,7 +24,7 @@
     "alpha": 0.1,
     "beta": 0.5,
     "t0": 1.0,
-    "label": "GD bt (alpha=0.1, beta=0.5)",
+    "label": "GD bt ($\\alpha = 0.1$, $\\beta = 0.5$)",
     "line_search_evals": 1264,
     "repeats": 3,
     "time_all_runs": [
@@ -509,7 +509,7 @@
     "alpha": 0.1,
     "beta": 0.8,
     "t0": 1.0,
-    "label": "GD bt (alpha=0.1, beta=0.8)",
+    "label": "GD bt ($\\alpha = 0.1$, $\\beta = 0.8$)",
     "line_search_evals": 2586,
     "repeats": 3,
     "time_all_runs": [
@@ -1014,7 +1014,7 @@
     "alpha": 0.1,
     "beta": 0.9,
     "t0": 1.0,
-    "label": "GD bt (alpha=0.1, beta=0.9)",
+    "label": "GD bt ($\\alpha = 0.1$, $\\beta = 0.9$)",
     "line_search_evals": 1896,
     "repeats": 3,
     "time_all_runs": [
@@ -1514,7 +1514,7 @@
     "alpha": 0.3,
     "beta": 0.5,
     "t0": 1.0,
-    "label": "GD bt (alpha=0.3, beta=0.5)",
+    "label": "GD bt ($\\alpha = 0.3$, $\\beta = 0.5$)",
     "line_search_evals": 1248,
     "repeats": 3,
     "time_all_runs": [
@@ -1999,7 +1999,7 @@
     "alpha": 0.3,
     "beta": 0.8,
     "t0": 1.0,
-    "label": "GD bt (alpha=0.3, beta=0.8)",
+    "label": "GD bt ($\\alpha = 0.3$, $\\beta = 0.8$)",
     "line_search_evals": 3495,
     "repeats": 3,
     "time_all_runs": [
@@ -2504,7 +2504,7 @@
     "alpha": 0.3,
     "beta": 0.9,
     "t0": 1.0,
-    "label": "GD bt (alpha=0.3, beta=0.9)",
+    "label": "GD bt ($\\alpha = 0.3$, $\\beta = 0.9$)",
     "line_search_evals": 2171,
     "repeats": 3,
     "time_all_runs": [
@@ -3004,7 +3004,7 @@
     "alpha": 0.5,
     "beta": 0.5,
     "t0": 1.0,
-    "label": "GD bt (alpha=0.5, beta=0.5)",
+    "label": "GD bt ($\\alpha = 0.5$, $\\beta = 0.5$)",
     "line_search_evals": 1754,
     "repeats": 3,
     "time_all_runs": [
@@ -3489,7 +3489,7 @@
     "alpha": 0.5,
     "beta": 0.8,
     "t0": 1.0,
-    "label": "GD bt (alpha=0.5, beta=0.8)",
+    "label": "GD bt ($\\alpha = 0.5$, $\\beta = 0.8$)",
     "line_search_evals": 5431,
     "repeats": 3,
     "time_all_runs": [
@@ -4009,7 +4009,7 @@
     "alpha": 0.5,
     "beta": 0.9,
     "t0": 1.0,
-    "label": "GD bt (alpha=0.5, beta=0.9)",
+    "label": "GD bt ($\\alpha = 0.5$, $\\beta = 0.9$)",
     "line_search_evals": 2594,
     "repeats": 3,
     "time_all_runs": [

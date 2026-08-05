@@ -116,6 +116,39 @@ def load_results(name: str) -> tuple[list[OptimizeResult], dict]:
     return runs, payload.get("extra", {})
 
 
+def _refresh_labels(
+    runs: Sequence[OptimizeResult],
+    specs: Sequence[dict],
+    name: str,
+    verbose: bool = True,
+) -> bool:
+    """Copy the labels of `specs` onto `runs`. True when anything changed.
+
+    Runs and specs are matched by position, which holds as long as the grid
+    is the same one that produced the file. A grid that has gained or lost a
+    configuration cannot be matched this way, and relabelling it by position
+    would attach a legend entry to the wrong curve, so the mismatch is
+    reported and the stored labels are left alone.
+    """
+    if len(runs) != len(specs):
+        if verbose:
+            print(
+                f"[warn] {name}: {len(runs)} stored runs against {len(specs)} "
+                "configurations, labels left as they were; pass force=True to rerun"
+            )
+        return False
+
+    changed = False
+    for run, spec in zip(runs, specs):
+        label = spec.get("label")
+        if label is not None and run.params.get("label") != label:
+            run.params["label"] = label
+            changed = True
+    if changed and verbose:
+        print(f"[relabel] {name}: labels updated from the grid, timings untouched")
+    return changed
+
+
 def run_or_load(
     problem,
     name: str,
@@ -132,10 +165,18 @@ def run_or_load(
     finishes, and this helper skips any group whose file is already present,
     so restarting the notebook picks up where it stopped instead of starting
     over. Pass force=True to recompute a group after changing its grid.
+
+    A reused group still takes its labels from the grid rather than from the
+    file. Labels are how a run is named in a legend, not something measured,
+    so rewording one must not cost a re-run of the sweep and must not leave
+    the stored copy disagreeing with the figures. Measurements are never
+    touched here; only `force=True` recomputes those.
     """
     path = RESULT_DIR / f"{name}.json"
     if path.exists() and not force:
-        runs, _ = load_results(name)
+        runs, extra_stored = load_results(name)
+        if _refresh_labels(runs, specs, name, verbose=verbose):
+            save_results(runs, name, extra=extra_stored)
         if verbose:
             print(f"[skip] {name}: reusing {len(runs)} runs from {path.name}")
         return runs
@@ -160,7 +201,7 @@ def gd_fixed_step_grid(problem, max_iter: int = 1200, record_every: int = 10) ->
             "method": "gradient_descent",
             "kwargs": {"max_iter": max_iter, "record_every": record_every,
                        "step_rule": {"kind": "fixed", "t": m / problem.L}},
-            "label": f"GD (t = {m:g}/L)",
+            "label": rf"GD ($t = {m:g}/L$)",
         }
         for m in multiples
     ]
@@ -172,7 +213,7 @@ def gd_fixed_step_grid(problem, max_iter: int = 1200, record_every: int = 10) ->
                 "record_every": record_every,
                 "step_rule": {"kind": "fixed", "multiple": 1.0, "reference": "L+mu"},
             },
-            "label": "GD (t = 2/(L+mu))",
+            "label": r"GD ($t = 2/(L+\mu)$)",
         }
     )
     return specs
@@ -205,7 +246,7 @@ def gd_backtracking_grid(problem, max_iter: int = 250, record_every: int = 5) ->
                             "t0": 1.0,
                         },
                     },
-                    "label": f"GD bt (alpha={alpha:g}, beta={beta:g})",
+                    "label": rf"GD bt ($\alpha = {alpha:g}$, $\beta = {beta:g}$)",
                 }
             )
     return specs
@@ -253,7 +294,7 @@ def sgd_batch_size_grid(problem, epochs: int = 30, batch_sizes=BATCH_SIZES) -> l
                     "step_rule": {"kind": "schedule", "schedule": "constant", "eta0": eta0},
                     "seed": 0,
                 },
-                "label": f"SGD (B = {B}, eta = 1/L_B = {eta0:.3g})",
+                "label": rf"SGD ($B = {B}$, $\eta = 1/L_B = {eta0:.3g}$)",
             }
         )
     return specs
@@ -275,7 +316,7 @@ def sgd_common_step_grid(problem, epochs: int = 30, batch_sizes=BATCH_SIZES) -> 
                 "step_rule": {"kind": "schedule", "schedule": "constant", "eta0": eta0},
                 "seed": 0,
             },
-            "label": f"SGD (B = {B}, common eta = 0.1/L = {eta0:.3g})",
+            "label": rf"SGD ($B = {B}$, common $\eta = 0.1/L = {eta0:.3g}$)",
         }
         for B in batch_sizes
     ]
@@ -284,23 +325,44 @@ def sgd_common_step_grid(problem, epochs: int = 30, batch_sizes=BATCH_SIZES) -> 
 def sgd_schedule_grid(problem, epochs: int = 30, batch_size: int = 64) -> list[dict]:
     """Section 5.2: step size schedules at a common batch size."""
     eta0 = 1.0 / problem.minibatch_smoothness(batch_size)
+    # The names are the formulas the report prints in its schedule table, so a
+    # legend entry and a table row can be matched by eye.
     schedules = [
-        ({"kind": "schedule", "schedule": "constant", "eta0": eta0}, "constant"),
-        ({"kind": "schedule", "schedule": "inverse", "eta0": eta0, "gamma": 0.5}, "eta0/(1+0.5k)"),
-        ({"kind": "schedule", "schedule": "sqrt", "eta0": eta0}, "eta0/sqrt(k)"),
+        (
+            {"kind": "schedule", "schedule": "constant", "eta0": eta0},
+            r"$\eta_k = \eta_0$ constant",
+        ),
+        (
+            {"kind": "schedule", "schedule": "inverse", "eta0": eta0, "gamma": 0.5},
+            r"$\eta_k = \eta_0/(1 + 0.5k)$",
+        ),
+        (
+            {"kind": "schedule", "schedule": "sqrt", "eta0": eta0},
+            r"$\eta_k = \eta_0/\sqrt{k+1}$",
+        ),
         (
             {"kind": "schedule", "schedule": "staircase", "eta0": eta0, "period": 5},
-            "halving every 5 epochs",
+            r"$\eta_k = \eta_0 \cdot 2^{-\lfloor k/5 \rfloor}$",
         ),
     ]
     return [
         {
             "method": "sgd",
             "kwargs": {"max_iter": epochs, "batch_size": batch_size, "step_rule": rule, "seed": 0},
-            "label": f"SGD (B = {batch_size}, {name})",
+            "label": rf"SGD ($B = {batch_size}$, {name})",
         }
         for rule, name in schedules
     ]
+
+
+# A legend has to name the momentum rule, not the internal key of it, so the
+# two keys are spelled out wherever they reach a figure. The constant rule is
+# named rather than written out because the formula does not fit a legend; the
+# report gives it in full next to the update itself.
+MOMENTUM_LABELS = {
+    "strongly_convex": r"$\beta$ from $\kappa$",
+    "sequence": r"$\beta_k = (k-1)/(k+2)$",
+}
 
 
 def agd_grid(problem, max_iter: int = 400, record_every: int = 5) -> list[dict]:
@@ -319,7 +381,8 @@ def agd_grid(problem, max_iter: int = 400, record_every: int = 5) -> list[dict]:
                         "momentum": momentum,
                         "restart": restart,
                     },
-                    "label": f"AGD [{momentum}]" + (" + restart" if restart else ""),
+                    "label": f"AGD ({MOMENTUM_LABELS[momentum]})"
+                    + (" + restart" if restart else ""),
                 }
             )
     # Backtracking needs more care here than it does for plain gradient
@@ -333,9 +396,9 @@ def agd_grid(problem, max_iter: int = 400, record_every: int = 5) -> list[dict]:
     # since the search only ever shrinks from there. The third entry below is
     # the configuration that fails, kept for the comparison.
     backtracking_variants = [
-        ({"alpha": 0.5, "beta": 0.5, "t0": 1.0}, "bt alpha=0.5 (descent lemma), t0=1"),
-        ({"alpha": 0.3, "beta": 0.8, "t0": 1.0 / problem.L}, "bt alpha=0.3, t0=1/L"),
-        ({"alpha": 0.3, "beta": 0.8, "t0": 1.0}, "bt alpha=0.3, t0=1 (unstable)"),
+        ({"alpha": 0.5, "beta": 0.5, "t0": 1.0}, r"bt $\alpha = 0.5$, $t_0 = 1$"),
+        ({"alpha": 0.3, "beta": 0.8, "t0": 1.0 / problem.L}, r"bt $\alpha = 0.3$, $t_0 = 1/L$"),
+        ({"alpha": 0.3, "beta": 0.8, "t0": 1.0}, r"bt $\alpha = 0.3$, $t_0 = 1$"),
     ]
     for params, name in backtracking_variants:
         specs.append(
@@ -347,7 +410,7 @@ def agd_grid(problem, max_iter: int = 400, record_every: int = 5) -> list[dict]:
                     "step_rule": {"kind": "backtracking", **params},
                     "momentum": "strongly_convex",
                 },
-                "label": f"AGD [strongly_convex] {name}",
+                "label": f"AGD ({MOMENTUM_LABELS['strongly_convex']}, {name})",
             }
         )
     return specs
@@ -360,12 +423,12 @@ def newton_grid(problem, max_iter: int = 10) -> list[dict]:
         {
             "method": "newton",
             "kwargs": {"max_iter": max_iter, "refactor": True},
-            "label": "Newton (t = 1, refactor each iteration)",
+            "label": r"Newton ($t = 1$, refactor each iteration)",
         },
         {
             "method": "newton",
             "kwargs": {"max_iter": max_iter, "refactor": False},
-            "label": "Newton (t = 1, cached factor)",
+            "label": r"Newton ($t = 1$, cached factor)",
         },
         {
             "method": "newton",
@@ -379,11 +442,11 @@ def newton_grid(problem, max_iter: int = 10) -> list[dict]:
         {
             "method": "newton_cg",
             "kwargs": {"max_iter": max_iter, "cg_tol": 1e-2},
-            "label": "Newton-CG (cg_tol = 1e-2)",
+            "label": r"Newton-CG (cg_tol $= 10^{-2}$)",
         },
         {
             "method": "newton_cg",
             "kwargs": {"max_iter": max_iter, "cg_tol": 1e-6},
-            "label": "Newton-CG (cg_tol = 1e-6)",
+            "label": r"Newton-CG (cg_tol $= 10^{-6}$)",
         },
     ]

@@ -68,25 +68,29 @@ def _init_w(problem, w0: np.ndarray | None) -> np.ndarray:
 
 
 def _label(prefix: str, step_rule: dict) -> str:
-    """Short human-readable description of a step rule, used in legends."""
+    """Short human-readable description of a step rule, used in legends.
+
+    Symbols are written as matplotlib mathtext so that a legend spells them
+    the same way the report does, with a real alpha rather than the word.
+    """
     kind = step_rule.get("kind")
     if kind == "fixed":
         if "t" in step_rule:
-            return f"{prefix} (t = {step_rule['t']:.3g})"
+            return rf"{prefix} ($t = {step_rule['t']:.3g}$)"
         ref = step_rule.get("reference", "L")
         mult = step_rule.get("multiple", 1.0)
         if ref == "L+mu":
-            return f"{prefix} (t = {mult:g}*2/(L+mu))"
-        return f"{prefix} (t = {mult:g}/L)"
+            return rf"{prefix} ($t = {mult:g} \cdot 2/(L+\mu)$)"
+        return rf"{prefix} ($t = {mult:g}/L$)"
     if kind == "backtracking":
         return (
-            f"{prefix} (bt, alpha={step_rule.get('alpha', 0.3):g}, "
-            f"beta={step_rule.get('beta', 0.8):g})"
+            rf"{prefix} (bt, $\alpha = {step_rule.get('alpha', 0.3):g}$, "
+            rf"$\beta = {step_rule.get('beta', 0.8):g}$)"
         )
     if kind == "schedule":
         return (
-            f"{prefix} ({step_rule.get('schedule', 'constant')}, "
-            f"eta0={step_rule.get('eta0', 0.1):.3g})"
+            rf"{prefix} ({step_rule.get('schedule', 'constant')}, "
+            rf"$\eta_0 = {step_rule.get('eta0', 0.1):.3g}$)"
         )
     return prefix
 
@@ -456,7 +460,7 @@ def heavy_ball(
     params = dict(rule)
     params["beta"] = beta
     params["t"] = t
-    params["label"] = f"Heavy ball (t = {t:.3g}, beta = {beta:.3g})"
+    params["label"] = rf"Heavy ball ($t = {t:.3g}$, $\beta = {beta:.3g}$)"
     return rec.finish(w, "heavy_ball", params, status)
 
 

@@ -27,7 +27,7 @@
     "restart": false,
     "n_restarts": 0,
     "line_search_evals": 0,
-    "label": "AGD [strongly_convex]",
+    "label": "AGD ($\\beta$ from $\\kappa$)",
     "repeats": 3,
     "time_all_runs": [
      7.110268376243766,
@@ -519,7 +519,7 @@
     "restart": true,
     "n_restarts": 71,
     "line_search_evals": 0,
-    "label": "AGD [strongly_convex] + restart",
+    "label": "AGD ($\\beta$ from $\\kappa$) + restart",
     "repeats": 3,
     "time_all_runs": [
      7.128891998028848,
@@ -1011,7 +1011,7 @@
     "restart": false,
     "n_restarts": 0,
     "line_search_evals": 0,
-    "label": "AGD [sequence]",
+    "label": "AGD ($\\beta_k = (k-1)/(k+2)$)",
     "repeats": 3,
     "time_all_runs": [
      10.471916584763676,
@@ -1583,7 +1583,7 @@
     "restart": true,
     "n_restarts": 6,
     "line_search_evals": 0,
-    "label": "AGD [sequence] + restart",
+    "label": "AGD ($\\beta_k = (k-1)/(k+2)$) + restart",
     "repeats": 3,
     "time_all_runs": [
      4.855885168944951,
@@ -2021,7 +2021,7 @@
     "restart": false,
     "n_restarts": 0,
     "line_search_evals": 373,
-    "label": "AGD [strongly_convex] bt alpha=0.5 (descent lemma), t0=1",
+    "label": "AGD ($\\beta$ from $\\kappa$, bt $\\alpha = 0.5$, $t_0 = 1$)",
     "repeats": 3,
     "time_all_runs": [
      11.445513540995307,
@@ -2484,7 +2484,7 @@
     "restart": false,
     "n_restarts": 0,
     "line_search_evals": 217,
-    "label": "AGD [strongly_convex] bt alpha=0.3, t0=1/L",
+    "label": "AGD ($\\beta$ from $\\kappa$, bt $\\alpha = 0.3$, $t_0 = 1/L$)",
     "repeats": 3,
     "time_all_runs": [
      10.404145834967494,
@@ -2977,7 +2977,7 @@
     "restart": false,
     "n_restarts": 0,
     "line_search_evals": 293,
-    "label": "AGD [strongly_convex] bt alpha=0.3, t0=1 (unstable)",
+    "label": "AGD ($\\beta$ from $\\kappa$, bt $\\alpha = 0.3$, $t_0 = 1$)",
     "repeats": 3,
     "time_all_runs": [
      7.5440548319602385,
