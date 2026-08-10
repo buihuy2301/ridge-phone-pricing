@@ -28,7 +28,6 @@ data/processed/*.npy
 *.synctex.gz
 *.vrb
 *.xdv
-report/*.pdf
 _minted*/
 
 # Style reference material (see docs/van-phong-tieng-viet.md).
