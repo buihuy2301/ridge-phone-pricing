@@ -25,19 +25,20 @@ Ngoại lệ duy nhất: tên file markdown, tên thư mục báo cáo, và nộ
 
 ## 2. Văn phong tiếng Việt
 
-Trước khi viết hoặc sửa bất kỳ đoạn văn tiếng Việt nào, đọc `docs/van-phong-tieng-viet.md`, trong đó có bộ mẫu và công thức viết đoạn. Mục này chỉ nêu hình dạng cần đạt, không đủ để viết nếu chưa đọc file kia.
+Trước khi viết hoặc sửa bất kỳ đoạn văn tiếng Việt nào, đọc `docs/van-phong-tieng-viet.md`, trong đó có quy trình ba lượt, công thức viết đoạn và bộ mẫu. Mục này chỉ nêu hình dạng cần đạt, không đủ để viết nếu chưa đọc file kia. Bộ mẫu nằm ở `style/mau/`, ngoài git vì lý do bản quyền, và phải nạp kèm ở lượt viết nháp: mô tả trong tài liệu chặn được lỗi nhưng không dựng được giọng.
 
 Văn đích là văn giáo trình toán ứng dụng: người viết đã làm thí nghiệm và đang thuật lại cho người đọc có nền tảng. Một đoạn phân tích kết quả gồm ba phần theo thứ tự, dữ kiện kèm số và nguồn `\ref`, cơ chế giải thích con số đó, rồi hệ quả hoặc điều kiện mà kết luận đảo chiều. Câu đầu đoạn là dữ kiện, không phải câu dẫn.
 
-Ba mốc về nhịp, kiểm tra được bằng mắt sau khi viết xong:
+Việc viết chia thành ba lượt gọi riêng, mô tả ở mục 1 của file văn phong: lượt A dựng bảng lập luận và không viết câu văn nào, lượt B viết nháp theo mục 2 tới mục 5, lượt C rà theo mục 6 và mỗi lần chỉ rà một nhóm. Không đưa danh sách rà soát vào lượt viết nháp.
 
-- Không quá ba câu đơn liên tiếp. Câu thứ tư phải có mệnh đề phụ hoặc nối vào câu trước bằng "vì", "do đó", "khi", "trong khi", "đổi lại".
-- Mỗi đoạn có ít nhất một câu từ 25 tiếng trở lên. Đoạn toàn câu ngắn đọc như bảng liệt kê, và đó là lỗi thường gặp nhất hiện nay.
+Hai mốc về nhịp, kiểm tra được bằng mắt sau khi viết xong:
+
+- Mỗi đoạn có ít nhất một câu mang lập luận, tức câu có mệnh đề phụ chỉ nguyên nhân, điều kiện hoặc tương phản. Đoạn toàn câu đơn rời rạc đọc như bảng liệt kê, và đó là lỗi thường gặp nhất hiện nay. Không có mốc âm tiết cho câu này; chuẩn duy nhất về độ dài là bộ mẫu ở mục 2 của file văn phong.
 - Hai câu liên tiếp không mở đầu bằng cùng một khuôn.
 
-Quy tắc tách câu dài nhắm vào câu chứa từ ba ý độc lập trở lên nối bằng dấu phẩy, không nhắm vào câu ghép có mệnh đề phụ. Một câu 45 tiếng gồm một ý chính và hai mệnh đề bổ nghĩa thì giữ nguyên.
+Quy tắc tách câu dài nhắm vào câu chứa từ ba ý ngang hàng trở lên nối bằng dấu phẩy, không nhắm vào câu ghép có mệnh đề phụ. Một câu dài gồm một ý chính và hai mệnh đề bổ nghĩa thì giữ nguyên.
 
-Mọi kết luận phải kèm số liệu hoặc biểu đồ tương ứng; chưa có bằng chứng thì ghi rõ đó là dự đoán. Danh sách lỗi từ vựng và cú pháp cần rà sau khi viết nằm ở mục 7 của file văn phong.
+Mọi kết luận phải kèm số liệu hoặc biểu đồ tương ứng; chưa có bằng chứng thì ghi rõ đó là dự đoán. Danh sách lỗi từ vựng và cú pháp cần rà sau khi viết nằm ở mục 6 của file văn phong.
 
 ## 3. Biểu đồ
 

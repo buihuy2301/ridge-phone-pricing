@@ -1,329 +1,258 @@
 # Văn phong tiếng Việt
 
-File này là bản đầy đủ của quy tắc văn phong tóm tắt ở mục 2 của `CLAUDE.md`. Đọc
-trước khi viết hoặc sửa bất kỳ đoạn văn tiếng Việt nào: báo cáo, slide, README, ô
-markdown trong notebook.
+Bản này thay bản cũ. Khác biệt chính: bộ mẫu chuyển từ văn Claude sinh sang văn
+người viết, quy trình tách thành ba lượt gọi riêng, danh sách cấm rút ngắn còn
+những mục mà mẫu không tự truyền đạt được.
 
-Dùng theo hai lượt. Lượt viết bám mục 1 tới mục 5, tức bám vào mẫu và công thức.
-Lượt rà soát dùng mục 7, tức danh sách các lỗi đã gặp. Không dùng mục 7 làm tài
-liệu hướng dẫn viết: danh sách cấm chỉ thu hẹp vùng được phép, nó không chỉ ra
-văn đích trông như thế nào, và viết theo nó sẽ ra một chuỗi câu ngắn rời rạc.
+## 0. Trạng thái
 
-## 1. Văn đích
+Mục 2 đã điền, gồm 20 đoạn của 16 nhóm tác giả, lưu ở `style/mau/`. File vì thế
+đã có neo: mục 6 chặn lỗi, còn giọng thì lấy từ bộ mẫu chứ không lấy từ mô tả.
 
-Báo cáo này hướng tới văn giáo trình toán ứng dụng: người viết đã làm thí nghiệm,
-đang thuật lại cho một người đọc có nền tảng và muốn biết con số nào dẫn tới kết
-luận nào. Sáu đặc điểm của thứ văn đó:
+Bộ đối chứng ở mục 8 cũng đã dựng, gồm năm đoạn ở `style/doi-chung/`. Từ đây mọi
+chỉnh sửa file này đều đo được, và lần sửa nào không qua được phép đo ở mục 8 thì
+không nên giữ.
 
-- Đoạn mở bằng dữ kiện, thường là một con số kèm mốc so sánh, chứ không mở bằng
-  câu giới thiệu về nội dung sắp trình bày.
-- Mỗi đoạn có ít nhất một câu ghép, tức câu có mệnh đề phụ chỉ nguyên nhân, điều
-  kiện, thời điểm hoặc tương phản. Câu ghép này là chỗ đặt lập luận; các câu đơn
-  quanh nó đặt dữ kiện.
-- Câu nối với câu bằng quan hệ logic hiện rõ trên bề mặt: "vì", "do đó", "nhờ
-  vậy", "khi", "trong khi", "ngược lại", "đổi lại", "miễn là".
-- Con số luôn đi cùng mốc để so sánh, dạng "0,076 giây, ít hơn 10 lần so với
-  gradient descent", không đứng trơ một mình.
-- Việc mình làm thì xưng "nhóm"; tính chất của bài toán thì để bài toán làm
-  chủ ngữ.
-- Giới hạn của kết luận nêu ngay tại chỗ, thường bằng một mệnh đề điều kiện đóng
-  đoạn: "nhận xét đó sẽ đảo chiều nếu $d$ lớn tới mức không tính được trị riêng
-  lớn nhất".
+Hai chỗ nên bù trước: bộ mẫu chưa có đoạn nào lấy từ luận văn hay luận án, và bộ
+đối chứng chỉ lấy từ ba mục nên chưa phủ các chương khảo sát tham số, vốn là nơi
+đặt nhiều đoạn bình luận bảng nhất.
+
+## 1. Ba lượt, ba lần gọi riêng
+
+Bản cũ ghi "dùng theo hai lượt" nhưng đặt cả hướng dẫn viết lẫn danh sách cấm
+trong một tài liệu, nên trên thực tế mọi thứ vào cùng một context và bản nháp
+đầu tiên đã viết trong trạng thái phòng thủ. Bản này tách thật.
+
+**Lượt A, dựng lập luận.** Không viết câu văn nào. Output là một bảng, mỗi đoạn
+dự kiến một dòng, bốn cột:
+
+| Kết luận | Số liệu chống lưng | Cơ chế | Điều kiện đảo chiều |
+| --- | --- | --- | --- |
+
+Người viết duyệt và sửa bảng này trước khi sang lượt B. Dòng nào chưa điền được
+cột cơ chế thì chưa đủ nguyên liệu, và việc cần làm là đọc lại kết quả hoặc chạy
+thêm thí nghiệm chứ không phải viết một đoạn mô tả bảng để lấp chỗ.
+
+**Lượt B, viết nháp.** Đưa mục 2 tới mục 5, bảng đã chốt, và các file mẫu ở
+`style/mau/` ứng với chức năng của đoạn sắp viết. Không đưa mục 6. Yêu cầu viết
+đặc thông tin, chưa cần đẹp.
+
+**Lượt C, rà.** Đưa mục 6, mỗi lần một nhóm, không rà cả ba nhóm trong một lượt.
+Sửa để tránh lỗi ở nhóm này dễ tạo ra lỗi ở nhóm khác nếu làm đồng thời.
+
+Câu mang kết luận của mỗi đoạn nên do người viết tự đặt, ở lượt A. Đó là chỗ khó
+bắt chước nhất, cũng là chỗ hội đồng hỏi trực tiếp.
 
 ## 2. Bộ mẫu
 
-Bốn đoạn dưới đây lấy nguyên từ `report/report.tex`, là các đoạn đọc tự nhiên
-nhất trong bản hiện tại. Khi viết đoạn mới, đối chiếu nhịp và cách nối câu với
-các mẫu này trước, rồi mới rà theo mục 7.
+Bộ mẫu nằm ở `style/mau/`, gồm 20 đoạn trích nguyên văn từ 16 bài báo tiếng Việt
+có bình duyệt, mỗi đoạn một file kèm tác giả, tên tài liệu, năm, nơi đăng và
+đường dẫn ở đầu file. Không đoạn nào do mô hình sinh ra và không đoạn nào bị sửa
+chữ; thao tác duy nhất là gỡ phần ngắt dòng của bản PDF hai cột, nên nhịp câu và
+trật tự mệnh đề giữ đúng như tác giả viết.
 
-**Mẫu 1, giải thích một quyết định về thiết kế thí nghiệm.**
+| Chức năng | Số đoạn | Tên file |
+| --- | --- | --- |
+| Bình luận một bảng số | 5 | `bang-so-*.md` |
+| Giải thích một chênh lệch bất ngờ giữa hai phương pháp | 5 | `chenh-lech-*.md` |
+| Nêu giới hạn hoặc điều kiện đảo chiều của kết luận | 4 | `gioi-han-*.md` |
+| Giải thích một quyết định về thiết kế thí nghiệm | 3 | `thiet-ke-*.md` |
+| Chuyển tiếp giữa hai mục | 3 | `chuyen-tiep-*.md` |
 
-> Toàn bộ thí nghiệm chạy trên một mẫu ngẫu nhiên 200 000 bản ghi, chia thành
-> 160 000 điểm huấn luyện và 40 000 điểm kiểm tra. Việc lấy mẫu là quyết định về
-> chi phí tính toán chứ không phải về thống kê: với toàn bộ một triệu bản ghi,
-> một lần tính gradient mất 271 ms thay vì 39 ms, và toàn bộ lưới tham số sẽ mất
-> hàng chục giờ.
+Hai mươi đoạn ứng với 16 nhóm tác giả và không chức năng nào lấy quá một đoạn từ
+cùng một nhóm, nên bộ mẫu không truyền tật riêng của một người viết. Ba tạp chí
+góp mặt là Khoa học Đại học Mở TP.HCM, Khoa học và Công nghệ Đại học Đà Nẵng, và
+TNU Journal of Science and Technology, với các bài từ năm 2011 tới năm 2026.
 
-Câu đầu 24 tiếng đặt dữ kiện, câu sau 46 tiếng mang toàn bộ lập luận. Đúng một
-dấu hai chấm, dẫn vào phần định lượng cho mệnh đề đứng trước nó. Đoạn này dài hơn
-hạn 40 từ ở mục 7 nhưng vẫn dễ đọc, vì mệnh đề sau dấu hai chấm chỉ mở rộng ý đã
-nêu chứ không thêm ý mới.
+Bộ mẫu hiện chưa có đoạn nào lấy từ luận văn hay luận án, tức thể loại sát bài
+này nhất. Bổ sung được thì nên bổ sung, theo thứ tự nguồn ngay dưới đây.
 
-**Mẫu 2, so sánh hai phương án bằng cấu trúc song song.**
+### Nguồn
 
-> Nếu lấy tích trực tiếp trên thang gốc, tức nhân `original_price` (cỡ $10^{5}$)
-> với `screen_size_inches` (cỡ 6), thì ma trận thiết kế thu được có $L = 17{,}14$
-> và 48 trị riêng dưới $10^{-6}$. Nếu lấy tích trên các cột đã chuẩn hóa thì
-> $L = 2{,}68$ và số trị riêng dưới $10^{-6}$ trở về đúng 7, bằng mức của khối
-> cột gốc. Không gian cột sinh ra vẫn như cũ, chỉ cách biểu diễn thay đổi, và số
-> điều kiện giảm theo, 6,4 lần.
+Luận văn và luận án, ưu tiên hàng đầu vì thể loại trùng với bài của bạn:
 
-Hai câu "Nếu... thì..." song song nhau, cùng độ dài, cùng thứ tự đại lượng, nên
-người đọc so sánh được hai cột số mà không cần bảng. Câu thứ ba ngắn hơn hẳn và
-chốt lại cơ chế.
+- `repository.vnu.edu.vn`, thư viện số tài nguyên nội sinh của ĐHQG Hà Nội, có
+  bộ sưu tập luận văn và luận án toàn văn.
+- `ir.vnulib.edu.vn`, kho của ĐHQG TP.HCM, bộ sưu tập luận văn thạc sĩ và luận
+  án tiến sĩ của Trường Đại học Khoa học Tự nhiên nằm ở `handle/VNUHCM/7914`.
+- Thư viện trường bạn đang học. Luận văn cùng khoa là mẫu sát nhất, vì nó đã qua
+  đúng hội đồng sẽ chấm bài bạn.
 
-**Mẫu 3, chuỗi suy luận dẫn tới một đẳng thức.**
+Tạp chí tiếng Việt có bình duyệt, truy cập mở:
 
-> Ma trận Gram $\tfrac{1}{n} X^{\top} X$ có hạng 273 trên 280, và ngay cả khi bỏ
-> qua 7 hướng suy biến đó, trị riêng kế tiếp cũng chỉ cỡ $2 \cdot 10^{-8}$. Nói
-> cách khác $\lambda_{\min}(\tfrac{1}{n} X^{\top} X) \approx 0$, nên
-> $\mu = \lambda$ và $\kappa = L / \lambda$. Hệ số hiệu chỉnh là đại lượng duy
-> nhất quyết định số điều kiện của bài toán, chứ không phải cấu trúc của dữ liệu.
-> Chương 8 khai thác tính chất này.
+- `jst.tnu.edu.vn`, chuyên san Khoa học Tự nhiên - Kỹ thuật - Công nghệ và chuyên
+  san Công nghệ Thông tin và Truyền thông.
+- `jst-ud.vn`, Tạp chí Khoa học và Công nghệ Đại học Đà Nẵng.
+- `journalofscience.ou.edu.vn`, chuyên san Kỹ thuật và Công nghệ.
+- `jmst.info`, mục Công nghệ thông tin và Cơ sở toán học cho tin học.
 
-Ba bậc rõ rệt: số đo, hệ quả toán học, phát biểu tổng quát. Câu cuối bảy tiếng
-làm nhiệm vụ chỉ đường, mang thông tin về vị trí nên hợp lệ.
+Giáo trình giải tích số, tối ưu hóa, xác suất thống kê của tác giả trong nước.
 
-**Mẫu 4, giải thích một chênh lệch bất ngờ giữa hai phương pháp.**
+Nguồn nên tránh: sách dịch, vì bản dịch mang sẵn cấu trúc tiếng Anh, đúng thứ mà
+mục 3 đang tìm cách chặn. Các trang bán và chia sẻ luận văn thương mại cũng nên
+tránh: chất lượng không qua bình duyệt, và nhiều bản là văn thuê viết.
 
-> Trên trục thời gian ở hình 12, Newton-CG chậm hơn Newton 25 lần, vì với
-> $d = 280$, chi phí $O(d^{3}) \approx 2 \cdot 10^{7}$ của phân rã Cholesky nhỏ
-> hơn nhiều so với chi phí một loạt tích Hessian nhân vector, mỗi tích tốn
-> $O(nd) \approx 4{,}5 \cdot 10^{7}$. Newton-CG chỉ có lợi khi $d$ lớn tới mức
-> không lập được ma trận $d \times d$.
+### Quy trình
 
-Một câu dài mang cả hiện tượng lẫn nguyên nhân, nối bằng "vì" chứ không tách
-thành hai câu rồi thêm "Nguyên nhân là". Câu sau nêu điều kiện mà kết luận đảo
-chiều.
+Quy trình dưới đây đã chạy một lần cho 20 đoạn hiện có; dùng lại nguyên vậy khi
+thêm đoạn mới.
 
-## 3. Trước khi viết
+1. Tải bản PDF từ các nguồn trên, lưu vào `style/mau/nguon/`.
+2. Trích đoạn thủ công, mỗi đoạn một file, đặt tên theo chức năng và số thứ tự,
+   ví dụ `bang-so-01.md`. Ghi tác giả, tên tài liệu, năm, số trang ở đầu file.
+3. Lọc theo mục "Lọc trước khi đưa vào" bên dưới.
+4. Thư mục `style/mau/` thêm vào `.gitignore`. Bộ mẫu là tài liệu tham chiếu
+   riêng, không phải một phần của báo cáo, và phần lớn nguồn cấp phép theo
+   CC BY-NC-ND nên không phát hành lại được.
+5. Ở lượt B, nạp các file mẫu kèm prompt. Không dán chúng vào chính file này.
 
-Bảng số và hình vẽ không tự sinh ra đoạn văn. Trước câu đầu tiên, xác định ý mà
-đoạn cần chứng minh rồi mới chọn số liệu phục vụ ý đó; làm ngược lại, tức đọc
-bảng trước rồi thuật lại những gì nhìn thấy, sẽ ra một đoạn liệt kê không có
-trọng tâm.
+Mỗi chức năng lấy từ ít nhất ba tác giả khác nhau. Một tác giả thì bộ mẫu sẽ
+truyền cả tật riêng của người đó.
 
-Mỗi đoạn trả lời đúng một câu hỏi, và trước khi viết cần trả lời được bốn câu sau
-về nó:
+Đoạn trích phải nguyên văn. Bản PDF hai cột khi chuyển sang văn bản thường dính
+số trang, tên chạy đầu trang và chú thích hình vào giữa đoạn, nên bước cần làm là
+gỡ những mảnh đó rồi nối lại các dòng bị ngắt, không phải viết lại câu cho gọn.
+Sửa chữ dù chỉ một câu thì đoạn đó thôi là mẫu, vì thứ cần học chính là lựa chọn
+của người viết.
 
-- Con số nào trong bảng hoặc hình đáng chú ý nhất?
-- Con số đó dẫn tới kết luận gì?
-- Cơ chế nào giải thích kết luận đó?
-- Kết luận còn đúng trong điều kiện nào?
+### Lọc trước khi đưa vào
 
-Chưa trả lời được cả bốn thì chưa đủ nguyên liệu để viết, và việc cần làm là đọc
-lại kết quả hoặc chạy thêm thí nghiệm chứ không phải viết một đoạn mô tả bảng để
-lấp chỗ.
+Văn khoa học tiếng Việt có tật phổ biến là câu dẫn dài trước khi vào số liệu, bị
+động chồng bị động, và khuôn "chúng tôi nhận thấy rằng". Loại các đoạn mắc những
+lỗi này thay vì lấy nguyên cả cụm.
 
-Điểm xuất phát là kết luận cần rút ra, không phải hàng đầu tiên của bảng. Khi đã
-có kết luận, giữ lại đúng những số liệu đủ để người đọc kiểm chứng nó, còn các số
-liệu khác thì dành cho đoạn khác hoặc để nguyên trong bảng, vì bảng đã in đầy đủ
-và người đọc tra được. Một đoạn tốt thường bỏ qua nhiều số hơn số nó dùng.
+Để mẫu đứng trần. Nhiều nhất một dòng nói đoạn đó đang làm việc gì. Chú giải kỹ
+về độ dài câu hay vị trí mệnh đề sẽ biến mẫu trở lại thành quy tắc, và mô hình sẽ
+bám con số thay vì bám giọng.
 
-### 3.1. Mỗi đoạn chỉ chứng minh một ý
+## 3. Trật tự thông tin
 
-Một đoạn gộp nhiều hiện tượng thì không chứng minh được hiện tượng nào.
+Phần lớn cảm giác "dịch máy" trong bản nháp không nằm ở từ vựng mà nằm ở chỗ
+thông tin được xếp theo trật tự chủ ngữ và vị ngữ của tiếng Anh rồi mới thay bằng
+từ tiếng Việt. Tiếng Việt tổ chức câu theo đề và thuyết: phần đề nêu cái đang bàn
+tới, không bắt buộc phải là chủ ngữ ngữ pháp, và phần thuyết nói về nó.
 
-> Sai: Bảng 5 cho thấy Newton nhanh hơn gradient descent, Newton-CG chậm hơn
-> Newton, backtracking làm tăng số lần đánh giá hàm, và chuẩn hóa cải thiện số
+Các cặp dưới đây minh họa một lỗi cụ thể. Chúng không phải mẫu văn để bắt chước;
+mẫu nằm ở mục 2.
+
+**Danh hóa để lấp chỗ chủ ngữ.**
+
+> Nặng: Việc chuẩn hóa các cột dữ liệu đã dẫn đến sự cải thiện đáng kể của số
 > điều kiện.
+>
+> Nhẹ: Chuẩn hóa cột xong, số điều kiện giảm từ 17,14 xuống 2,68.
 
-Bốn mệnh đề trên cần bốn cơ chế khác nhau, nên bản đúng là bốn đoạn cùng đọc từ
-bảng 5 nhưng mỗi đoạn chỉ giữ các cột phục vụ ý của nó: một đoạn giải thích
-Newton, một đoạn giải thích Newton-CG, một đoạn giải thích backtracking, một đoạn
-giải thích chuẩn hóa.
+Tiếng Anh cần một danh ngữ làm chủ ngữ nên phải danh hóa động từ. Tiếng Việt đặt
+thẳng hành động lên đầu làm đề. Dấu hiệu nhận ra: chuỗi "việc", "sự", "quá
+trình", "tính chất của" đứng đầu câu.
 
-Mốc để quyết định tách hay không là số cơ chế chứ không phải số kết luận. Hai kết
-luận dựa trên cùng một cơ chế thì viết chung được, còn hai kết luận cần hai cơ
-chế khác nhau thì nằm ở hai đoạn, ngay cả khi cùng đọc từ một bảng.
+**Chủ ngữ giả trỏ về cả mệnh đề trước.**
 
-### 3.2. Viết theo chuỗi suy luận, không theo thứ tự đọc bảng
+> Nặng: Ma trận Gram gần suy biến. Điều này cho thấy rằng hệ số hiệu chỉnh quyết
+> định số điều kiện.
+>
+> Nhẹ: Ma trận Gram gần suy biến, nên số điều kiện do hệ số hiệu chỉnh quyết
+> định chứ không do dữ liệu.
 
-Người đọc không cần biết nhóm đã nhìn bảng theo thứ tự nào, họ chỉ cần biết
-vì sao kết luận đúng. Thứ tự trong đoạn vì thế là thứ tự của lập luận: dữ kiện đủ
-để chứng minh, cơ chế nối dữ kiện với kết luận, rồi kết luận hoặc giới hạn của
-nó. Mục 4 khai triển ba phần này thành công thức viết đoạn.
+**Mệnh đề quan hệ lồng sâu.**
 
-Thứ tự cần tránh là thứ tự đọc bảng, tức đọc số thứ nhất, số thứ hai, số thứ ba,
-cuối cùng mới tới kết luận. Đoạn viết theo thứ tự đó bắt người đọc giữ ba con số
-trong đầu khi còn chưa biết chúng dùng để làm gì, và dồn toàn bộ phần suy luận
-vào một câu cuối. Đoạn văn phải đọc như một lời giải thích, không phải lời thuyết
-minh bảng.
+> Nặng: Phương pháp mà nhóm dùng để ước lượng hằng số Lipschitz, vốn dựa trên trị
+> riêng lớn nhất của ma trận Gram, cho kết quả ổn định.
+>
+> Nhẹ: Nhóm ước lượng hằng số Lipschitz qua trị riêng lớn nhất của ma trận Gram,
+> và kết quả ổn định qua các lần chạy.
 
-## 4. Công thức cho đoạn phân tích kết quả
+Tiếng Việt nối mệnh đề theo chuỗi tuyến tính tốt hơn là lồng vào giữa câu. Khi
+một mệnh đề chen giữa chủ ngữ và vị ngữ, tách nó ra thành vế nối bằng liên từ.
 
-Phần lớn báo cáo là các đoạn bình luận một bảng hoặc một hình. Một đoạn như vậy
-gồm ba phần, theo thứ tự:
+## 4. Công thức đoạn phân tích kết quả
 
-1. **Dữ kiện.** Con số đọc từ bảng hoặc hình, kèm nguồn bằng `\ref` và kèm mốc so
-   sánh. Đây là câu đầu tiên của đoạn, không có câu dẫn nào đứng trước.
-2. **Cơ chế.** Vì sao con số ra như vậy. Phần này viết thành câu ghép, nối vào
-   dữ kiện bằng "vì", "do", "khi". Nếu cơ chế cần tới một công thức thì dẫn công
-   thức bằng `\eqref` ngay trong câu.
-3. **Hệ quả hoặc giới hạn.** Kết luận rút ra, hoặc điều kiện mà kết luận không
-   còn đúng. Một câu, đặt cuối đoạn.
+Một đoạn bình luận bảng hoặc hình gồm ba phần, theo thứ tự lập luận chứ không
+theo thứ tự đọc bảng:
 
-Ba phần không cần ba câu. Mẫu 4 gộp dữ kiện và cơ chế vào một câu, mẫu 2 dùng hai
-câu song song cho phần dữ kiện. Phần được phép lược là phần cơ chế, khi nó đã
-trình bày ở mục trước và chỉ cần nhắc lại bằng một cụm.
+1. **Dữ kiện.** Số đọc từ bảng, kèm nguồn bằng `\ref` và kèm mốc so sánh. Là câu
+   đầu tiên, không có câu dẫn đứng trước.
+2. **Cơ chế.** Vì sao số ra như vậy, nối vào dữ kiện bằng "vì", "do", "khi". Nếu
+   cần công thức thì dẫn bằng `\eqref` ngay trong câu.
+3. **Hệ quả hoặc giới hạn.** Kết luận, hoặc điều kiện mà kết luận không còn đúng.
 
-Khi một bảng cho nhiều kết luận độc lập, mỗi kết luận là một đoạn riêng có đủ ba
-phần, thay vì gộp thành một đoạn dài. Câu dẫn kiểu "Bảng 3 cho ba kết luận" chỉ
-dùng một lần cho cả cụm đoạn, và chỉ khi thật sự có ba đoạn theo sau.
+Ba phần không cần ba câu, và phần được phép lược là cơ chế khi nó đã trình bày ở
+mục trước.
 
-## 5. Nhịp câu và liên kết
+Mốc để tách đoạn là số cơ chế, không phải số kết luận. Hai kết luận cùng một cơ
+chế viết chung được; hai kết luận cần hai cơ chế thì nằm ở hai đoạn, ngay cả khi
+cùng đọc từ một bảng.
 
-Lỗi nặng nhất của các bản nháp gần đây không còn là câu rườm mà là câu đều: một
-chuỗi câu trần thuật ngắn, mỗi câu một mệnh đề chính, không câu nào nối vào câu
-nào. Đoạn dưới đây, lấy từ `report.tex`, có năm câu, câu dài nhất 20 tiếng, và
-chỉ một câu có mệnh đề phụ:
+## 5. Nhịp câu
 
-> Đại lượng cần báo cáo ở đây là số lần đánh giá hàm mục tiêu mà line search tiêu
-> tốn trên mỗi vòng lặp. Phép đo phải thực hiện trong giai đoạn thuật toán còn
-> tiến triển. Khi $f$ đã chạm giới hạn số học, không độ dài bước nào còn thỏa mãn
-> điều kiện Armijo. Line search vì thế tiêu hết ngân sách ở mọi vòng lặp, làm con
-> số đo được tăng lên gấp năm lần. Bảng 4 lấy trong 100 vòng lặp đầu.
+Bệnh của bản nháp gần đây là câu đều: chuỗi câu trần thuật ngắn, mỗi câu một
+mệnh đề chính, không câu nào nối vào câu nào. Đoạn như vậy đọc như bảng liệt kê.
 
-Bản sửa, gộp theo quan hệ logic và bỏ câu dẫn ở đầu:
+Mỗi đoạn cần ít nhất một câu mang lập luận, tức câu có mệnh đề phụ chỉ nguyên
+nhân, điều kiện hoặc tương phản. Các câu còn lại đặt dữ kiện quanh nó. Bản cũ quy
+định mốc âm tiết cho câu này; bỏ mốc đó, vì nó dẫn tới việc kéo dài câu cho đủ
+chỉ tiêu. Mẫu ở mục 2 là chuẩn duy nhất về độ dài.
 
-> Bảng 4 đo số lần đánh giá hàm mục tiêu mà line search tiêu tốn trên mỗi vòng
-> lặp, lấy trong 100 vòng lặp đầu. Phép đo chỉ có nghĩa trong giai đoạn thuật
-> toán còn tiến triển, vì khi $f$ đã chạm giới hạn số học thì không độ dài bước
-> nào còn thỏa mãn điều kiện Armijo, line search tiêu hết ngân sách ở mọi vòng
-> lặp và con số đo được tăng lên gấp năm lần.
+Hai câu liên tiếp không mở đầu bằng cùng một khuôn. Các khuôn hay lặp: chủ ngữ là
+tên bảng hoặc hình, "Với...", "Khi...", "Số liệu...".
 
-Ba mốc cần giữ khi viết:
-
-- Không quá ba câu đơn liên tiếp. Câu thứ tư phải có mệnh đề phụ, hoặc phải nối
-  vào câu trước bằng một liên từ chỉ quan hệ.
-- Mỗi đoạn có ít nhất một câu từ 25 tiếng trở lên. Đoạn toàn câu dưới 20 tiếng
-  đọc như bảng liệt kê.
-- Hai câu liên tiếp không mở đầu bằng cùng một khuôn. Kiểm tra riêng các khuôn
-  hay lặp: chủ ngữ là tên bảng hoặc hình, "Với...", "Khi...", "Số liệu...".
-
-Liên từ nên dùng, phân theo quan hệ:
+Liên từ theo quan hệ:
 
 | Quan hệ | Từ nối |
 | --- | --- |
 | Nguyên nhân | vì, do, bởi |
 | Hệ quả | nên, do đó, nhờ vậy, vì thế |
 | Điều kiện | nếu, khi, miễn là, trừ khi |
-| Tương phản | nhưng, trong khi, ngược lại, đổi lại, tuy nhiên |
-| Bổ sung | ngoài ra, hơn nữa, đồng thời |
+| Tương phản | nhưng, trong khi, ngược lại, đổi lại |
 | Diễn giải | tức là, nói cách khác |
 
-Quy tắc tách câu dài ở mục 7 nhắm vào câu chứa ba ý độc lập nối bằng dấu phẩy,
-không nhắm vào câu ghép có mệnh đề phụ. Mốc để quyết định là số ý, không phải số
-tiếng: một câu 45 tiếng gồm một ý chính và hai mệnh đề bổ nghĩa cho nó thì giữ
-nguyên, còn một câu 30 tiếng gồm ba ý ngang hàng thì tách.
+Tách câu chứa từ ba ý ngang hàng trở lên nối bằng dấu phẩy. Mốc là số ý, không
+phải số tiếng: một câu dài gồm một ý chính và hai mệnh đề bổ nghĩa thì giữ.
 
-## 6. Trước và sau
+## 6. Rà soát
 
-Ba cặp dưới đây là các lỗi lặp lại nhiều lần nhất trong bản nháp.
+Dùng ở lượt C, mỗi lần một nhóm.
 
-**Câu dẫn thay cho dữ kiện.**
+**Nhóm 1, giàn giáo.**
 
-> Sai: Backtracking cho phương pháp tăng tốc cần điều kiện chặt hơn. Đây là kết
-> quả đáng chú ý nhất của mục này. Với $\alpha = 0{,}3$ và $t_0 = 1$, phương pháp
-> không hội tụ, dừng ở sai số $5{,}5 \cdot 10^{-5}$.
->
-> Đúng: Với $\alpha = 0{,}3$ và $t_0 = 1$, phương pháp tăng tốc không hội tụ mà
-> dừng ở sai số $5{,}5 \cdot 10^{-5}$. Điều kiện Armijo thông thường không đủ cho
-> phương pháp này.
+- Bỏ câu chỉ bình luận rằng nội dung sắp viết là quan trọng. Phép thử: xóa câu đó
+  rồi xem người đọc có mất thông tin nào không.
+- Giữ câu chỉ đường mang thông tin về vị trí: "Mục 8 khai thác tính chất này".
+- Bỏ câu kết đoạn dạng cách ngôn. Nếu cần câu tổng kết thì gắn nó với số cụ thể.
+- Bỏ khung "Lý do là", "Nguyên nhân là". Nối thẳng bằng "vì", "do", "nên".
 
-**Đại từ chỉ định mở đầu câu.**
+**Nhóm 2, câu và chủ ngữ.** Xem mục 3 trước khi rà nhóm này.
 
-> Sai: Lô kích thước 1 phân kỳ thành `NaN` ngay trong lượt duyệt đầu tiên. Đây là
-> hệ quả trực tiếp của tỉ lệ 1159 lần nói trên.
->
-> Đúng: Lô kích thước 1 phân kỳ thành `NaN` ngay trong lượt duyệt đầu tiên, đúng
-> như tỉ lệ 1159 lần dự báo.
-
-**Tiêu đề `\paragraph` là mệnh đề.**
-
-> Sai: `\paragraph{Newton vượt trội hoàn toàn trên bài toán này, và đó là điều
-> hiển nhiên.}`
->
-> Đúng: `\paragraph{Phương pháp Newton.}` rồi mở đầu đoạn bằng dữ kiện: "Toàn bộ
-> lời giải mất 0,076 giây, ít hơn 10 lần so với thời gian gradient descent cần để
-> đạt $10^{-6}$."
-
-## 7. Danh sách rà soát
-
-Dùng sau khi đã viết xong đoạn, không dùng khi đang viết.
-
-**Giàn giáo và câu thừa**
-
-- Bỏ câu chỉ bình luận rằng nội dung sắp viết là quan trọng: "Điểm cần làm rõ
-  trước là", "Một tính chất cần nêu rõ ngay ở đây", "Con số đáng so sánh là",
-  "Dưới đây là bốn phép thử quan trọng nhất". Phép thử: xóa câu đó đi rồi xem
-  người đọc có mất thông tin nào không.
-- Giữ câu chỉ đường mang thông tin về vị trí: "Mục 8 khai thác tính chất này",
-  "Cách quy đổi hàm mục tiêu của thư viện nằm ở mục 7".
-- Bỏ câu kết đoạn dạng cách ngôn: "Tham số mặc định của thư viện không phải lúc
-  nào cũng phù hợp với bài toán cụ thể". Nếu cần câu tổng kết thì gắn nó với con
-  số cụ thể.
-- Bỏ khung "Lý do là", "Nguyên nhân là". Nối thẳng bằng "vì", "do", "nên". Chỉ
-  giữ khung khi phần giải thích dài tới mức phải tách thành câu riêng.
-
-**Câu và chủ ngữ**
-
-- Không mở đầu câu bằng "Đây là", "Điều này", "Điều đó" trỏ về cả mệnh đề đứng
-  trước. Gộp vào câu trước, hoặc nêu đích danh danh từ được trỏ.
-- Không viết câu cụt thiếu vị ngữ: "Ba kết luận.", "Hai cách xử lý, cả hai đều
-  hội tụ.". Viết đủ: "Từ bảng 3 có thể rút ra ba kết luận."
-- Chủ ngữ của việc cài đặt, chạy thí nghiệm, chọn tham số là "nhóm" hoặc
-  lược bỏ, không phải "báo cáo" và không phải "chúng tôi". Khi câu nói về nội dung của chính văn bản thì
-  lấy văn bản làm chủ ngữ lại đúng: "Báo cáo gồm tám mục", "Bảng 3 cho thấy ba
-  kết luận".
-- Tách câu chứa từ ba ý độc lập trở lên nối bằng dấu phẩy. Xem mốc ở mục 5.
-- Hạn chế bị động "được" khi đã có chủ thể rõ ràng: "Toàn bộ thí nghiệm được thực
-  hiện trên một mẫu ngẫu nhiên" viết thành "Toàn bộ thí nghiệm chạy trên một mẫu
-  ngẫu nhiên". Giữ "được" khi nó mang nghĩa khả năng: "tính được", "đo được",
-  "không phân biệt được".
+- Không mở đầu câu bằng "Đây là", "Điều này", "Điều đó" trỏ về cả mệnh đề trước.
+- Chủ ngữ của việc cài đặt, chạy thí nghiệm, chọn tham số là "nhóm" hoặc lược bỏ.
+  Khi câu nói về nội dung của chính văn bản thì lấy văn bản làm chủ ngữ: "Báo cáo
+  gồm tám mục".
+- Hạn chế bị động "được" khi đã có chủ thể rõ. Giữ khi nó mang nghĩa khả năng:
+  "tính được", "đo được".
 - Không dùng bị động có tác nhân "bị chi phối bởi X". Đảo thành "X chi phối".
-- Không để giới từ treo cuối câu: "trường hợp xấu nhất mà cận được thiết kế cho"
-  viết thành "trường hợp xấu nhất mà cận nhắm tới".
-- Tiêu đề mục và tiểu mục dùng lối danh hóa hoặc động từ chủ động: "Tạo biến
-  tương tác trên cột đã chuẩn hóa", không viết "Biến tương tác phải được tạo
-  trên cột đã chuẩn hóa".
+- Tiêu đề mục dùng lối danh hóa hoặc động từ chủ động, không viết thành mệnh đề.
 
-**Khuôn lặp**
+**Nhóm 3, từ vựng và khuôn lặp.**
 
+- Không dùng em dash. Thay bằng phẩy, hai chấm, ngoặc đơn, hoặc tách câu.
+- Không dùng từ cường điệu, câu cảm thán, emoji trong phần nội dung.
+- Không trộn văn nói: "thắng rõ", "đụng tới", "chỉ đơn giản là", "tỏ ra vượt
+  trội".
+- Không chen tiếng Anh khi đã có từ tương đương. Thuật ngữ giữ nguyên tiếng Anh
+  phải dùng nhất quán cả bài: `line search`, `backtracking`, `epoch`.
 - Dấu hai chấm chỉ dùng khi dẫn vào liệt kê, định nghĩa, hoặc phần định lượng cho
-  mệnh đề đứng trước. Trong bản nháp gần nhất, 35 trên khoảng 242 câu kết thúc
-  bằng dấu hai chấm, tức cứ bảy câu lại có một câu theo nhịp "khẳng định, hai
-  chấm, giải thích".
-- Công thức tương phản "không phải X mà là Y", "không chỉ X mà còn Y", "X chứ
-  không phải Y" dùng nhiều nhất một lần mỗi mục.
-- Khung đếm "Bảng N cho ba kết luận" dùng nhiều nhất một lần mỗi chương.
+  mệnh đề trước. Đếm lại nếu quá một phần mười số câu kết thúc bằng dấu hai chấm.
+- Công thức "không phải X mà là Y" dùng nhiều nhất một lần mỗi mục.
+- Mỗi khái niệm một tên duy nhất trong toàn bài, chú thích tiếng Anh trong ngoặc
+  ở lần xuất hiện đầu.
+- Dấu thập phân trong văn xuôi là dấu phẩy; số trong công thức toán giữ dấu chấm.
+- Mọi kết luận rút ra từ thí nghiệm phải kèm số liệu. Chưa có bằng chứng thì ghi
+  rõ đó là dự đoán.
 
-**Từ vựng**
-
-- Không dùng em dash. Thay bằng dấu phẩy, dấu hai chấm, dấu ngoặc đơn, hoặc tách
-  thành câu riêng.
-- Không dùng từ cường điệu: "cực kỳ", "siêu", "tuyệt vời", "bí quyết", "chìa
-  khóa", "đột phá", "must-know".
-- Không dùng câu cảm thán và emoji trong phần nội dung. Emoji chỉ dùng làm ký
-  hiệu trong bảng trạng thái nếu thực sự cần.
-- Không trộn văn nói: "cho có", "thắng rõ", "thắng tuyệt đối", "đụng tới", "khó
-  bị đánh bại", "đổi chác", "hội tụ thật", "chỉ đơn giản là", "tỏ ra vượt trội".
-- Không viết theo lối bán hàng hay thuyết phục: "nắm được điều này là nắm được
-  nửa môn học", "chỉ cần 5 phút là hiểu".
-- Không chen từ tiếng Anh khi đã có từ tương đương: viết "trùng nhau từng bit",
-  không viết "trùng nhau bit-by-bit". Thuật ngữ giữ nguyên tiếng Anh phải dùng
-  nhất quán cả bài, chẳng hạn `line search`, `backtracking`, `epoch`.
-- Không dùng hệ từ theo lối tiếng Anh: "cái giá phải trả là nhỏ" viết thành "cái
-  giá phải trả không đáng kể".
-- Kiểm tra các cụm dễ đọc nhầm do hai từ chức năng đứng cạnh nhau: "hệ số quan
-  sát được ước lượng bằng cách", "ba quy tắc giảm dần đều đưa sai số".
-
-**Thuật ngữ, số, bằng chứng**
-
-- Mỗi khái niệm một tên duy nhất trong toàn bài. Chọn "lượt duyệt dữ liệu" thì
-  chú thích "(epoch)" ở lần xuất hiện đầu tiên rồi dùng thống nhất.
-- Dấu thập phân trong văn xuôi là dấu phẩy. `preamble.tex` khai báo
-  `\sisetup{output-decimal-marker={,}}` để `siunitx` in ra cùng dạng. Số trong
-  công thức toán giữ dấu chấm theo quy ước quốc tế.
-- Mọi kết luận rút ra từ thí nghiệm phải kèm số liệu hoặc biểu đồ tương ứng. Chưa
-  có bằng chứng thì ghi rõ đó là dự đoán.
-
-## 8. Ranh giới với mã nguồn
+## 7. Ranh giới với mã nguồn
 
 Quy tắc ngôn ngữ ở mục 1 của `CLAUDE.md` cấm tiếng Việt trong mã nguồn, kể cả
 comment và docstring.
-
-Ví dụ đúng:
 
 ```python
 def backtracking_line_search(problem, w, grad, alpha=0.3, beta=0.8, t0=1.0):
@@ -337,10 +266,35 @@ def backtracking_line_search(problem, w, grad, alpha=0.3, beta=0.8, t0=1.0):
     return t, n_evals
 ```
 
-Ví dụ sai:
+## 8. Bộ đối chứng
 
-```python
-def tim_buoc_nhay(bai_toan, w, grad):
-    # thu nho buoc cho den khi thoa dieu kien giam du
-    ...
-```
+Không có cách đo thì mọi chỉnh sửa file này đều là đoán, và file sẽ dài ra mà
+không ai biết mục nào đang có tác dụng.
+
+Bộ đối chứng nằm ở `style/doi-chung/`, gồm năm đoạn lấy từ bản nháp hiện tại:
+
+| File | Lấy từ | Chức năng | Vai trò |
+| --- | --- | --- | --- |
+| `doi-chung-01.md` | mục 1.1, đoạn 1 | mô tả thành phần bộ dữ liệu | lỗi nặng nhất, đoạn liệt kê thuần |
+| `doi-chung-02.md` | mục 1.1, đoạn 3 | quyết định thiết kế thí nghiệm | mốc chống thụt lùi |
+| `doi-chung-03.md` | mục 2.3, đoạn 1 | bình luận một hình | thiếu câu hệ quả cuối đoạn |
+| `doi-chung-04.md` | mục 2.3, đoạn 3 | nêu đánh đổi của một quyết định | thiếu điều kiện đảo chiều |
+| `doi-chung-05.md` | chương 6, câu dẫn và đoạn đầu | mở chương rồi bình luận bảng | phép thử sạch, lỗi nằm trọn ở câu dẫn |
+
+Hai vai trò trong cột cuối phục vụ hai phép đo khác nhau. Đoạn có lỗi đo xem thay
+đổi có sửa được lỗi không, còn đoạn làm mốc chống thụt lùi đo xem thay đổi có phá
+thứ đang chạy tốt không. Thiếu vế thứ hai thì mọi chỉnh sửa đều có vẻ hiệu quả,
+vì chỉ nhìn vào chỗ mình vừa nhắm tới.
+
+Mỗi file ghi ba phần: đoạn nguyên trạng, lỗi cụ thể ở từng câu kèm mục quy tắc
+tương ứng, và bảng lập luận bốn cột của lượt A. Bảng đó là phần quan trọng nhất,
+vì nó cố định đầu vào: sinh lại từ cùng một bảng thì chênh lệch giữa hai bản chỉ
+còn do file này thay đổi, không do người viết nghĩ ra kết luận khác.
+
+Cách chạy: sau khi sửa file này, chạy lại lượt B trên đúng năm bảng lập luận đó,
+mỗi đoạn một lần, rồi đối chiếu với phần lỗi đã ghi. Không sửa bộ đối chứng cho
+khớp với kết quả mới, vì như vậy là dịch cái thước.
+
+Ba dấu hiệu cho thấy một thay đổi có tác dụng: lỗi đã ghi biến mất, không xuất
+hiện lỗi mới ở nhóm khác, và đoạn không dài thêm mà vẫn giữ đủ số liệu. Mỗi file
+ghi sẵn số câu, số tiếng và độ dài câu dài nhất để so dấu hiệu thứ ba.
