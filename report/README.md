@@ -30,6 +30,13 @@ Báo cáo và slide dùng chung mẫu trình bày với báo cáo môn Toán r�
 - Slide dùng theme `default` với thanh tiêu đề màu `darkblue`, tỉ lệ 16:9, logo
   trường ở góc dưới bên phải và số trang ở chân slide.
 - Logo trường nằm ở `report/figures/logo-hus.jpg`.
+- `slides-notes.tex` là bản slide kèm kịch bản nói. Nó không chứa nội dung riêng:
+  chỉ đặt cờ `\shownotes` rồi `\input{slides.tex}`, và cờ đó bật khối
+  `\setbeameroption{show notes}` ở đầu `slides.tex`. Sản phẩm là
+  `slides-notes.pdf`, xen kẽ mỗi slide với một trang mang ảnh thu nhỏ của slide
+  đó cùng phần `\note{}` viết cho nó. Vì hai file dùng chung một nguồn, sửa slide
+  mà quên sửa kịch bản thì thấy ngay ở lần biên dịch sau. Bản chiếu
+  `slides.pdf` không đổi khi không có cờ.
 
 ## Biên dịch
 
@@ -38,6 +45,7 @@ Chạy từ trong thư mục `report/`:
 ```bash
 latexmk -xelatex report.tex
 latexmk -xelatex slides.tex
+latexmk -xelatex slides-notes.tex
 ```
 
 Dọn file trung gian:

@@ -1,0 +1,10 @@
+% Speaker-notes edition of the slides: every frame followed by a page carrying a
+% thumbnail of that slide and the script for it.
+%
+% Compile with XeLaTeX, exactly like the slides: latexmk -xelatex slides-notes.tex
+%
+% There is no content here on purpose. The flag below switches on the note-page
+% block near the top of slides.tex; everything else comes from that one source,
+% so a frame can never drift away from the script written for it.
+\def\shownotes{1}
+\input{slides.tex}
