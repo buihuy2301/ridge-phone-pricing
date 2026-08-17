@@ -1,6 +1,6 @@
 """scikit-learn baselines.
 
-Section 6 of the plan compares the hand-written optimizers against library
+Chapter 4 of the report compares the hand-written optimizers against library
 defaults on two quantities: the objective value reached and the running time.
 
 The comparison is only meaningful once the two objectives are written in the

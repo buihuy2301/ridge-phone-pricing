@@ -103,7 +103,7 @@ theo cơ chế sinh ra hiện tượng. Người nghe cần nhớ ba thứ thay 
 | Nhiễu của gradient ngẫu nhiên | $L_{\max}$ lớn hơn $L$ 1159 lần nên độ dài bước phải theo kích thước lô; bước hằng dừng ở một lân cận quanh $w^*$; giảm theo bậc thang hơn bước hằng 165 lần với cùng chi phí |
 | Chi phí mỗi vòng lặp | Newton cần một vòng nhưng vòng đó tốn $\bigO(nd^2 + d^3)$; L-BFGS đứng giữa hai nhóm; thứ tự các đường đổi khi trục hoành chuyển từ vòng lặp sang giây |
 
-Ba lỗi ghi ở mục 13.5 của `KE_HOACH_TRIEN_KHAI.md` đưa vào đúng cơ chế tương ứng,
+Ba lỗi ghi ở mục 12.5 của `KE_HOACH_TRIEN_KHAI.md` đưa vào đúng cơ chế tương ứng,
 không giấu đi: chúng là bằng chứng thực nghiệm mạnh nhất cho hai cơ chế đầu.
 
 ## 5. Xử lý công thức toán học
@@ -176,7 +176,7 @@ Thêm hai thứ:
 **Nội dung.** Ghi RMSE trên tập kiểm tra tại từng lần ghi lịch sử, cho mọi thuật
 toán ở cấu hình tốt nhất.
 
-**Cách làm.** `HistoryRecorder.record` ở `src/history.py:187` đã nhận `w` và đã
+**Cách làm.** `Recorder.record` ở `src/history.py:187` đã nhận `w` và đã
 dừng đồng hồ trước khi tính, nên thêm một callback tính RMSE trong đúng cửa sổ đã
 dừng đồng hồ. Thời gian đo của thuật toán không bị ảnh hưởng.
 

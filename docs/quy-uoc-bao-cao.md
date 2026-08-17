@@ -93,7 +93,7 @@ liệu tham khảo.
 - Mỗi frame một ý. Slide biểu đồ chỉ chứa hình và tối đa hai dòng kết luận, phần
   diễn giải dài để người trình bày nói.
 - Dùng `\note{}` cho ghi chú người trình bày, không nhét vào phần hiển thị.
-- Cấu trúc frame bám theo outline ở mục 10 của `KE_HOACH_TRIEN_KHAI.md`.
+- Cấu trúc frame bám theo outline ở mục 4 của `KE_HOACH_TRIEN_KHAI.md`.
 - Không dùng hiệu ứng chuyển slide. `\pause` và `\onslide` chỉ dùng khi thật sự
   cần bộc lộ nội dung theo trình tự.
 

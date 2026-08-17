@@ -1,6 +1,6 @@
 """Correctness checks required before running the full experiment grid.
 
-Covers the four checks listed in section 8 of the plan:
+Covers the four checks listed in section 11 of the plan:
 
 1. analytic gradient against a central finite difference;
 2. analytic Hessian against a central finite difference of the gradient;

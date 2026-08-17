@@ -73,7 +73,7 @@ Chi tiết ở `docs/quy-uoc-bao-cao.md`. Các điểm bắt buộc:
 ## 6. Tổ chức mã nguồn
 
 - Logic thuật toán đặt trong `src/`. Notebook chỉ gọi hàm, chạy thí nghiệm và vẽ hình, không định nghĩa lại thuật toán.
-- Mọi thuật toán tối ưu hóa dùng chung một chữ ký hàm và trả về cùng một cấu trúc lịch sử, theo mô tả ở mục 4.1 của kế hoạch.
+- Mọi thuật toán tối ưu hóa dùng chung một chữ ký hàm và trả về cùng một cấu trúc lịch sử, theo mô tả ở mục 10.1 của kế hoạch.
 - Khi đo thời gian chạy, dừng đồng hồ trước khi tính và ghi log, chạy lại sau đó. Thời gian ghi log không được tính vào thời gian thuật toán.
 - Cố định seed cho mọi thành phần ngẫu nhiên và ghi seed vào kết quả.
 - Kết quả chạy lưu ra `results/raw/` dạng JSON để vẽ lại được mà không cần chạy lại thí nghiệm.
