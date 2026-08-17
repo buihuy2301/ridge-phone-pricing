@@ -30,6 +30,11 @@ data/processed/*.npy
 *.xdv
 _minted*/
 
+# Style sample corpus (see docs/van-phong-tieng-viet.md and style/mau-nguon.md).
+# The paragraphs are quoted from third-party journal articles, so they are kept
+# out of the repository. mau-nguon.md records where to fetch them again.
+style/mau/
+
 # macOS
 .DS_Store
 .claude

@@ -50,60 +50,32 @@ câu đó đi thì người đọc có mất gì không.
 
 ## 2. Mẫu
 
-Sáu đoạn dưới đây trích nguyên văn từ chính dự án này, không sửa chữ. Bốn đoạn lấy
-từ `report/report.tex` nên giữ nguyên macro LaTeX; hai đoạn lấy từ
-`docs/giai-thich-de-thuyet-trinh.md` nên viết thoải mái hơn. Mỗi đoạn ghi một dòng
-nói nó đang làm việc gì, không chú giải thêm.
+Mẫu là phần duy nhất dựng được giọng, nên nạp nó kèm khi viết chứ đừng chỉ đọc
+mục 1.
 
-**Cảnh báo về bốn đoạn lấy từ `report.tex`.** Chúng lấy từ đúng bản báo cáo bị
-đánh giá là khô, nên chúng mang theo tật của bản đó: chủ ngữ là danh từ trừu tượng
-hoặc đại từ chỉ định, và câu dựng theo trật tự của tiếng Anh. Bản nháp chương 1
-viết theo bộ mẫu này đã lặp lại đúng tật ấy. Cho tới khi thay được bằng văn tiếng
-Việt có bình duyệt, hãy đọc bốn đoạn đó để lấy mật độ số liệu và trật tự lập luận,
-còn khuôn câu thì theo mục 3 và theo hai đoạn cuối.
+**Bộ mẫu chính nằm ở `style/mau/`**, gồm bảy đoạn trích nguyên văn từ ba bài báo
+tiếng Việt có bình duyệt, thuộc ba nhóm tác giả khác nhau, viết về phương pháp lặp
+và về so sánh mô hình. Thư mục ấy nằm ngoài git vì các đoạn là văn của người khác;
+`style/mau-nguon.md` ghi đủ nguồn để dựng lại trong một lượt.
 
-**Bình luận một bảng số.**
+| File | Chức năng |
+| --- | --- |
+| `bang-so-01.md` | Bình luận bảng so sánh ba thuật toán |
+| `bang-so-02.md` | Bình luận kết quả một ví dụ số |
+| `chenh-lech-01.md` | Giải thích vì sao một phương pháp kém hơn phương pháp kia |
+| `chenh-lech-02.md` | So sánh hai mô hình qua bảng chỉ số sai số |
+| `gioi-han-01.md` | Nêu hạn chế của cả lớp thuật toán |
+| `gioi-han-02.md` | Nêu điều kiện mà kết quả chỉ đúng bên trong |
+| `thiet-ke-01.md` | Nêu cấu hình thí nghiệm đã chạy |
 
-> Với $t = 2.1/L$ hàm mục tiêu tăng tới $\num{5.4e11}$, còn với $t = 1.9/L$ phương
-> pháp hội tụ sau 20 vòng lặp, dù hai độ dài bước chỉ cách nhau 10\%
-> (bảng~\ref{tab:gd-fixed}). Ngưỡng $2/L$ vì thế là một ranh giới thật: sai số của
-> thành phần ứng với trị riêng $\lambda_i$ của Hessian tắt theo hệ số
-> $\abs{1 - t\lambda_i}$ mỗi vòng lặp, nên hệ số của thành phần ứng với
-> $\lambda_{\max} = L$ vượt quá 1 ngay khi $t$ vượt $2/L$. Đúng tại ngưỡng, hệ số
-> đó bằng 1 nên thành phần này đứng yên, khiến $t = 2/L$ dừng ở sai số
-> $\num{4.9e-8}$ thay vì đi tiếp tới giới hạn số học như các bước ngắn hơn.
+Bộ mẫu phải lấy từ ngoài dự án, và đây là chỗ đã sai một lần. Bản trước của file
+này lấy bốn trong sáu đoạn mẫu từ `report/report.tex`, tức từ đúng bản báo cáo bị
+đánh giá là khô. Bản nháp chương 1 viết theo bộ mẫu đó đã lặp lại nguyên tật của
+nó: chủ ngữ là danh từ trừu tượng hoặc đại từ chỉ định, và câu dựng theo trật tự
+tiếng Anh. Mẫu là thứ để bắt chước, nên mẫu hỏng thì bản viết hỏng theo.
 
-**Giải thích một quyết định về thiết kế thí nghiệm.**
-
-> Toàn bộ thí nghiệm chạy trên một mẫu ngẫu nhiên \num{200000} bản ghi, chia thành
-> \num{160000} điểm huấn luyện và \num{40000} điểm kiểm tra. Nhóm lấy mẫu vì chi
-> phí tính toán chứ không vì lý do thống kê: trên toàn bộ một triệu bản ghi, một
-> lần tính gradient mất \SI{271}{\milli\second} thay vì \SI{39}{\milli\second}, và
-> vì lưới tham số ở chương~\ref{sec:tuning} nhân con số đó lên theo tổng số vòng
-> lặp của mọi cấu hình nên chênh lệch gần bảy lần ấy nhân lên theo toàn bộ lưới.
-> Cỡ mẫu này đủ cho các kết luận về tốc độ hội tụ, vốn chỉ phụ thuộc $L$, $\mu$ và
-> $\kappa$, nhưng sẽ không đủ nếu đại lượng cần đo phụ thuộc trực tiếp vào $n$,
-> chẳng hạn phương sai gradient của SGD ở mục~\ref{sec:sgd-batch}.
-
-**Nối một kết quả sang chi phí, và chỉ đường sang mục sau.**
-
-> Thứ tự các đường giữ nguyên khi đổi trục hoành sang thời gian chạy
-> (hình~\ref{fig:gd-fixed-time}), chẳng hạn $t = 2/(L+\mu)$ mất \SI{0.773}{\second}
-> so với \SI{3.013}{\second} của $t = 0.5/L$, đúng tỉ lệ giữa 20 và 80 vòng lặp.
-> Mọi cấu hình ở đây gọi gradient đúng một lần mỗi vòng lặp và không có line
-> search, nên thời gian chạy chỉ là số vòng lặp nhân với một hằng số. Hai trục sẽ
-> tách nhau ngay khi mỗi vòng lặp tốn một số lần đánh giá hàm khác nhau, đúng tình
-> huống của mục~\ref{sec:gd-backtracking}.
-
-**Nêu điều kiện đảo chiều của một kết luận.**
-
-> Dữ liệu tự nó có những hướng phẳng lì, không cong chút nào. Cái bát nếu chỉ do
-> dữ liệu tạo ra thì có một mảng đáy phẳng, hòn bi lăn tới đó là đứng yên, và thứ
-> duy nhất tạo ra độ cong ở các hướng ấy là vế phạt $\lambda$. Hệ quả cần thuộc
-> lòng: số điều kiện của bài toán này do $\lambda$ quyết định hoàn toàn, dữ liệu
-> không có tiếng nói gì. Kết luận trên đảo chiều nếu mọi cột độc lập tuyến tính và
-> trị riêng nhỏ nhất cùng bậc với $\lambda$, khi đó $\mu$ quay về do dữ liệu quyết
-> định.
+Hai đoạn dưới đây giữ lại từ `docs/giai-thich-de-thuyet-trinh.md`, cho hai chức
+năng mà bộ mẫu ngoài không có.
 
 **Giải thích một khái niệm trừu tượng bằng một vật thể.**
 
@@ -121,6 +93,10 @@ còn khuôn câu thì theo mục 3 và theo hai đoạn cuối.
 > màn hình có nứt không, giá gốc bao nhiêu. Ta muốn đoán giá bán lại. Cách đoán đơn
 > giản nhất là cho mỗi đặc điểm một trọng số rồi cộng lại. Còn lại là tìm bộ trọng
 > số $w$ sao cho dự đoán sát thực tế nhất, và đó chính là bài toán tối ưu hóa.
+
+Thêm mẫu mới thì lấy từ tạp chí tiếng Việt có bình duyệt hoặc từ luận văn cùng
+khoa, không lấy từ sách dịch vì bản dịch mang sẵn cấu trúc tiếng Anh, và không lấy
+từ chính báo cáo này.
 
 ## 3. Bốn lỗi cấu trúc tiếng Anh
 
