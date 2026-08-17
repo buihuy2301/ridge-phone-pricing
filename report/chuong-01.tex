@@ -3,12 +3,11 @@
 \chapter{Bài toán định giá và hàm mục tiêu}
 \label{sec:problem}
 
-Bài toán ứng dụng của báo cáo là định giá một chiếc điện thoại đã qua sử dụng từ
-các đặc điểm quan sát được của nó: hãng máy, dung lượng RAM, tuổi máy, tình trạng
-màn hình, giá lúc mới mua. Mô hình đơn giản nhất cho mỗi đặc điểm một trọng số rồi
-cộng lại, nên việc định giá quy về việc tìm bộ trọng số $w$ sao cho dự đoán sát
-giá thật nhất. Tìm $w$ chính là giải một bài toán tối ưu hóa, và đó là nội dung
-của báo cáo này.
+Định giá một chiếc điện thoại đã qua sử dụng thì căn cứ vào hãng máy, dung lượng
+RAM, tuổi máy, tình trạng màn hình và giá lúc mới mua. Cho mỗi đặc điểm một trọng
+số rồi cộng lại, ta được mô hình đơn giản nhất, và định giá khi đó quy về tìm bộ
+trọng số $w$ sao cho dự đoán sát giá thật. Tìm $w$ là giải một bài toán tối ưu
+hóa, và báo cáo này bàn về cách giải nó.
 
 \section{Bài toán ứng dụng và cách đo một lời giải tốt}
 \label{sec:application}
@@ -44,15 +43,26 @@ logarit biến mục tiêu trước khi hồi quy: giữ nguyên thang gốc th�
 số để vài trăm bản ghi đắt tiền chi phối hàm mục tiêu, và nghiệm thu được sẽ phản
 ánh riêng nhóm máy đó thay vì phản ánh cả thị trường.
 
-Phép lấy logarit đổi luôn cách đọc sai số, nên cần nói rõ ngay từ đây vì mọi con
-số về chất lượng dự đoán trong báo cáo đều đọc theo cách này. Sai số bình phương
-trung bình trên thang logarit, viết tắt là RMSE, đo độ lệch nhân tính chứ không đo
-độ lệch cộng tính. Một mô hình đạt RMSE $\num{0.20601}$ tương ứng với hệ số lệch
-điển hình $e^{0.20601} = \num{1.2288}$, tức dự đoán vênh khoảng \num{22.9}\% so
-với giá thật, và trên một chiếc máy giá trung vị \num{18555} thì con số đó là
-khoảng \num{4245} đơn vị tiền. Cách quy đổi này chỉ gần đúng, vì RMSE lấy trung
-bình của bình phương nên nó nặng hơn độ lệch trung bình, nhưng nó đủ để so hai mô
-hình với nhau và đó là việc duy nhất báo cáo cần tới.
+Lấy logarit thì đổi luôn cách đọc sai số. Gọi $p_i$ là giá thật của máy thứ $i$
+trong tập kiểm tra và $\hat{p}_i$ là giá dự đoán, phần dư đo trên thang logarit và
+sai số quy đổi ra thang giá là
+%
+\begin{equation}
+  \label{eq:rmse-to-price}
+  r_i = \log \hat{p}_i - \log p_i,
+  \qquad
+  \mathrm{RMSE} = \sqrt{\frac{1}{m} \sum_{i=1}^{m} r_i^{2}},
+  \qquad
+  \delta = e^{\mathrm{RMSE}} - 1 .
+\end{equation}
+%
+Vì phần dư nằm trên thang logarit nên RMSE đo độ lệch nhân tính, và $\delta$
+ở \eqref{eq:rmse-to-price} là độ lệch ấy đọc theo tỉ lệ phần trăm của giá. Thay
+RMSE $\num{0.20601}$ vào thì $\delta = \num{0.2288}$, tức dự đoán vênh khoảng
+\num{22.9}\% so với giá thật, và trên một chiếc máy giá trung vị \num{18555} thì
+vênh khoảng \num{4245} đơn vị tiền. Phép quy đổi này chỉ gần đúng, do RMSE lấy
+trung bình của bình phương nên nặng hơn độ lệch trung bình, nhưng nó đủ để so hai
+mô hình với nhau và báo cáo không cần hơn thế.
 
 Toàn bộ thí nghiệm chạy trên một mẫu ngẫu nhiên \num{200000} bản ghi, chia thành
 \num{160000} điểm huấn luyện và \num{40000} điểm kiểm tra. Nhóm lấy mẫu vì chi phí
@@ -77,13 +87,13 @@ bằng không, nên bài toán chỉ còn một khối biến $w$:
   f(w) = \frac{1}{2n} \norm{Xw - y}^{2} + \frac{\lambda}{2} \norm{w}^{2}.
 \end{equation}
 %
-Công thức này ghi lại một đánh đổi. Số hạng thứ nhất ép mô hình bám dữ liệu, số
-hạng thứ hai ép các trọng số nhỏ lại, và $\lambda$ định giá quy đổi giữa hai đòi
-hỏi đó. Hai hằng số phía trước có mặt vì lý do kỹ thuật chứ không vì lý do thống
-kê: hệ số $\tfrac{1}{2}$ để đạo hàm không kéo theo số 2, còn hệ số $\tfrac{1}{n}$
-để hằng số Lipschitz ở \eqref{eq:constants} không phụ thuộc cỡ mẫu, nhờ vậy mọi
-kết luận về độ dài bước vẫn dùng được khi đổi số điểm dữ liệu. Bỏ $\tfrac{1}{n}$
-đi thì $L$ tăng theo $n$ và mỗi lần đổi cỡ mẫu lại phải chọn lại độ dài bước.
+Hai số hạng trong \eqref{eq:objective} kéo về hai phía. Số hạng đầu ép mô hình bám
+dữ liệu, số hạng sau ép các trọng số nhỏ lại, còn $\lambda$ định giá quy đổi giữa
+hai bên. Hai hằng số đứng trước thì thuần túy kỹ thuật: chia đôi để đạo hàm không
+kéo theo số 2, còn chia cho $n$ để hằng số Lipschitz ở \eqref{eq:constants} không
+phụ thuộc cỡ mẫu. Nhờ vậy đổi số điểm dữ liệu mà không phải chọn lại độ dài bước,
+còn bỏ $\tfrac{1}{n}$ đi thì $L$ tăng theo $n$ và lần nào đổi cỡ mẫu cũng phải dò
+lại từ đầu.
 
 Đạo hàm của \eqref{eq:objective} tính trực tiếp được:
 %
@@ -94,10 +104,10 @@ kết luận về độ dài bước vẫn dùng được khi đổi số điể
   \nabla^{2} f(w) = \frac{1}{n} X\trans X + \lambda I.
 \end{equation}
 %
-Điểm đáng chú ý nằm ở vế thứ hai: Hessian không chứa $w$, tức độ cong của $f$
-giống nhau tại mọi điểm. Tính chất này là lý do phần lớn báo cáo đơn giản đi so
-với một bài toán phi tuyến, và chương~\ref{sec:algorithms} sẽ cho thấy nó kéo theo
-việc phương pháp Newton hội tụ chỉ sau một vòng lặp.
+Hessian ở vế sau không chứa $w$, nghĩa là $f$ cong như nhau tại mọi điểm. Nhờ vậy
+phần lớn báo cáo nhẹ đi so với một bài toán phi tuyến, và
+chương~\ref{sec:algorithms} sẽ cho thấy chính tính chất ấy khiến phương pháp Newton
+hội tụ sau đúng một vòng lặp.
 
 Vì $\lambda > 0$ nên Hessian xác định dương và khả nghịch, do đó $f$ lồi mạnh và
 có đúng một điểm cực tiểu, giải ra được bằng cách cho gradient bằng không:
@@ -109,12 +119,12 @@ có đúng một điểm cực tiểu, giải ra được bằng cách cho gradi
   \qquad \fstar = f(\wstar).
 \end{equation}
 %
-Hệ quả của \eqref{eq:closed-form} quan trọng hơn bản thân công thức. Vì $\fstar$
-tính được trước khi chạy bất kỳ thuật toán nào nên sai số $f(w_k) - \fstar$ đo
-được tuyệt đối, không phải so với giá trị tốt nhất quan sát được như ở các bài
-toán không có nghiệm đóng. Mọi biểu đồ hội tụ trong báo cáo dựa vào đại lượng này,
-và hệ số co rút thực nghiệm ở chương~\ref{sec:theory} đối chiếu thẳng được với cận
-lý thuyết cũng nhờ nó.
+Dùng \eqref{eq:closed-form} thì biết $\fstar$ trước khi chạy bất kỳ thuật toán nào,
+và đó mới là chỗ đáng khai thác. Sai số $f(w_k) - \fstar$ nhờ vậy đo được tuyệt
+đối, chứ không phải so với giá trị tốt nhất quan sát được như ở các bài toán không
+có nghiệm đóng. Mọi biểu đồ hội tụ trong báo cáo vẽ theo đại lượng ấy, và
+chương~\ref{sec:theory} đối chiếu được hệ số co rút thực nghiệm với cận lý thuyết
+cũng vì có nó.
 
 \section{Ba con số quyết định độ khó}
 \label{sec:constants}
@@ -130,15 +140,24 @@ Tốc độ của mọi phương pháp bậc một trong báo cáo phụ thuộc
   \kappa = \frac{L}{\mu}.
 \end{equation}
 %
-$L$ là hằng số Lipschitz của gradient và $\mu$ là hệ số lồi mạnh. Với một hàm bậc
-hai, hai đại lượng ấy đọc thẳng từ phổ của Hessian: gradient thỏa
-$\norm{\nabla f(u) - \nabla f(v)} \le L \norm{u - v}$ với $L$ chính là chuẩn phổ
-của $\nabla^{2} f$, vì Hessian hằng theo \eqref{eq:derivatives} nên chặn này đạt
-được và không thể lấy nhỏ hơn.
+$L$ chặn tốc độ thay đổi của gradient và $\mu$ chặn độ cong từ phía dưới, theo
+%
+\begin{equation}
+  \label{eq:lipschitz}
+  \norm{\nabla f(u) - \nabla f(v)} \le L \norm{u - v},
+  \qquad
+  \mu I \preceq \nabla^{2} f(w) \preceq L I
+  \quad \text{với mọi } u, v, w \in \R^{d}.
+\end{equation}
+%
+Với hàm bậc hai thì đọc thẳng hai hằng số ấy từ phổ của Hessian. Hessian hằng theo
+\eqref{eq:derivatives}, nên hai bất đẳng thức ở \eqref{eq:lipschitz} chặt tại trị
+riêng lớn nhất và nhỏ nhất, và không thể lấy $L$ nhỏ hơn hay $\mu$ lớn hơn giá trị
+ở \eqref{eq:constants}.
 
-Số điều kiện $\kappa$ có một cách đọc hình học giải thích gần hết kết quả về sau.
-Các đường mức của $f$ là những ellipsoid, và $\kappa$ đúng bằng tỉ số giữa trục
-dài nhất với trục ngắn nhất của chúng. Khi $\kappa = 1$, đường mức là mặt cầu và
+Đọc $\kappa$ theo lối hình học thì giải thích được gần hết kết quả về sau. Đường
+mức của $f$ là các ellipsoid, và $\kappa$ đúng bằng tỉ số giữa trục dài nhất với
+trục ngắn nhất. Khi $\kappa = 1$, đường mức là mặt cầu và
 gradient chỉ thẳng về tâm, nên một bước duy nhất là tới đích. Khi $\kappa$ lớn,
 ellipsoid bị bóp dẹt thành một cái máng hẹp và dài, và gradient khi đó gần như
 vuông góc với trục của máng. Sai số theo chiều ngang máng vì thế giảm rất nhanh,

@@ -55,6 +55,13 @@ từ `report/report.tex` nên giữ nguyên macro LaTeX; hai đoạn lấy từ
 `docs/giai-thich-de-thuyet-trinh.md` nên viết thoải mái hơn. Mỗi đoạn ghi một dòng
 nói nó đang làm việc gì, không chú giải thêm.
 
+**Cảnh báo về bốn đoạn lấy từ `report.tex`.** Chúng lấy từ đúng bản báo cáo bị
+đánh giá là khô, nên chúng mang theo tật của bản đó: chủ ngữ là danh từ trừu tượng
+hoặc đại từ chỉ định, và câu dựng theo trật tự của tiếng Anh. Bản nháp chương 1
+viết theo bộ mẫu này đã lặp lại đúng tật ấy. Cho tới khi thay được bằng văn tiếng
+Việt có bình duyệt, hãy đọc bốn đoạn đó để lấy mật độ số liệu và trật tự lập luận,
+còn khuôn câu thì theo mục 3 và theo hai đoạn cuối.
+
 **Bình luận một bảng số.**
 
 > Với $t = 2.1/L$ hàm mục tiêu tăng tới $\num{5.4e11}$, còn với $t = 1.9/L$ phương
