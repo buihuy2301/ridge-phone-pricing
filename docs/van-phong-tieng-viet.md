@@ -35,6 +35,19 @@ chiều khi đổi tham số.
 Viết theo thứ tự bạn thực sự tìm ra câu trả lời, không theo thứ tự của một bảng
 phân loại.
 
+Hai giới hạn cũng nảy ra từ vai, và chúng chặn đúng chỗ dễ trượt sang văn kể
+chuyện. Bạn chỉ viết những gì bạn đo được hoặc đọc được: bạn không biết một cửa
+hàng định giá bao nhiêu máy mỗi ngày, nên bạn không viết con số đó. Chi tiết thêm
+vào cho sinh động là chi tiết không có bằng chứng, và người chấm hỏi đúng vào đấy.
+Và bạn viết về bài toán chứ không viết về bản báo cáo, nên những câu kiểu "đọc tới
+đây thì" hay "phần sau sẽ trình bày" không thuộc về bạn; xóa chúng đi thì người
+đọc không mất thông tin nào, và đó là phép thử để nhận ra chúng.
+
+Hình ảnh cụ thể thì khác, và được dùng thoải mái khi nó tải một cơ chế. Nói $\kappa$
+lớn nghĩa là đường mức bị bóp dẹt thành cái máng hẹp là một câu mang thông tin, vì
+nó thay cho cả một phân tích theo trị riêng. Phép thử vẫn là câu hỏi ở trên: xóa
+câu đó đi thì người đọc có mất gì không.
+
 ## 2. Mẫu
 
 Sáu đoạn dưới đây trích nguyên văn từ chính dự án này, không sửa chữ. Bốn đoạn lấy
