@@ -51,8 +51,10 @@ SOFTWARE_NAMES = (
     "pandas", "matplotlib", "Accelerate",
 )
 
-# One canonical name per concept. The alternates below are the ones a writer
-# reaches for by accident; the report currently uses none of them.
+# One canonical name per concept, mapped to the alternates a writer reaches for
+# by accident. The alternates are regular expressions, which is what "giá bán"
+# needs: it is a prefix of the canonical "giá bán lại", so a plain substring
+# search would fire on every correct use.
 BANNED_SYNONYMS = {
     "số điều kiện": ("chỉ số điều kiện", "hệ số điều kiện"),
     "độ dài bước": ("kích thước bước", "bước nhảy", "độ lớn bước"),
@@ -61,6 +63,12 @@ BANNED_SYNONYMS = {
     "phân kỳ": ("phân kì",),
     "line search": ("tìm kiếm đường thẳng", "dò tìm bước"),
     "backtracking": ("quay lui",),
+    # resale_price against original_price. Both columns appear in the same
+    # chapter, so a bare "giá bán" does not say which one is meant.
+    "giá bán lại": (r"giá bán(?! lại)",),
+    # "giá gốc, tức giá lúc mới mua" is the allowed gloss on first mention, so
+    # the lookbehind has to sit before the phrase, not after it.
+    "giá gốc": (r"(?<!tức )giá lúc mới mua",),
 }
 
 
@@ -172,8 +180,8 @@ def test_terminology_is_consistent(name: str) -> None:
     """One concept, one name. A second name for it reads as a second concept."""
     body = prose(read_source(name)).lower()
     found = {
-        canonical: [word for word in alternates if word in body]
-        for canonical, alternates in BANNED_SYNONYMS.items()
+        canonical: [p for p in patterns if re.search(p, body)]
+        for canonical, patterns in BANNED_SYNONYMS.items()
     }
     offenders = {key: value for key, value in found.items() if value}
     assert not offenders, f"{name} mixes names for one concept: {offenders}"
