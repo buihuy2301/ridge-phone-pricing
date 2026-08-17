@@ -8,7 +8,7 @@ Dự án: bài tập môn Tối ưu hóa nâng cao, chủ đề các thuật to�
 
 | File | Đọc khi |
 | --- | --- |
-| `docs/van-phong-tieng-viet.md` | Trước khi viết hoặc sửa bất kỳ đoạn văn tiếng Việt nào: báo cáo, slide, README, ô markdown trong notebook. Bắt buộc, vì mục 2 dưới đây chỉ là bản tóm tắt. |
+| `docs/van-phong-tieng-viet.md` | Trước khi viết hoặc sửa bất kỳ đoạn văn tiếng Việt nào: báo cáo, slide, README, ô markdown trong notebook. Bắt buộc, vì phần mẫu ở đó là thứ dựng giọng, còn mục 2 dưới đây chỉ nêu nguyên tắc. |
 | `docs/quy-uoc-bao-cao.md` | Trước khi sửa `report/*.tex` hoặc `report/preamble.tex`. |
 | `report/README.md` | Cách biên dịch, danh sách gói LaTeX, mẫu trình bày. |
 | `KE_HOACH_TRIEN_KHAI.md` | Nội dung thí nghiệm, ký hiệu toán học, outline báo cáo và slide. |
@@ -25,20 +25,13 @@ Ngoại lệ duy nhất: tên file markdown, tên thư mục báo cáo, và nộ
 
 ## 2. Văn phong tiếng Việt
 
-Trước khi viết hoặc sửa bất kỳ đoạn văn tiếng Việt nào, đọc `docs/van-phong-tieng-viet.md`, trong đó có quy trình ba lượt, công thức viết đoạn và bộ mẫu. Mục này chỉ nêu hình dạng cần đạt, không đủ để viết nếu chưa đọc file kia. Bộ mẫu nằm ở `style/mau/`, ngoài git vì lý do bản quyền, và phải nạp kèm ở lượt viết nháp: mô tả trong tài liệu chặn được lỗi nhưng không dựng được giọng.
+Trước khi viết hoặc sửa bất kỳ đoạn văn tiếng Việt nào, nạp `docs/van-phong-tieng-viet.md`. File đó gồm vai người viết, sáu đoạn mẫu lấy từ chính dự án, bốn lỗi cấu trúc tiếng Anh, và ba ràng buộc cứng. Đọc nó rồi viết một lượt, không có lượt rà riêng.
 
-Văn đích là văn giáo trình toán ứng dụng: người viết đã làm thí nghiệm và đang thuật lại cho người đọc có nền tảng. Một đoạn phân tích kết quả gồm ba phần theo thứ tự, dữ kiện kèm số và nguồn `\ref`, cơ chế giải thích con số đó, rồi hệ quả hoặc điều kiện mà kết luận đảo chiều. Câu đầu đoạn là dữ kiện, không phải câu dẫn.
+Nguyên tắc chia việc: thứ gì máy kiểm được thì nằm ở `tests/test_style.py`; thứ gì máy không kiểm được thì nằm ở vai và ở mẫu. Không tồn tại loại thứ ba, tức danh sách quy tắc phải nhớ và phải rà bằng mắt. Bản trước của file văn phong là một danh sách như vậy, dài 300 dòng, và bản báo cáo viết ra dưới nó bị đánh giá là khô và khó theo dõi.
 
-Việc viết chia thành ba lượt gọi riêng, mô tả ở mục 1 của file văn phong: lượt A dựng bảng lập luận và không viết câu văn nào, lượt B viết nháp theo mục 2 tới mục 5, lượt C rà theo mục 6 và mỗi lần chỉ rà một nhóm. Không đưa danh sách rà soát vào lượt viết nháp.
+Vai, tóm tắt một câu: học viên cao học ngành khoa học dữ liệu đã chạy xong toàn bộ thí nghiệm, biết từng con số, đang thuật lại cho người chấm và bạn cùng lớp. Bản đầy đủ ở mục 1 của file văn phong, và mọi thứ còn lại bám vào nó.
 
-Hai mốc về nhịp, kiểm tra được bằng mắt sau khi viết xong:
-
-- Mỗi đoạn có ít nhất một câu mang lập luận, tức câu có mệnh đề phụ chỉ nguyên nhân, điều kiện hoặc tương phản. Đoạn toàn câu đơn rời rạc đọc như bảng liệt kê, và đó là lỗi thường gặp nhất hiện nay. Không có mốc âm tiết cho câu này; chuẩn duy nhất về độ dài là bộ mẫu ở mục 2 của file văn phong.
-- Hai câu liên tiếp không mở đầu bằng cùng một khuôn.
-
-Quy tắc tách câu dài nhắm vào câu chứa từ ba ý ngang hàng trở lên nối bằng dấu phẩy, không nhắm vào câu ghép có mệnh đề phụ. Một câu dài gồm một ý chính và hai mệnh đề bổ nghĩa thì giữ nguyên.
-
-Mọi kết luận phải kèm số liệu hoặc biểu đồ tương ứng; chưa có bằng chứng thì ghi rõ đó là dự đoán. Danh sách lỗi từ vựng và cú pháp cần rà sau khi viết nằm ở mục 6 của file văn phong.
+Thêm một quy tắc mới thì hỏi trước: máy kiểm được không. Kiểm được thì viết thành test. Không kiểm được thì hoặc sửa vai, hoặc thêm một đoạn mẫu.
 
 ## 3. Biểu đồ
 

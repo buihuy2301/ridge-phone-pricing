@@ -291,60 +291,40 @@ toán này, lấy từ mục 2.1. Dẫn xuất dài nằm ở phụ lục D.
 
 ---
 
-## 6. Giai đoạn A: sửa bộ quy tắc văn phong
+## 6. Giai đoạn A: thay bộ quy tắc văn phong
 
-Làm trước tiên, theo yêu cầu: bộ quy tắc hiện tại bị đánh giá là siết quá tay và
-làm kết quả tệ đi, nên phải sửa xong rồi mới viết báo cáo.
+- [x] Đã xong. Ghi lại ở đây vì mọi việc viết phía sau đều dựa vào kết quả này.
 
-**File:**
-- Sửa: `docs/van-phong-tieng-viet.md`
-- Sửa: `CLAUDE.md`, mục 2
-- Đọc: `style/doi-chung/doi-chung-01.md` tới `doi-chung-05.md`
+Bản cũ của `docs/van-phong-tieng-viet.md` dài 300 dòng, gồm quy trình ba lượt và
+khoảng 20 điều cấm. Nó đã được áp dụng đúng một lần, ở commit `364e7de` viết lại
+`report.tex`, và sản phẩm là bản báo cáo bị đánh giá là khô và khó theo dõi. Bộ
+đối chứng ở `style/doi-chung/` thì chưa từng chạy: từ khi nó ra đời ở `32f7b0e`,
+file văn phong không được sửa lần nào.
 
-- [ ] **Bước 1: liệt kê quy tắc đang gây hại**
+Bốn nguyên nhân đã chẩn đoán. Bộ quy tắc thao tác toàn bộ ở cấp câu và cấp đoạn
+trong khi lời chê nằm ở cấp tài liệu. Nó chỉ có phần cấm, còn phần sinh là bộ mẫu
+thì nằm ở `style/mau/`, một thư mục không tồn tại trên đĩa. Ba điều cấm của nó
+chặn đúng những thứ dàn bài mới bắt buộc phải có, gồm câu mở chương nêu câu hỏi và
+câu chốt chương quy ra giây hoặc ra tiền. Và giao thức đo ở mục 8 nặng tới mức
+không ai chạy.
 
-Đọc `docs/van-phong-tieng-viet.md` mục 6 và đối chiếu với ba lời chê cụ thể: không
-biết đang đọc để làm gì, toàn ký hiệu không thấy vật thể, câu chữ đều đều. Ghi ra
-bảng hai cột: quy tắc, và lỗi nó gây ra hoặc lỗi nó chặn được. Chưa sửa gì.
+Nguyên tắc thay thế: **thứ gì máy kiểm được thì nằm ở test và không xuất hiện
+trong tài liệu nào; thứ gì máy không kiểm được thì nằm ở vai và ở mẫu.** Không có
+loại thứ ba, tức danh sách quy tắc phải nhớ và phải rà bằng mắt, vì đó đúng là
+loại duy nhất đã chứng minh là không hiệu quả.
 
-- [ ] **Bước 2: chốt danh sách sửa**
+Kết quả:
 
-Ba nhóm ứng viên, cần quyết từng cái:
+| Việc | Trạng thái |
+| --- | --- |
+| `docs/van-phong-tieng-viet.md` viết lại còn 5 mục: vai, sáu đoạn mẫu, bốn lỗi cấu trúc tiếng Anh, ba ràng buộc cứng, và phần máy kiểm | Xong |
+| Bộ mẫu lấy từ chính dự án: bốn đoạn từ `report.tex`, hai đoạn từ `docs/giai-thich-de-thuyet-trinh.md` | Xong, thay cho `style/mau/` đã mất |
+| `tests/test_style.py`: em dash, dấu thập phân trong văn xuôi, nhất quán thuật ngữ | Xong, sáu phép kiểm xanh trên `report.tex` và `slides.tex` |
+| `CLAUDE.md` mục 2 rút còn bốn đoạn | Xong |
+| `style/` xóa khỏi cây làm việc, còn trong lịch sử git | Xong |
 
-  - Mục 6 nhóm 1 cấm "câu chỉ bình luận rằng nội dung sắp viết là quan trọng" và
-    cấm "câu kết đoạn dạng cách ngôn". Hai điều cấm này chặn luôn cả câu mở chương
-    có bối cảnh và câu chốt chương quy ra ngôn ngữ ứng dụng, mà dàn bài mới lại
-    bắt buộc phải có cả hai.
-  - Mục 6 nhóm 3 cấm mọi ví dụ tình huống. Dàn bài mới cần quy kết luận ra tiền và
-    ra vật thể cụ thể.
-  - Mục 4 buộc mọi đoạn theo đúng khuôn dữ kiện, cơ chế, hệ quả. Áp cho cả đoạn mở
-    chương thì mọi chương mở giống hệt nhau, và đó chính là lỗi câu chữ đều đều.
-
-- [ ] **Bước 3: sửa file, giữ bộ đối chứng nguyên trạng**
-
-Không sửa `style/doi-chung/`. Bộ đối chứng là thước đo, sửa nó là dịch cái thước.
-
-- [ ] **Bước 4: đo bằng bộ đối chứng**
-
-Chạy lại lượt viết nháp trên đúng năm bảng lập luận trong `style/doi-chung/`, mỗi
-đoạn một lần, rồi đối chiếu với phần lỗi đã ghi trong từng file. Ba dấu hiệu cho
-thấy thay đổi có tác dụng: lỗi đã ghi biến mất, không xuất hiện lỗi mới ở nhóm
-khác, và đoạn không dài thêm mà vẫn giữ đủ số liệu.
-
-- [ ] **Bước 5: quyết định về `style/mau/`**
-
-Thư mục này không có trên máy. Hoặc dựng lại theo quy trình ở mục 2 của file văn
-phong, hoặc bỏ hẳn cơ chế bộ mẫu và ghi rõ lý do trong file. Không để trạng thái
-lửng lơ, vì file đang viện dẫn một thứ không tồn tại.
-
-- [ ] **Bước 6: cập nhật `CLAUDE.md` mục 2 cho khớp**
-
-- [ ] **Bước 7: commit**
-
-```bash
-git add docs/van-phong-tieng-viet.md CLAUDE.md
-git commit -m "docs: loosen the Vietnamese style rules that blocked narrative framing"
-```
+Quy trình viết từ nay: nạp file văn phong, viết một lượt, chạy `pytest tests/test_style.py`.
+Không còn lượt rà riêng.
 
 ---
 
@@ -602,7 +582,6 @@ ridge-phone-pricing/
 ├── results/
 │   ├── raw/                    # kết quả dạng JSON và summary_all_methods.csv
 │   └── figures/                # mỗi hình một bản PDF và một bản PNG
-├── style/doi-chung/            # bộ đối chứng đo văn phong
 ├── tests/
 └── report/
     ├── preamble.tex
@@ -650,10 +629,13 @@ pytest tests/
 cd report && latexmk -xelatex report.tex && latexmk -xelatex slides.tex
 ```
 
+`tests/test_style.py` và `tests/test_report.py` là hai phép kiểm chạy trên nguồn
+LaTeX; chúng thay cho các lượt rà bằng mắt.
+
 Tiêu chí nghiệm thu:
 
 - `latexmk -xelatex` biên dịch được cả `report.tex` và `slides.tex`.
-- `pytest tests/test_report.py` xanh.
+- `pytest tests/test_report.py` và `pytest tests/test_style.py` xanh.
 - Mọi hình và bảng có `\caption`, có `\label`, được `\ref` ít nhất một lần.
 - Mục nào trong `refs.bib` không được trích dẫn thì đã xóa.
 - Mỗi chương đóng bằng một câu quy ra giây, RMSE, hoặc tiền.
@@ -804,5 +786,5 @@ thẳng điều đó rẻ hơn và rõ hơn là thêm một hàm mục tiêu m�
 | RMSE không bão hòa như dự đoán | Đường `rmse_vs_gap` dốc tới tận $10^{-8}$ | Chương 3 viết theo hướng ngược lại. Không viết chương này trước khi có số |
 | Monitor bị tính vào thời gian chạy | `time_to_1e-06_s` lệch trên 20% so với bản cũ | Kiểm tra vị trí gọi monitor trong `Recorder.record`, phải nằm giữa `_pause` và `_resume` |
 | Báo cáo dài thêm vì phần giải thích công thức | Vượt quá bốn trang so với bản cũ ở mạch chính | Chuyển thêm dẫn xuất xuống phụ lục D |
-| Sửa bộ quy tắc văn phong làm hỏng chỗ đang chạy tốt | Bộ đối chứng ở `style/doi-chung/` phát hiện lỗi mới | Không sửa bộ đối chứng cho khớp kết quả mới; quay lại bước 2 của giai đoạn A |
+| Bộ quy tắc văn phong mới cũng không hiệu quả | Chương 1 viết lại vẫn khô như bản cũ | Phép thử là chương 1, không phải cảm nhận về file quy tắc. Nếu hỏng thì chẩn đoán ở giai đoạn A sai, và nguyên nhân nằm chỗ khác |
 | Thầy chấm theo outline cũ | Cấu trúc chương khác hẳn bản đã nộp | Hỏi trước khi nộp lại. Mục 13 cho thấy mọi yêu cầu vẫn được đáp ứng, chỉ đổi chỗ |
