@@ -1,0 +1,121 @@
+% Bản nháp chương 2 theo dàn bài mới, viết với bộ mẫu ở style/mau/.
+% Chưa nối vào report.tex.
+% ===========================================================================
+\chapter{Chuẩn bị dữ liệu}
+\label{sec:data}
+
+Phần xử lý dữ liệu giữ ở mức tối thiểu, vì trọng tâm của bài tập là tối ưu hóa.
+Nhóm chuyển các cột dạng chuỗi có đơn vị về số, mã hóa one-hot toàn bộ biến
+định tính, bổ sung tích từng cặp và bình phương của các cột định lượng, rồi
+chuẩn hóa mọi cột về trung bình 0 và độ lệch chuẩn 1. Các cột hằng bị loại vì
+không mang thông tin, còn bình phương của 7 cột nhị phân bị loại vì nó tái tạo
+đúng cột gốc.
+
+Ba quyết định trong số đó chạm thẳng vào bài toán tối ưu hóa, và chương này đọc
+cả ba theo cùng một trục: mỗi quyết định làm bài toán dễ đi hay khó đi bao
+nhiêu, đo bằng số điều kiện $\kappa$ ở \eqref{eq:constants}. Ba mục sau lần lượt
+xét cách tạo biến tương tác, cách chuẩn hóa cột, và cách chọn hệ số hiệu chỉnh.
+
+\section{Ma trận thiết kế}
+\label{sec:design-matrix}
+
+Số thuộc tính sau khi mã hóa là $d = 280$. Trong 280 cột đó có 21 cột định
+lượng gốc, 210 tích từng cặp, 14 bình phương và 35 cột one-hot, nên phần lớn
+kích thước bài toán do biến tương tác sinh ra chứ không do biến định tính. Tích
+từng cặp của 21 cột cho $\binom{21}{2} = 210$ cột, gấp sáu lần toàn bộ phần
+one-hot của 6 biến định tính với 41 mức ở bảng~\ref{tab:dataset}. Tỉ lệ này sẽ
+đảo nếu một biến định tính như \texttt{model} có hàng nghìn mức thay vì 23 mức,
+khi đó khối one-hot mới là phần chi phối $d$.
+
+\section{Tạo biến tương tác trên cột đã chuẩn hóa}
+\label{sec:interaction}
+
+Thứ tự giữa hai thao tác nhân cột và chuẩn hóa cột quyết định độ khó của bài
+toán, dù không gian cột sinh ra thì như nhau. Lấy tích trực tiếp trên thang
+gốc, tức nhân \texttt{original\_price} cỡ $10^{5}$ với
+\texttt{screen\_size\_inches} cỡ 6, thì ma trận thiết kế thu được có
+$L = \num{17.14}$ và 48 trị riêng dưới $10^{-6}$. Lấy tích trên các cột đã
+chuẩn hóa thì $L = \num{2.68}$ và số trị riêng dưới $10^{-6}$ trở về đúng 7,
+bằng mức của khối cột gốc.
+
+Chênh lệch 6{,}4 lần về số điều kiện giữa hai cách hoàn toàn do cách biểu diễn.
+Một cột tích trên thang gốc có phương sai lớn hơn các cột còn lại nhiều bậc nên
+nó kéo riêng trị riêng lớn nhất lên, trong khi không gian cột thì không đổi.
+Hai cách chỉ cho cùng một $\kappa$ khi mọi cột định lượng vốn đã cùng một thang
+đo, và đó không phải trường hợp của bộ dữ liệu này.
+
+\section{Chuẩn hóa cột và số điều kiện}
+\label{sec:normalization}
+
+\resultfig{normalization_iter}
+  {Ảnh hưởng của việc chuẩn hóa cột lên tốc độ hội tụ của gradient descent, theo
+   số vòng lặp. Trục tung là $f(w_k) - \fstar$ trên thang logarit.}
+  {fig:normalization-iter}
+\resultfig{normalization_time}
+  {Ảnh hưởng của việc chuẩn hóa cột lên tốc độ hội tụ của gradient descent, theo
+   thời gian chạy.}
+  {fig:normalization-time}
+
+Với cùng dữ liệu và cùng $\lambda$, số điều kiện là $\kappa = \num{268.3}$ sau
+khi chuẩn hóa cột nhưng lên tới $\kappa = \num{46540}$ khi các cột giữ thang đo
+không đồng nhất, tức chênh nhau 173 lần. Chênh lệch đó hiện thẳng ra ở tốc độ
+hội tụ trên hình~\ref{fig:normalization-iter}: bản đã chuẩn hóa chạm giới hạn
+số học $10^{-16}$ sau khoảng 290 vòng lặp, còn bản giữ thang đo gốc chạy hết
+500 vòng mà sai số mới xuống cỡ $10^{-2}$, tức vẫn cao hơn mức bản chuẩn hóa
+đạt được trong mươi vòng đầu tiên. Hệ số co rút mỗi vòng lặp của gradient
+descent có dạng $1 - \bigO(1/\kappa)$, nên $\kappa$ lớn hơn 173 lần thì phần
+sai số cắt được sau mỗi vòng cũng nhỏ đi theo đúng tỉ lệ ấy.
+
+Chi phí mỗi vòng lặp không phụ thuộc cách biểu diễn cột, khoảng
+\SI{42}{\milli\second} cho cả hai, nên hình~\ref{fig:normalization-time} chỉ là
+hình~\ref{fig:normalization-iter} vẽ lại trên một thang khác: bản chuẩn hóa
+xuống tới giới hạn số học trong khoảng 12 giây còn bản kia sau hơn 20 giây vẫn
+dừng ở $10^{-2}$. Do đó chuẩn hóa cột không phải một bước tiền xử lý về thống
+kê mà là bước quyết định bài toán tối ưu hóa có giải được trong thời gian hợp
+lý hay không. Chú ý rằng khoản lợi ấy chỉ tính cho các phương pháp bậc một, vì
+Newton ở chương~\ref{sec:mechanisms} vẫn hội tụ sau đúng một vòng lặp dù
+$\kappa$ bằng bao nhiêu.
+
+\section{Chọn hệ số hiệu chỉnh}
+\label{sec:choose-lambda}
+
+\resultfig{lambda_cv}
+  {Sai số cross-validation 5 fold theo $\lambda$. Dải xám là một sai số chuẩn
+   quanh giá trị nhỏ nhất, đường chấm là điểm cực tiểu và đường gạch là giá trị
+   được chọn.}
+  {fig:lambda-cv}
+
+Đường cong cross-validation 5 fold ở hình~\ref{fig:lambda-cv} cho sai số trung
+bình giống nhau tới bốn chữ số thập phân với mọi $\lambda$ từ $10^{-6}$ đến
+$10^{-3}$, tức phẳng suốt ba bậc thập phân, vì mức hiệu chỉnh nhỏ hơn nhiễu của
+dữ liệu thì không đổi được sai số dự báo. Trong khi đó, theo
+\eqref{eq:mu-equals-lambda}, số điều kiện giữa hai đầu khoảng ấy chênh nhau
+1000 lần. Vậy $\lambda$ vẫn phải chọn cẩn thận, nhưng tiêu chí chọn phải nằm
+ngoài cross-validation. Đường cong chỉ có cực tiểu rõ khi $n$ nhỏ hơn nhiều
+hoặc $d$ gần $n$, và bài toán này không rơi vào trường hợp đó.
+
+Cực tiểu của một đường cong phẳng như vậy chỉ phản ánh nhiễu của phép chia
+fold, nên nhóm dùng quy tắc một sai số chuẩn: chọn $\lambda$ lớn nhất mà sai số
+cross-validation của nó vẫn nằm trong một sai số chuẩn của giá trị tốt nhất.
+Quy tắc này cho $\lambda = \num{0.01}$ ứng với $\kappa = \num{268.3}$, trong
+khi điểm cực tiểu nằm ở $\lambda = 10^{-4}$ ứng với $\kappa = \num{26831}$, tức
+chênh nhau đúng 100 lần theo tỉ lệ giữa hai giá trị $\lambda$.
+
+Cái giá phải trả về mặt thống kê rất nhỏ. RMSE trên tập kiểm tra là
+\num{0.20601} tại $\lambda = \num{0.01}$ so với \num{0.20579} tại điểm cực tiểu
+cross-validation, kém đi 0{,}1\%, và quy theo \eqref{eq:rmse-to-price} thì sai
+số giá đi từ \num{4240} lên \num{4245} đơn vị tiền trên một chiếc máy giá trung
+vị. Đổi lại, $\kappa$ giảm 100 lần và toàn bộ các thuật toán bậc một trở nên so
+sánh được với nhau trong thời gian chạy hợp lý.
+
+Đánh đổi ấy chỉ có lợi trong hai điều kiện. Thứ nhất, đường cong
+cross-validation phải phẳng, vì với một đường cong có cực tiểu rõ thì khoản mất
+kia lớn hơn 5 đơn vị tiền rất nhiều. Thứ hai, bài toán phải giải bằng phương
+pháp lặp, vì với thuật toán bậc hai thì $\kappa$ không chi phối số vòng lặp nên
+khoản được cũng biến mất.
+
+Tổng lại, ba quyết định của chương này đưa $\kappa$ từ mức mà gradient descent
+sau 20 giây vẫn dừng ở sai số $10^{-2}$ xuống mức nó chạm giới hạn số học trong
+khoảng 12 giây, và cái giá đo được trên bài toán ứng dụng là 5 đơn vị tiền mỗi
+máy. Bài toán tối ưu hóa mà các chương sau khảo sát là bài toán sau ba quyết
+định ấy, với $L$, $\mu$ và $\kappa$ đã ghi ở bảng~\ref{tab:constants}.
