@@ -149,7 +149,10 @@ Nguồn: `results/raw/summary_all_methods.csv`.
 Hai quan sát chi phối toàn bộ mạch báo cáo mới:
 
 1. Năm cấu hình đầu cho RMSE trùng nhau tới chữ số thứ bảy, trong khi thời gian
-   chênh 580 lần giữa Newton và toàn bộ ngân sách của GD.
+   để cùng đạt $10^{-6}$ trải hơn một bậc, từ 0,076 giây của Newton tới 0,879
+   giây của AGD. Con số 580 lần chỉ đúng khi so với thời gian GD chạy hết ngân
+   sách, tức phần lớn là thời gian sau khi đã vượt ngưỡng, nên không dùng làm
+   câu kết luận.
 2. Chỉ SGD bước hằng mới đổi được chất lượng dự đoán, và đổi theo hướng xấu đi.
 
 ### 2.3. Hình đã có
@@ -505,7 +508,7 @@ chương, quy trình giống nhau:
   `all_methods_time`, `rmse_vs_time`. Bảng tổng hợp thêm cột thời gian đạt
   $\eps_{\text{app}}$. Đưa `Ridge` và `SGDRegressor` vào cùng bảng; phần quy đổi
   hàm mục tiêu xuống phụ lục C. Kết luận chính: chất lượng dự đoán như nhau, chi
-  phí chênh 580 lần, ngoại lệ duy nhất là SGD bước hằng. Kết chương bằng ba câu
+  phí chênh hơn một bậc, ngoại lệ duy nhất là SGD bước hằng. Kết chương bằng ba câu
   hỏi còn nợ, dẫn sang chương 5 và 6.
 
 - [ ] **Chương 5.** Nguồn: chương 3 cũ, rút gọn còn năm thuật toán. Phần kiểm thử

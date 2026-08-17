@@ -1,0 +1,264 @@
+% Bản nháp chương 1 theo dàn bài mới. Chưa nối vào report.tex.
+% ===========================================================================
+\chapter{Bài toán định giá và hàm mục tiêu}
+\label{sec:problem}
+
+Một cửa hàng thu mua điện thoại cũ phải trả lời cùng một câu hỏi vài chục lần mỗi
+ngày: chiếc máy đang cầm trên tay đáng bao nhiêu tiền. Người bán biết hãng máy,
+dung lượng RAM, tuổi máy, màn hình có nứt hay không, giá lúc mới mua. Cách trả lời
+đơn giản nhất là cho mỗi đặc điểm một trọng số rồi cộng lại, và khi đó việc định
+giá quy về việc tìm bộ trọng số $w$ sao cho dự đoán sát giá thật nhất. Tìm $w$
+chính là giải một bài toán tối ưu hóa, và toàn bộ báo cáo này nói về cách giải nó.
+
+\section{Bài toán ứng dụng và cách đo một lời giải tốt}
+\label{sec:application}
+
+Bộ dữ liệu \emph{Used Phone Price Prediction} trên Kaggle gồm \num{1000000} bản
+ghi và 28 cột, phân bố theo bảng~\ref{tab:dataset}, trong đó không cột nào có giá
+trị thiếu và không bản ghi nào trùng lặp. Vì bản đăng trên Kaggle đã qua tiền xử
+lý, phần chuẩn bị dữ liệu ở chương~\ref{sec:data} bỏ được cả bước điền khuyết lẫn
+bước khử trùng lặp. Thuận lợi này gắn với nguồn dữ liệu chứ không gắn với bài
+toán: nếu thu thập trực tiếp từ các tin rao bán thì hai con số 0 nói trên không
+còn, và nhóm dự đoán khi đó chi phí làm sạch sẽ vượt hẳn chi phí của phần tối ưu
+hóa.
+
+\begin{table}[tp]
+  \centering
+  \caption{Thành phần 28 cột của bộ dữ liệu gốc.}
+  \label{tab:dataset}
+  \begin{tabular}{lrl}
+    \toprule
+    Nhóm cột & Số cột & Ví dụ \\
+    \midrule
+    Định lượng liên tục & 14 & dung lượng RAM, tuổi máy, giá gốc, điểm camera \\
+    Định lượng nhị phân & 7  & \texttt{screen\_cracked}, \texttt{box\_available} \\
+    Định tính           & 6  & \texttt{brand} 7 mức, \texttt{model} 23 mức \\
+    Biến mục tiêu       & 1  & \texttt{resale\_price} \\
+    \bottomrule
+  \end{tabular}
+\end{table}
+
+Giá bán lại lệch phải rõ rệt, với trung vị \num{18555} thấp hơn hẳn trung bình
+\num{22598} trong khi giá trị lớn nhất lên tới \num{160257}. Nhóm vì thế lấy
+logarit biến mục tiêu trước khi hồi quy: giữ nguyên thang gốc thì bình phương sai
+số để vài trăm bản ghi đắt tiền chi phối hàm mục tiêu, và nghiệm thu được sẽ phản
+ánh riêng nhóm máy đó thay vì phản ánh cả thị trường.
+
+Phép lấy logarit đổi luôn cách đọc sai số, nên cần nói rõ ngay từ đây vì mọi con
+số về chất lượng dự đoán trong báo cáo đều đọc theo cách này. Sai số bình phương
+trung bình trên thang logarit, viết tắt là RMSE, đo độ lệch nhân tính chứ không đo
+độ lệch cộng tính. Một mô hình đạt RMSE $\num{0.20601}$ tương ứng với hệ số lệch
+điển hình $e^{0.20601} = \num{1.2288}$, tức dự đoán vênh khoảng \num{22.9}\% so
+với giá thật, và trên một chiếc máy giá trung vị \num{18555} thì con số đó là
+khoảng \num{4245} đơn vị tiền. Cách quy đổi này chỉ gần đúng, vì RMSE lấy trung
+bình của bình phương nên nó nặng hơn độ lệch trung bình, nhưng nó đủ để so hai mô
+hình với nhau và đó là việc duy nhất báo cáo cần tới.
+
+Toàn bộ thí nghiệm chạy trên một mẫu ngẫu nhiên \num{200000} bản ghi, chia thành
+\num{160000} điểm huấn luyện và \num{40000} điểm kiểm tra. Nhóm lấy mẫu vì chi phí
+tính toán chứ không vì lý do thống kê: trên toàn bộ một triệu bản ghi, một lần
+tính gradient mất \SI{271}{\milli\second} thay vì \SI{39}{\milli\second}, và vì
+lưới tham số ở chương~\ref{sec:mechanisms} nhân con số đó lên theo tổng số vòng
+lặp của mọi cấu hình nên chênh lệch gần bảy lần ấy nhân lên theo toàn bộ lưới. Cỡ
+mẫu này đủ cho các kết luận về tốc độ hội tụ, vốn chỉ phụ thuộc $L$, $\mu$ và
+$\kappa$, nhưng sẽ không đủ nếu đại lượng cần đo phụ thuộc trực tiếp vào $n$,
+chẳng hạn phương sai gradient của SGD ở chương~\ref{sec:mechanisms}.
+
+\section{Từ định giá tới hàm mục tiêu Ridge}
+\label{sec:objective}
+
+Ký hiệu $n$ là số điểm dữ liệu, $d$ là số thuộc tính sau khi mã hóa, $X \in
+\R^{n \times d}$ là ma trận thiết kế và $y \in \R^{n}$ là vector logarit giá. Sau
+khi chuẩn hóa từng cột của $X$ và trừ trung bình khỏi $y$ thì hệ số chặn tối ưu
+bằng không, nên bài toán chỉ còn một khối biến $w$:
+%
+\begin{equation}
+  \label{eq:objective}
+  f(w) = \frac{1}{2n} \norm{Xw - y}^{2} + \frac{\lambda}{2} \norm{w}^{2}.
+\end{equation}
+%
+Công thức này ghi lại một đánh đổi. Số hạng thứ nhất ép mô hình bám dữ liệu, số
+hạng thứ hai ép các trọng số nhỏ lại, và $\lambda$ định giá quy đổi giữa hai đòi
+hỏi đó. Hai hằng số phía trước có mặt vì lý do kỹ thuật chứ không vì lý do thống
+kê: hệ số $\tfrac{1}{2}$ để đạo hàm không kéo theo số 2, còn hệ số $\tfrac{1}{n}$
+để hằng số Lipschitz ở \eqref{eq:constants} không phụ thuộc cỡ mẫu, nhờ vậy mọi
+kết luận về độ dài bước vẫn dùng được khi đổi số điểm dữ liệu. Bỏ $\tfrac{1}{n}$
+đi thì $L$ tăng theo $n$ và mỗi lần đổi cỡ mẫu lại phải chọn lại độ dài bước.
+
+Đạo hàm của \eqref{eq:objective} tính trực tiếp được:
+%
+\begin{equation}
+  \label{eq:derivatives}
+  \nabla f(w) = \frac{1}{n} X\trans (Xw - y) + \lambda w,
+  \qquad
+  \nabla^{2} f(w) = \frac{1}{n} X\trans X + \lambda I.
+\end{equation}
+%
+Điểm đáng chú ý nằm ở vế thứ hai: Hessian không chứa $w$, tức độ cong của $f$
+giống nhau tại mọi điểm. Tính chất này là lý do phần lớn báo cáo đơn giản đi so
+với một bài toán phi tuyến, và chương~\ref{sec:algorithms} sẽ cho thấy nó kéo theo
+việc phương pháp Newton hội tụ chỉ sau một vòng lặp.
+
+Vì $\lambda > 0$ nên Hessian xác định dương và khả nghịch, do đó $f$ lồi mạnh và
+có đúng một điểm cực tiểu, giải ra được bằng cách cho gradient bằng không:
+%
+\begin{equation}
+  \label{eq:closed-form}
+  \wstar = \left( \frac{1}{n} X\trans X + \lambda I \right)^{-1}
+           \left( \frac{1}{n} X\trans y \right),
+  \qquad \fstar = f(\wstar).
+\end{equation}
+%
+Hệ quả của \eqref{eq:closed-form} quan trọng hơn bản thân công thức. Vì $\fstar$
+tính được trước khi chạy bất kỳ thuật toán nào nên sai số $f(w_k) - \fstar$ đo
+được tuyệt đối, không phải so với giá trị tốt nhất quan sát được như ở các bài
+toán không có nghiệm đóng. Mọi biểu đồ hội tụ trong báo cáo dựa vào đại lượng này,
+và hệ số co rút thực nghiệm ở chương~\ref{sec:theory} đối chiếu thẳng được với cận
+lý thuyết cũng nhờ nó.
+
+\section{Ba con số quyết định độ khó}
+\label{sec:constants}
+
+Tốc độ của mọi phương pháp bậc một trong báo cáo phụ thuộc vào ba đại lượng:
+%
+\begin{equation}
+  \label{eq:constants}
+  L = \lambda_{\max}\!\Bigl( \tfrac{1}{n} X\trans X \Bigr) + \lambda,
+  \qquad
+  \mu = \lambda_{\min}\!\Bigl( \tfrac{1}{n} X\trans X \Bigr) + \lambda,
+  \qquad
+  \kappa = \frac{L}{\mu}.
+\end{equation}
+%
+$L$ là hằng số Lipschitz của gradient và $\mu$ là hệ số lồi mạnh. Với một hàm bậc
+hai, hai đại lượng ấy đọc thẳng từ phổ của Hessian: gradient thỏa
+$\norm{\nabla f(u) - \nabla f(v)} \le L \norm{u - v}$ với $L$ chính là chuẩn phổ
+của $\nabla^{2} f$, vì Hessian hằng theo \eqref{eq:derivatives} nên chặn này đạt
+được và không thể lấy nhỏ hơn.
+
+Số điều kiện $\kappa$ có một cách đọc hình học giải thích gần hết kết quả về sau.
+Các đường mức của $f$ là những ellipsoid, và $\kappa$ đúng bằng tỉ số giữa trục
+dài nhất với trục ngắn nhất của chúng. Khi $\kappa = 1$, đường mức là mặt cầu và
+gradient chỉ thẳng về tâm, nên một bước duy nhất là tới đích. Khi $\kappa$ lớn,
+ellipsoid bị bóp dẹt thành một cái máng hẹp và dài; gradient khi đó gần như vuông
+góc với trục của máng, nên phương pháp bậc một lao rất nhanh xuống đáy máng rồi bò
+dọc theo máng chậm hơn nhiều bậc. Toàn bộ khó khăn mà chương~\ref{sec:mechanisms}
+mô tả nằm ở hình ảnh này.
+
+\begin{table}[tp]
+  \centering
+  \caption{Các hằng số của bài toán sau khi cố định dữ liệu và $\lambda$.}
+  \label{tab:constants}
+  \begin{tabular}{llr}
+    \toprule
+    Ký hiệu & Ý nghĩa & Giá trị \\
+    \midrule
+    $n$       & số điểm huấn luyện              & \num{160000} \\
+    $d$       & số thuộc tính sau khi mã hóa    & 280 \\
+    $\lambda$ & hệ số hiệu chỉnh                & \num{0.01} \\
+    $L$       & hằng số Lipschitz của gradient  & \num{2.68309} \\
+    $\mu$     & hệ số lồi mạnh                  & \num{0.01} \\
+    $\kappa$  & số điều kiện                    & \num{268.309} \\
+    $\fstar$  & giá trị tối ưu                  & \num{0.0237430} \\
+    \bottomrule
+  \end{tabular}
+\end{table}
+
+Bảng~\ref{tab:constants} cho thấy $\mu$ trùng khít với $\lambda$, và đó không phải
+trùng hợp. Ma trận Gram $\tfrac{1}{n} X\trans X$ có hạng 273 trên 280, tức bảy
+hướng hoàn toàn suy biến, và ngay cả trị riêng đầu tiên sau bảy hướng đó cũng chỉ
+cỡ $2 \cdot 10^{-8}$, nhỏ hơn $L$ tới tám bậc. Dữ liệu tự nó có những hướng phẳng
+lì, và thứ duy nhất tạo ra độ cong theo các hướng ấy là số hạng phạt, nên
+%
+\begin{equation}
+  \label{eq:mu-equals-lambda}
+  \mu = \lambda, \qquad \kappa = \frac{L}{\lambda}.
+\end{equation}
+%
+Độ khó của bài toán do đó là thứ người làm chọn qua $\lambda$, không phải thứ dữ
+liệu áp đặt, và chương~\ref{sec:lambda} khai thác đúng tính chất này. Quan hệ
+\eqref{eq:mu-equals-lambda} đảo chiều nếu mọi cột độc lập tuyến tính và trị riêng
+nhỏ nhất cùng bậc với $\lambda$; khi đó $\mu$ quay về do dữ liệu quyết định và
+$\lambda$ mất vai trò điều khiển $\kappa$.
+
+\section{Năm thuật toán của báo cáo}
+\label{sec:catalogue}
+
+Bảng~\ref{tab:methods} giới thiệu năm thuật toán mà chương~\ref{sec:compare} đem
+so sánh, đủ để đọc chương đó trước khi tới phần cài đặt chi tiết ở
+chương~\ref{sec:algorithms}. Hai cột cuối là hai thứ phân biệt chúng: mỗi phương
+pháp dùng bao nhiêu thông tin về $f$, và trả giá bao nhiêu cho mỗi vòng lặp.
+
+\begin{table}[tp]
+  \centering
+  \caption{Năm thuật toán trong mạch chính, xếp theo lượng thông tin sử dụng.}
+  \label{tab:methods}
+  \begin{tabular}{llll}
+    \toprule
+    Thuật toán & Thông tin dùng & Chi phí mỗi vòng & Tham số phải chọn \\
+    \midrule
+    Gradient descent & gradient tại $w_k$      & $\bigO(nd)$        & $t$, hoặc $\alpha$ và $\beta$ \\
+    SGD              & gradient trên lô $B$ điểm & $\bigO(Bd)$      & $B$, quy tắc chọn $\eta_k$ \\
+    AGD (Nesterov)   & gradient tại điểm ngoại suy & $\bigO(nd)$    & $t$, công thức momentum \\
+    L-BFGS           & $m$ cặp hiệu gần nhất   & $\bigO(nd + md)$   & $m$ \\
+    Newton           & toàn bộ Hessian         & $\bigO(nd^{2} + d^{3})$ & không có \\
+    \bottomrule
+  \end{tabular}
+\end{table}
+
+Cột chi phí giải thích trước một điều mà chương~\ref{sec:compare} sẽ đo: xếp hạng
+theo số vòng lặp và xếp hạng theo thời gian chạy là hai thứ khác nhau. Newton dùng
+nhiều thông tin nhất nên cần ít vòng lặp nhất, nhưng mỗi vòng của nó đắt hơn một
+vòng gradient descent theo bậc $d^{2}$, và với $d = 280$ thì chênh lệch ấy đủ lớn
+để đảo thứ hạng theo hướng nào cũng có thể xảy ra. Nhóm còn cài Heavy ball,
+Newton-CG và Adam nhưng không đưa vào so sánh chính; lý do nằm ở phụ lục~\ref{app:cut}.
+
+\section{Câu hỏi báo cáo trả lời}
+\label{sec:question}
+
+Đọc tới đây thì có một chỗ vướng cần giải quyết trước khi đi tiếp. Bài toán này đã
+có nghiệm đóng ở \eqref{eq:closed-form}, tính được bằng một lần phân rã Cholesky.
+Vậy chạy các thuật toán lặp để làm gì?
+
+Có hai câu trả lời, và chúng định hình toàn bộ phần còn lại. Thứ nhất, chính vì có
+nghiệm đóng mà bài toán này dùng được làm phòng thí nghiệm: $\fstar$ biết trước
+tới sai số máy, nên mọi phát biểu về tốc độ hội tụ đo được bằng một cái thước
+tuyệt đối, thứ không tồn tại ở các bài toán mà người ta thực sự cần phương pháp
+lặp. Thứ hai, nghiệm đóng chỉ dùng được trong một khoảng quy mô nhất định: chi phí
+$\bigO(d^{3})$ và việc phải lập ma trận $d \times d$ trở thành rào cản khi $d$ lớn,
+và khi đó những phương pháp mà báo cáo khảo sát mới là lựa chọn duy nhất.
+
+Câu hỏi xuyên suốt báo cáo vì thế phát biểu được thành một dòng: \emph{huấn luyện
+mô hình định giá là giải một bài toán tối ưu hóa; giải bằng cách nào, và giải tới
+mức nào thì dừng?} Bảng~\ref{tab:roadmap} chỉ ra chương nào trả lời phần nào của
+câu hỏi đó.
+
+\begin{table}[tp]
+  \centering
+  \caption{Câu hỏi mà mỗi chương trả lời.}
+  \label{tab:roadmap}
+  \begin{tabular}{ll}
+    \toprule
+    Chương & Câu hỏi \\
+    \midrule
+    \ref{sec:data}       & Chuẩn bị dữ liệu làm bài toán dễ hay khó đi, đo bằng $\kappa$ \\
+    \ref{sec:enough}     & Sai số $f - \fstar$ nhỏ tới đâu thì sai số giá ngừng giảm \\
+    \ref{sec:compare}    & Thuật toán nào về đích trước, kể cả khi đặt cạnh thư viện \\
+    \ref{sec:algorithms} & Năm thuật toán được cài đặt và đo thời gian ra sao \\
+    \ref{sec:mechanisms} & Ba cơ chế giải thích vì sao các đường nằm ở đó \\
+    \ref{sec:theory}     & Cận lý thuyết mô tả đúng chỗ nào và lệch chỗ nào \\
+    \ref{sec:lambda}     & Đổi $\lambda$, tức đổi $\kappa$, thì thứ hạng có đổi không \\
+    \ref{sec:conclusion} & Rút lại thì nên chọn thuật toán nào, với điều kiện gì \\
+    \bottomrule
+  \end{tabular}
+\end{table}
+
+Một con số đặt trước để người đọc biết mình đang đi về đâu. Trên bài toán này, năm
+cấu hình tốt nhất của năm thuật toán cho RMSE trên tập kiểm tra trùng nhau tới chữ
+số thứ bảy, trong khi thời gian để cùng đạt mức sai số $10^{-6}$ trải hơn một bậc,
+từ \SI{0.076}{\second} của Newton tới \SI{0.879}{\second} của AGD. Chọn sai thuật
+toán vì thế không làm cửa hàng định giá sai, nó chỉ làm người huấn luyện chờ lâu
+hơn. Ngoại lệ duy nhất là SGD với độ dài bước hằng, dừng ở RMSE $\num{0.20986}$ so
+với $\num{0.20601}$, tức đắt thêm khoảng 88 đơn vị tiền trên mỗi chiếc máy giá
+trung vị. Chương~\ref{sec:enough} truy nguyên nhân của ngoại lệ ấy, và
+chương~\ref{sec:compare} trình bày đầy đủ phần so sánh.

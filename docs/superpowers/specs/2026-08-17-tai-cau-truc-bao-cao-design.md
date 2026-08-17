@@ -24,8 +24,8 @@ thích nguồn gốc.
 Số liệu chữa được hai lỗi đầu đã nằm sẵn trong `results/raw/summary_all_methods.csv`:
 RMSE trên tập kiểm tra của GD, AGD, Newton và L-BFGS trùng nhau tới chữ số thứ
 bảy (0,2060141), SGD bậc thang lệch ở chữ số thứ sáu, SGD bước hằng kém hẳn
-(0,20986), trong khi thời gian chênh 580 lần giữa Newton (0,076 giây) và GD
-(44 giây).
+(0,20986), trong khi thời gian để cùng đạt sai số $10^{-6}$ trải hơn một bậc, từ
+0,076 giây của Newton tới 0,879 giây của AGD.
 
 ## 2. Quyết định đã chốt
 
