@@ -1,0 +1,123 @@
+% Bản nháp chương 8 theo dàn bài mới, viết với bộ mẫu ở style/mau/.
+% Chưa nối vào report.tex.
+% ===========================================================================
+\chapter{Kết luận bền tới đâu}
+\label{sec:lambda}
+
+Mọi con số trong bốn chương trước đo ở đúng một giá trị $\lambda$, tức ở đúng một
+số điều kiện $\kappa = \num{268.31}$. Vì $\kappa$ có mặt trong cả hai cận ở
+chương~\ref{sec:theory} và trong cả ba cơ chế ở chương~\ref{sec:mechanisms}, câu
+hỏi tự nhiên là các kết luận ấy còn đúng tới đâu khi bài toán dễ đi hoặc khó đi.
+Chương này đổi $\lambda$ để đổi $\kappa$ và đo lại.
+
+\section{Hệ số hiệu chỉnh điều khiển số điều kiện}
+\label{sec:lambda-control}
+
+\resultfig{lambda_effect_iter}
+  {Tốc độ hội tụ ứng với ba giá trị $\lambda$, theo số vòng lặp. Cả ba lần chạy
+   dùng gradient descent với $t = 1/L$.}
+  {fig:lambda-iter}
+\resultfig{lambda_effect_time}
+  {Cùng ba lần chạy ấy theo thời gian chạy.}
+  {fig:lambda-time}
+
+\begin{table}[tp]
+  \centering
+  \caption{Hệ số hiệu chỉnh vừa quyết định số điều kiện, vừa quyết định chất
+    lượng dự báo. Cả ba lần chạy dùng gradient descent với $t = 1/L$, nên cột số
+    vòng lặp đặt cạnh được với dòng $t = 1/L$ của bảng~\ref{tab:gd-fixed}. Cột
+    cuối tính theo \eqref{eq:rmse-to-price} trên một chiếc máy giá trung vị.}
+  \label{tab:lambda}
+  \begin{tabular}{rrrrrrr}
+    \toprule
+    $\lambda$ & $\kappa$ & \multicolumn{2}{c}{Vòng lặp đạt}
+      & Tổng (s) & RMSE test & Sai lệch giá \\
+    \cmidrule(lr){3-4}
+    & & $10^{-6}$ & $10^{-12}$ & & & \\
+    \midrule
+    \num{0.001} & \num{2674}  & 40 & 170 & \num{10.58} & \num{0.20580} & \num{-4.8}  \\
+    \num{0.01}  & \num{268.3} & 40 & 150 & \num{8.42}  & \num{0.20601} & \num{0}     \\
+    \num{0.1}   & \num{27.73} & 30 & 90  & \num{5.46}  & \num{0.21916} & \num{302}   \\
+    \bottomrule
+  \end{tabular}
+\end{table}
+
+Ba dòng của bảng~\ref{tab:lambda} cho $\kappa$ bằng \num{2674}, \num{268.3} và
+\num{27.73} ứng với $\lambda$ bằng \num{0.001}, \num{0.01} và \num{0.1}, tức tăng
+$\lambda$ lên 10 lần thì giảm $\kappa$ đúng 10 lần. Quan hệ ấy đến thẳng từ
+\eqref{eq:mu-equals-lambda}: trên bài toán này $\mu = \lambda$ nên $\kappa$ là
+$L/\lambda$, và $L$ không đổi khi $\lambda$ đổi vì $\lambda$ chỉ cộng thêm một
+lượng nhỏ so với trị riêng lớn nhất. Hiệu chỉnh Ridge do đó có hai vai trò tách
+biệt, một vai trò thống kê là chống quá khớp và một vai trò tối ưu hóa là làm bài
+toán dễ giải hơn.
+
+\section{Số điều kiện là chỉ báo kém cho chi phí}
+\label{sec:lambda-early}
+
+Hai vai trò ấy không cùng chiều, và mức ảnh hưởng của chúng lệch nhau rất xa. Từ
+$\lambda = \num{0.001}$ lên $\num{0.1}$, số điều kiện giảm 96 lần nhưng số vòng
+lặp cần để đạt $10^{-6}$ chỉ giảm từ 40 xuống 30, tức 25\%
+(hình~\ref{fig:lambda-iter}). Nếu $\kappa$ chi phối chi phí như \eqref{eq:gd-rate}
+gợi ý thì mức giảm phải gần với 96 lần chứ không phải một phần tư.
+
+Nguyên nhân đã có sẵn ở chương~\ref{sec:theory}. Ngưỡng $10^{-6}$ rơi vào giai
+đoạn đầu, nơi sai số do 269 hướng cong chi phối và chúng tắt theo $\abs{1 - tL}$
+chứ không theo $(\kappa-1)/(\kappa+1)$. Đổi $\lambda$ không đụng tới các hướng ấy
+vì nó chỉ nâng đầu nhỏ của phổ, nên nó gần như không đổi được chi phí ở mức chính
+xác mà bài toán định giá cần.
+
+\section{Ở độ chính xác cao thì số điều kiện mới lên tiếng}
+\label{sec:lambda-tail}
+
+Cùng ba lần chạy ấy nhưng đo tới $10^{-12}$ thì bức tranh đổi. Số vòng lặp đi từ
+170 xuống 90, tức giảm 47\% thay vì 25\%, và tổng thời gian tới lúc dừng hẳn đi
+từ \SI{10.58}{\second} còn \SI{5.46}{\second} (hình~\ref{fig:lambda-time}). Độ
+nhạy với $\kappa$ tăng lên khi ngưỡng chặt lại, đúng như bức tranh hai giai đoạn
+ở mục~\ref{sec:theory-early} dự đoán.
+
+Nhưng ngay cả ở $10^{-12}$, giảm $\kappa$ đi 96 lần cũng mới cắt được nửa số vòng
+lặp. Muốn thấy đúng tỉ lệ mà \eqref{eq:gd-rate} mô tả thì phải chạy tới chỗ chỉ
+còn tám hướng phẳng chi phối, và trên bài toán này chỗ đó nằm sát giới hạn số học
+của kiểu dữ liệu, tức nằm ngoài vùng có ý nghĩa thực tế. Nói cách khác, $\kappa$
+là đại lượng đúng để dự đoán hành vi tiệm cận nhưng là chỉ báo kém cho chi phí ở
+mọi mức chính xác mà người ta thực sự dùng.
+
+\section{Cái giá về phía bài toán định giá}
+\label{sec:lambda-price}
+
+Cột cuối bảng~\ref{tab:lambda} cho thấy vế còn lại của đánh đổi. Từ
+$\lambda = \num{0.001}$ lên $\num{0.1}$, RMSE trên tập kiểm tra xấu đi 6,5\%, và
+quy theo \eqref{eq:rmse-to-price} thì sai lệch giá tăng \num{307} đơn vị tiền
+trên một chiếc máy giá trung vị.
+
+Con số ấy đáng đặt cạnh mọi con số khác trong báo cáo. Chênh lệch giữa cấu hình
+tối ưu hóa tốt nhất và tệ nhất mà nhóm tự cài là 87,7 đơn vị tiền, còn giữa nhóm
+và cài đặt mặc định tệ nhất của thư viện là \num{137} đơn vị
+(bảng~\ref{tab:sklearn}). Một quyết định về hệ số hiệu chỉnh vì thế đắt hơn mọi
+quyết định về thuật toán cộng lại, dù nó chỉ là một dòng trong phần chuẩn bị dữ
+liệu.
+
+Đổi lại, khoản thu được về phía tối ưu hóa là 10 vòng lặp ở ngưỡng $10^{-6}$, tức
+khoảng \SI{0.3}{\second}. Đánh đổi ấy không có lợi trên bài toán này, và đó là lý
+do quy tắc một sai số chuẩn ở mục~\ref{sec:choose-lambda} dừng ở
+$\lambda = \num{0.01}$ chứ không đi xa hơn về phía hiệu chỉnh mạnh.
+
+\section{Kết luận nào bền, và điều chưa kiểm được}
+\label{sec:lambda-scope}
+
+Ba kết luận của báo cáo giữ nguyên qua hai bậc thay đổi của $\kappa$. Ngưỡng
+$2/L$ không phụ thuộc $\lambda$ vì $L$ không đổi. Bức tranh hai giai đoạn ở
+chương~\ref{sec:theory} giữ nguyên và còn được củng cố, vì độ nhạy với $\kappa$
+tăng đúng theo hướng nó dự đoán khi ngưỡng chặt lại. Và ngưỡng
+$\eps_{\text{app}}$ của chương~\ref{sec:enough} vẫn nằm trong giai đoạn đầu ở cả
+ba giá trị $\lambda$, nên kết luận rằng chọn thuật toán không đổi được chất lượng
+định giá cũng không đổi.
+
+Phần chưa kiểm được cần nói rõ. Thí nghiệm này chạy riêng gradient descent ở ba
+giá trị $\lambda$, nên nó trả lời câu $\kappa$ dự đoán chi phí tốt tới đâu, chứ
+chưa trả lời câu thứ hạng giữa các thuật toán ở bảng~\ref{tab:summary} có đổi khi
+$\kappa$ đổi hay không. Muốn trả lời câu sau phải chạy lại toàn bộ lưới tham số ở
+cả ba giá trị $\lambda$, tức gấp ba khối lượng tính toán của
+chương~\ref{sec:mechanisms}. Nhóm dự đoán thứ hạng giữ nguyên, vì cả ba cơ chế
+chi phối nó đều không phụ thuộc $\lambda$, nhưng đây là dự đoán chứ chưa phải kết
+quả đo.
