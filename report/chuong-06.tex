@@ -182,7 +182,7 @@ $5{,}8 \cdot 10^{-6}$, tức tốt hơn bước hằng 165 lần với cùng ng�
 (hình~\ref{fig:sgd-schedule-epoch}).
 
 Cơ chế nằm ở chỗ phương sai của $g_k$ trong \eqref{eq:sgd} không tắt theo $k$.
-Gần $\wstar$ thì gradient đầy đủ tiến về không nhưng gradient của một lô thì
+Gần $\wstar$, gradient đầy đủ tiến về không nhưng gradient của một lô thì
 không, nên bước cập nhật cuối cùng chỉ còn là nhiễu nhân với $\eta$, và nghiệm
 dao động trong một lân cận có bán kính tỉ lệ với $\eta$. Muốn sai số tiếp tục
 giảm thì phải để $\eta_k$ tắt thay, và ba quy tắc giảm dần khác nhau ở chỗ chúng
@@ -229,7 +229,7 @@ khác thứ hạng trên trục thời gian.
 
 Ba biến thể Newton đều hội tụ sau đúng một vòng lặp theo
 \eqref{eq:newton-one-step} nên hình~\ref{fig:newton-iter} không phân biệt được
-chúng; chỉ hình~\ref{fig:newton-time} phân biệt được. Phân rã lại Hessian mỗi
+chúng, chỉ hình~\ref{fig:newton-time} phân biệt được. Phân rã lại Hessian mỗi
 vòng tốn \SI{0.136}{\second} còn dùng lại phân rã cũ tốn \SI{0.133}{\second}, tức
 gần như không khác, đúng như phải thế khi cả hai chỉ chạy một vòng. Bản damped
 thêm backtracking mất \SI{0.168}{\second} vì nó đánh giá $f$ ba lần thay vì hai,
@@ -253,7 +253,7 @@ $d = 280$ còn xa mức đó.
 L-BFGS nằm giữa hai nhóm và bốn kích thước bộ nhớ đã thử đều đạt $10^{-6}$ sau
 đúng 8 vòng lặp (hình~\ref{fig:lbfgs-iter}), trong khi tổng thời gian trải từ
 \SI{1.38}{\second} với $m = 10$ tới \SI{1.97}{\second} với $m = 3$
-(hình~\ref{fig:lbfgs-time}). Bộ nhớ lớn hơn không mua thêm vòng lặp nào vì bài
+(hình~\ref{fig:lbfgs-time}). Bộ nhớ lớn hơn không đem lại lợi ích nào vì bài
 toán là hàm bậc hai và tám cặp hiệu đã đủ dựng lại phần phổ mà thuật toán cần,
 còn chênh lệch thời gian giữa bốn cấu hình nằm trong khoảng dao động giữa các lần
 chạy nên không nên đọc thành thứ hạng.

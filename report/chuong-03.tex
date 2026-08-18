@@ -4,8 +4,8 @@
 \label{sec:enough}
 
 Mọi biểu đồ hội tụ trong báo cáo đo bằng $f(w_k) - \fstar$, còn cửa hàng định
-giá thì chỉ quan tâm sai số giá. Hai đại lượng ấy chưa gặp nhau ở chỗ nào, nên
-câu hỏi hiển nhiên nhất vẫn còn treo: giải bài toán tối ưu hóa tới mức nào thì
+giá chỉ quan tâm sai số giá. Hai đại lượng ấy chưa gặp nhau ở chỗ nào, nên
+câu hỏi hiển nhiên nhất vẫn chưa có lời đáp: giải bài toán tối ưu hóa tới mức nào thì
 lời giải ngừng tốt lên đối với người dùng nó. Chương này trả lời bằng một thí
 nghiệm riêng, và câu trả lời ấy đặt ra ngưỡng dừng cho toàn bộ phần còn lại.
 
@@ -15,7 +15,7 @@ nghiệm riêng, và câu trả lời ấy đặt ra ngưỡng dừng cho toàn 
 Nhóm ghi RMSE trên tập kiểm tra tại từng điểm ghi lịch sử của từng lần chạy, cho
 cấu hình tốt nhất của bảy nhóm thí nghiệm. Phép đo này nằm trong cửa sổ mà đồng
 hồ đã dừng, cùng chỗ với phép tính $f(w_k)$ và chuẩn gradient, nên chi phí của
-nó không bị tính vào thời gian chạy; bộ đếm số lần đánh giá hàm cũng được khôi
+nó không bị tính vào thời gian chạy. Bộ đếm số lần đánh giá hàm cũng được khôi
 phục sau mỗi lần ghi. Chi tiết cài đặt nằm ở mục~\ref{sec:recorder}.
 
 Loại trừ chi phí ấy vẫn chưa đủ để thời gian đo được giữ nguyên. Mỗi lần ghi,
@@ -99,7 +99,7 @@ $\eps_{\text{app}} = 4{,}0 \cdot 10^{-5}$.
 
 Con số thứ nhất đáng chú ý vì một lý do ngoài dự kiến. Ngưỡng $10^{-6}$ mà báo
 cáo dùng từ đầu là một quy ước, chọn vì nó tròn và vì nó nằm đủ xa giới hạn số
-học; hóa ra nó chỉ chặt hơn ngưỡng có căn cứ từ bài toán ứng dụng 1,35 lần. Quy
+học. Hóa ra nó chỉ chặt hơn ngưỡng có căn cứ từ bài toán ứng dụng 1,35 lần. Quy
 ước ấy vì thế không cần đổi, nhưng từ chương này nó có một lý do thay cho thói
 quen.
 

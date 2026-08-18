@@ -119,8 +119,8 @@ Với $\lambda = \num{0.01}$ và $n = \num{160000}$ thì $\alpha = \num{1600}$.
 \texttt{SGDRegressor} với \texttt{loss="squared\_error"} và \texttt{penalty="l2"}
 cực tiểu hóa trung bình mất mát trên các mẫu cộng $\tfrac{\alpha}{2}\norm{w}^{2}$,
 tức trùng \eqref{eq:objective} ngay khi $\alpha = \lambda$. \texttt{LinearRegression}
-không có số hạng phạt nên nó ứng với $\lambda = 0$ và giải một bài toán khác;
-báo cáo đưa nó vào để có mốc tham chiếu chứ không để so tốc độ.
+không có số hạng phạt nên nó ứng với $\lambda = 0$ và giải một bài toán khác.
+Báo cáo đưa nó vào để có mốc tham chiếu chứ không để so tốc độ.
 
 Nhóm kiểm \eqref{eq:alpha-ridge} bằng số chứ không bằng suy luận trên giấy. Lấy
 $\hat{w}$ do \texttt{Ridge} với solver \texttt{cholesky} trả về, khoảng cách tới
@@ -164,7 +164,7 @@ bình của $B$ hàm, và với $B$ mẫu độc lập thì phần phương sai 
 cho $B$ còn phần chung giữ nguyên, nên hằng số trơn nội suy giữa hai đầu:
 $L_B \to L_{\max}$ khi $B = 1$ và $L_B \to L$ khi $B = n$. Dạng nội suy tuyến
 tính theo $1/B$ cho \eqref{eq:minibatch-smoothness}. Đây là xấp xỉ dùng làm quy
-tắc chọn bước chứ không phải đẳng thức chặt; điều duy nhất báo cáo dựa vào là
+tắc chọn bước chứ không phải đẳng thức chặt. Điều duy nhất báo cáo dựa vào là
 $L_B$ giảm theo $B$, và mục~\ref{sec:mech-noise} kiểm điều đó bằng số.
 
 \section{Cận co rút của gradient descent trên hàm bậc hai}
@@ -216,7 +216,7 @@ Mọi thành phần ngẫu nhiên dùng seed 0: phép lấy mẫu \num{200000} b
 triệu, phép chia tập huấn luyện và tập kiểm tra, phép chia fold của
 cross-validation, và thứ tự lô của SGD. Bài toán đã chốt gồm $n = \num{160000}$
 điểm huấn luyện, $d = 280$ thuộc tính, $\num{40000}$ điểm kiểm tra và
-$\lambda = \num{0.01}$; ba hằng số $L$, $\mu$, $\kappa$ cùng $\fstar$ ghi ở
+$\lambda = \num{0.01}$. Ba hằng số $L$, $\mu$, $\kappa$ cùng $\fstar$ ghi ở
 bảng~\ref{tab:constants}.
 
 Mỗi cấu hình chạy ba lần và lấy trung vị theo thời gian. Chênh lệch giữa ba lần

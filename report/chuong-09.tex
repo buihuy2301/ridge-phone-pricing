@@ -23,7 +23,7 @@ bậc thang từ chỗ không đạt trở thành đạt sau 21 lượt duyệt 
 bài toán ứng dụng, chứ không phải bản thân thuật toán, quyết định phương pháp nào
 được coi là dùng được.
 
-Chiều ngược lại cũng cần nói. Chạy chính xác hơn mức cần không mua thêm gì: từ
+Ngược lại, chạy chính xác hơn mức cần không đem lại lợi ích nào: từ
 $10^{-8}$ trở xuống, sai lệch giá còn dưới \num{0.02} đơn vị tiền, và gradient
 descent dừng ở $4{,}9 \cdot 10^{-8}$ còn cho RMSE thấp hơn nghiệm đóng một chút
 vì $\wstar$ cực tiểu hàm mục tiêu trên tập huấn luyện chứ không trên tập kiểm
@@ -39,7 +39,7 @@ bộ giải trực tiếp của scikit-learn làm đúng việc ấy trong \SI{0
 Phương pháp lặp không có lý do tồn tại ở quy mô này.
 
 Điều kiện đảo chiều là quy mô. Newton tốn $\bigO(nd^{2} + d^{3})$ mỗi vòng và
-phải lập ma trận $d \times d$; khi $d$ lớn tới mức không lập nổi ma trận ấy thì
+phải lập ma trận $d \times d$. Khi $d$ lớn tới mức không lập nổi ma trận ấy thì
 L-BFGS là phương pháp duy nhất trong báo cáo còn chạy được, vì nó chỉ giữ $m$ cặp
 hiệu và tốn $\bigO(md)$ ngoài một lần lấy gradient. Ở $d = 280$ thì Newton-CG
 chậm hơn Newton 10 lần, nhưng nó tồn tại đúng vì lý do ấy và cân bằng sẽ đảo ở
@@ -59,7 +59,7 @@ hạn.
 Chọn độ dài bước sát ngưỡng $2/L$ nhưng đừng chạm vào nó. Chênh 10\% quanh ngưỡng
 đủ để lật từ hội tụ sau 20 vòng sang phân kỳ với $f$ lên $5{,}4 \cdot 10^{11}$,
 và đúng tại ngưỡng thì một thành phần đứng yên nên lần chạy dừng ở
-$4{,}9 \cdot 10^{-8}$. Lời khuyên này đòi biết $L$; khi không biết thì
+$4{,}9 \cdot 10^{-8}$. Lời khuyên này đòi biết $L$. Khi không biết thì
 backtracking thay thế được với cái giá là số lần đánh giá hàm, và cái giá ấy do
 $\beta$ quyết định chứ không do $\alpha$, từ \num{1.40} lần thêm mỗi vòng với
 $\beta = 0.5$ lên \num{4.1} lần với $\beta = 0.9$.
@@ -74,7 +74,7 @@ phải khởi tạo $t_0 = 1/L$.
 Cho mỗi kích thước lô một độ dài bước riêng. Hằng số trơn của mất mát một mẫu lớn
 hơn $L$ tới 1159 lần, nên một bước an toàn cho gradient đầy đủ làm SGD với lô một
 mẫu phân kỳ. Và nếu muốn sai số tiếp tục giảm thì phải để $\eta_k$ tắt dần, vì
-bước hằng chỉ đưa nghiệm tới một lân cận quanh $\wstar$; giảm theo bậc thang cho
+bước hằng chỉ đưa nghiệm tới một lân cận quanh $\wstar$. Giảm theo bậc thang cho
 kết quả tốt hơn bước hằng 165 lần với cùng ngân sách.
 
 \section{Lý thuyết dùng được vào việc gì}

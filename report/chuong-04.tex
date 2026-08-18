@@ -8,8 +8,8 @@ giá dưới một đơn vị tiền trên một chiếc máy giá trung vị. C
 hình tốt nhất của bảy nhóm thí nghiệm lên cùng một đường chạy tới đích ấy, rồi
 đặt cả nhóm cạnh các cài đặt mặc định của scikit-learn.
 
-Câu trả lời gọn nằm ngay ở đây. Newton về đích sau \SI{0.133}{\second}, nhanh hơn
-gradient descent 3,5 lần; năm cấu hình tất định còn lại đều cho cùng một RMSE, và
+Newton về đích sau \SI{0.133}{\second}, nhanh hơn
+gradient descent 3,5 lần. Năm cấu hình tất định còn lại đều cho cùng một RMSE, và
 khoảng cách giữa chúng chỉ là chuyện chờ lâu hay chóng. Phần còn lại của chương
 nói rõ khoảng cách ấy thay đổi thế nào khi đổi mức chính xác yêu cầu, và vì sao
 một cấu hình về đích sớm chưa chắc đi xa được.
@@ -82,7 +82,7 @@ chính xác vừa phải thì chọn phương pháp nào cũng gần như không
 lệch 21\% ấy không nên đọc thành thứ hạng, vì ba lần chạy của cùng một cấu hình
 đã dao động 5\% tới 25\% ở phần lớn các nhóm và tới 61\% ở trường hợp xấu nhất.
 Chính khoảng dao động đó, chứ không phải bản thân thuật toán, quyết định cấu hình
-nào được chọn khi hai cấu hình hòa nhau về số vòng lặp; $t = 2/L$ được chọn thay
+nào được chọn khi hai cấu hình hòa nhau về số vòng lặp, và $t = 2/L$ được chọn thay
 cho $t = 2/(L+\mu)$ ở bảng~\ref{tab:summary} đúng theo cách ấy.
 
 \paragraph{Phần đuôi, và chuyện cấu hình tốt nhất phụ thuộc dung sai.} Cấu hình
@@ -161,7 +161,7 @@ hình~\ref{fig:sklearn-iter} chỉ đặt các phương pháp lặp tự cài đ
 phép so đầy đủ nằm ở hình~\ref{fig:sklearn-time}, nơi mỗi cài đặt thư viện hiện
 ra thành một điểm. Bộ giải trực tiếp giải thẳng chính hệ phương trình mà
 một bước Newton giải, nên nó và phương pháp Newton tự cài đặt về bản chất làm
-cùng một việc; con số \SI{0.133}{\second} của bản tự cài đặt so với
+cùng một việc. Con số \SI{0.133}{\second} của bản tự cài đặt so với
 \SI{0.235}{\second} của thư viện không nói lên điều gì ngoài việc bản tự cài đặt
 không phải kiểm tra tham số đầu vào và không dựng lại ma trận Gram. Phương pháp
 lặp chỉ lấy lại chỗ đứng khi $d$ lớn tới mức không phân rã nổi ma trận
@@ -177,7 +177,7 @@ bước mặc định của bộ ước lượng này không tính theo $L_B$ c�
 lượng này ở tham số mặc định, không áp cho thư viện nói chung, và ba dòng
 \texttt{Ridge} phía trên là bằng chứng ngược lại.
 
-Dòng cuối bảng đáng chú ý theo hướng ngược lại. \texttt{LinearRegression} không
+Dòng cuối bảng đi theo hướng ngược lại. \texttt{LinearRegression} không
 hiệu chỉnh nên nó không giải bài toán \eqref{eq:objective}, và sai lệch hàm mục
 tiêu $3{,}5 \cdot 10^{-5}$ phản ánh đúng điều đó. Nhưng RMSE của nó là
 \num{0.20579}, tức tốt hơn nghiệm đóng \num{5} đơn vị tiền, vì quy tắc một sai số

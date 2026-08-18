@@ -124,7 +124,7 @@ phải một dạng line search. Ba thuật toán còn lại của báo cáo đ�
 dùng backtracking, riêng SGD thì không, và lý do đo được. Điều kiện Armijo
 \eqref{eq:armijo} đòi đánh giá $f$ trên toàn bộ tập huấn luyện ở mỗi lần thử độ
 dài bước, trong khi với $B = 64$ một lượt duyệt dữ liệu gồm \num{2500} lần cập
-nhật. Lấy \SI{23}{\milli\second} làm chi phí một lần quét toàn bộ dữ liệu thì
+nhật. Lấy \SI{23}{\milli\second} làm chi phí một lần quét toàn bộ dữ liệu,
 riêng phần line search cần khoảng \SI{58}{\second} cho một lượt duyệt, còn cả
 lượt duyệt đo được chỉ mất \SI{0.087}{\second}, tức gấp hơn 600 lần. Con số
 \SI{58}{\second} là ước lượng suy ra từ hai đại lượng đo được và chưa tính số lần
@@ -149,7 +149,7 @@ $\mu$~\cite{nesterov2018lectures}, hoặc $\beta_k = (k-1)/(k+2)$ khi
 không~\cite{beck2009fista}.
 
 So với thuật toán~\ref{alg:gd}, cập nhật \eqref{eq:agd} chỉ thêm một điểm nhớ là
-$w_{k-1}$, nên chi phí mỗi vòng vẫn là $\bigO(nd)$ và phần thêm chỉ là một phép
+$w_{k-1}$, nên chi phí mỗi vòng vẫn là $\bigO(nd)$ và phần thêm là một phép
 cộng vector. Điểm khác nằm ở chỗ gradient được lấy tại điểm ngoại suy $y_k$ chứ
 không tại $w_k$, tức thuật toán đọc hàm mục tiêu ở phía trước hướng đang đi. Cơ
 chế khởi động lại đặt $k = 0$ mỗi khi $\nabla f(y_k)\trans (w_{k+1} - w_k) >
@@ -212,7 +212,7 @@ quy hai vòng ở thuật toán~\ref{alg:lbfgs}~\cite{nocedal2006numerical}. M�
 của đệ quy chỉ gồm tích vô hướng và phép cộng vector nên toàn bộ hướng đi tính
 được với chi phí $\bigO(md)$, cộng thêm $\bigO(nd)$ cho một lần lấy gradient.
 
-Đó là lý do L-BFGS nằm giữa hai nhóm về cả chi phí lẫn tốc độ. Nó dùng nhiều
+Nhờ chi phí đó, L-BFGS nằm giữa hai nhóm về cả chi phí lẫn tốc độ. Nó dùng nhiều
 thông tin hơn gradient descent nên cần ít vòng lặp hơn, 8 thay vì 20 ở
 bảng~\ref{tab:summary}, nhưng nó không phải trả cái giá $\bigO(nd^2)$ của Newton
 vì nó không bao giờ chạm tới ma trận $d \times d$. Với $d$ lớn tới mức không lập
@@ -220,5 +220,5 @@ nổi ma trận ấy, đây là phương pháp duy nhất trong báo cáo còn c
 
 Cả năm thuật toán đều đã qua bốn phép kiểm tra tính đúng đắn trước khi chạy lưới
 tham số, mô tả ở phụ lục~\ref{app:tests}. Ngoài năm thuật toán này nhóm còn cài
-Heavy ball, Newton-CG và Adam; phụ lục~\ref{app:cut} nói vì sao chúng không vào
+Heavy ball, Newton-CG và Adam. Phụ lục~\ref{app:cut} nói vì sao chúng không vào
 phần so sánh chính.

@@ -63,7 +63,7 @@ giá. Với RMSE $\num{0.20601}$ thì $\delta = \num{0.2288}$, tức dự đoán
 \num{22.9}\% so với giá thật,
 và trên một chiếc máy giá trung vị \num{18555} thì vênh khoảng \num{4245} đơn vị
 tiền. Chú ý rằng phép quy đổi này chỉ gần đúng, do RMSE lấy trung bình của bình
-phương nên nặng hơn độ lệch trung bình; nó đủ để so hai mô hình với nhau và báo
+phương nên nặng hơn độ lệch trung bình. Nó đủ để so hai mô hình với nhau và báo
 cáo không cần hơn thế.
 
 Cụ thể, toàn bộ thí nghiệm chạy trên một mẫu ngẫu nhiên \num{200000} bản ghi,
@@ -81,7 +81,7 @@ $n$, chẳng hạn phương sai gradient của SGD.
 
 Ký hiệu $n$ là số điểm dữ liệu, $d$ là số thuộc tính sau khi mã hóa,
 $X \in \R^{n \times d}$ là ma trận thiết kế và $y \in \R^{n}$ là vector logarit
-giá. Chuẩn hóa từng cột của $X$ và trừ trung bình khỏi $y$ thì hệ số chặn tối ưu
+giá. Chuẩn hóa từng cột của $X$ và trừ trung bình khỏi $y$, hệ số chặn tối ưu
 bằng không, nên bài toán chỉ còn một khối biến $w$:
 %
 \begin{equation}
@@ -248,7 +248,7 @@ chỗ đo: $\fstar$ biết trước tới sai số máy, nên mọi phát biểu
 được bằng một cái thước tuyệt đối, thứ không có ở những bài toán mà người ta thực
 sự cần phương pháp lặp. Thứ hai, nghiệm đóng chỉ dùng được trong một khoảng quy
 mô nhất định, vì chi phí $\bigO(d^{3})$ và việc phải lập ma trận $d \times d$
-thành rào cản khi $d$ lớn; khi đó các phương pháp mà báo cáo khảo sát mới là lựa
+thành rào cản khi $d$ lớn. Khi đó các phương pháp mà báo cáo khảo sát mới là lựa
 chọn còn lại.
 
 Câu hỏi xuyên suốt báo cáo vì thế gồm hai vế: giải bài toán \eqref{eq:objective}
