@@ -60,19 +60,20 @@ Với cùng dữ liệu và cùng $\lambda$, số điều kiện là $\kappa = \
 khi chuẩn hóa cột nhưng lên tới $\kappa = \num{46540}$ khi các cột giữ thang đo
 không đồng nhất, tức chênh nhau 173 lần. Chênh lệch đó hiện thẳng ra ở tốc độ
 hội tụ trên hình~\ref{fig:normalization-iter}: bản đã chuẩn hóa chạm giới hạn
-số học $10^{-16}$ sau khoảng 290 vòng lặp, còn bản giữ thang đo gốc chạy hết
+số học $10^{-16}$ sau 295 vòng lặp, còn bản giữ thang đo gốc chạy hết
 500 vòng mà sai số mới xuống cỡ $10^{-2}$, tức vẫn cao hơn mức bản chuẩn hóa
 đạt được trong mươi vòng đầu tiên. Hệ số co rút mỗi vòng lặp của gradient
 descent có dạng $1 - \bigO(1/\kappa)$, nên $\kappa$ lớn hơn 173 lần thì phần
 sai số cắt được sau mỗi vòng cũng nhỏ đi theo đúng tỉ lệ ấy.
 
 Chi phí mỗi vòng lặp không phụ thuộc cách biểu diễn cột, khoảng
-\SI{42}{\milli\second} cho cả hai, nên hình~\ref{fig:normalization-time} chỉ là
+\SI{28}{\milli\second} cho cả hai, nên hình~\ref{fig:normalization-time} chỉ là
 hình~\ref{fig:normalization-iter} vẽ lại trên một thang khác: bản chuẩn hóa
-xuống tới giới hạn số học trong khoảng 12 giây còn bản kia sau hơn 20 giây vẫn
-dừng ở $10^{-2}$. Do đó chuẩn hóa cột không phải một bước tiền xử lý về thống
-kê mà là bước quyết định bài toán tối ưu hóa có giải được trong thời gian hợp
-lý hay không. Chú ý rằng khoản lợi ấy chỉ tính cho các phương pháp bậc một, vì
+xuống tới giới hạn số học trong \SI{8.4}{\second} còn bản kia sau
+\SI{13.9}{\second} vẫn dừng ở $10^{-2}$. Do đó chuẩn hóa cột không phải một bước
+tiền xử lý về thống kê mà là bước quyết định bài toán tối ưu hóa có giải được
+trong thời gian hợp lý hay không. Chú ý rằng khoản lợi ấy chỉ tính cho các
+phương pháp bậc một, vì
 Newton ở chương~\ref{sec:mechanisms} vẫn hội tụ sau đúng một vòng lặp dù
 $\kappa$ bằng bao nhiêu.
 
@@ -115,7 +116,7 @@ pháp lặp, vì với thuật toán bậc hai thì $\kappa$ không chi phối s
 khoản được cũng biến mất.
 
 Tổng lại, ba quyết định của chương này đưa $\kappa$ từ mức mà gradient descent
-sau 20 giây vẫn dừng ở sai số $10^{-2}$ xuống mức nó chạm giới hạn số học trong
-khoảng 12 giây, và cái giá đo được trên bài toán ứng dụng là 5 đơn vị tiền mỗi
-máy. Bài toán tối ưu hóa mà các chương sau khảo sát là bài toán sau ba quyết
+sau \SI{13.9}{\second} vẫn dừng ở sai số $10^{-2}$ xuống mức nó chạm giới hạn số
+học trong \SI{8.4}{\second}, và cái giá đo được trên bài toán ứng dụng là 5 đơn
+vị tiền mỗi máy. Bài toán tối ưu hóa mà các chương sau khảo sát là bài toán sau ba quyết
 định ấy, với $L$, $\mu$ và $\kappa$ đã ghi ở bảng~\ref{tab:constants}.

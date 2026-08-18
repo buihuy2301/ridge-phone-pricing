@@ -71,7 +71,7 @@ Cụ thể, toàn bộ thí nghiệm chạy trên một mẫu ngẫu nhiên \num
 chia thành \num{160000} điểm huấn luyện và \num{40000} điểm kiểm tra, với seed cố
 định ghi kèm trong kết quả. Nhóm lấy mẫu vì chi phí tính toán chứ không vì lý do
 thống kê: trên toàn bộ một triệu bản ghi, một lần tính gradient mất
-\SI{271}{\milli\second} thay vì \SI{39}{\milli\second}, và lưới tham số ở
+\SI{135}{\milli\second} thay vì \SI{23}{\milli\second}, và lưới tham số ở
 chương~\ref{sec:mechanisms} nhân con số đó lên theo tổng số vòng lặp của mọi cấu
 hình. Cỡ mẫu này đủ cho các kết luận về tốc độ hội tụ, vốn chỉ phụ thuộc $L$,
 $\mu$ và $\kappa$, nhưng sẽ không đủ nếu đại lượng cần đo phụ thuộc trực tiếp vào
@@ -277,9 +277,11 @@ nào trả lời vế nào.
 \end{table}
 
 Kết quả chính, nêu trước ở đây và trình bày đầy đủ ở chương~\ref{sec:compare}:
-trong năm thuật toán được thực nghiệm, cả năm cho RMSE trên tập kiểm tra trùng
-nhau tới chữ số thứ bảy, trong khi thời gian để cùng đạt sai số $10^{-6}$ trải
-hơn một bậc, từ \SI{0.076}{\second} của Newton tới \SI{0.879}{\second} của AGD.
+trong năm thuật toán được thực nghiệm, cả năm cho cùng một RMSE trên tập kiểm
+tra, chênh lệch lớn nhất giữa chúng chỉ là \num{0.06} đơn vị tiền trên một chiếc
+máy giá trung vị, trong khi thời gian để cùng đạt sai số $10^{-6}$ chênh nhau 4,2
+lần, từ \SI{0.133}{\second} của Newton tới \SI{0.563}{\second} của gradient
+descent có backtracking.
 Chọn sai thuật toán vì thế không làm cửa hàng định giá sai mà chỉ làm người huấn
 luyện chờ lâu hơn. Chỉ duy nhất SGD với độ dài bước hằng là ngoại lệ, dừng ở RMSE
 $\num{0.20986}$ so với $\num{0.20601}$, tức đắt thêm khoảng 88 đơn vị tiền trên
