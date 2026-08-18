@@ -157,7 +157,10 @@ sánh phía sau sẽ vô nghĩa nếu nó thất bại.
 
 Bốn bộ giải \texttt{Ridge} đều đạt $\fstar$ ở mức sai số máy và đều cho cùng một
 RMSE, nhưng thời gian trải từ \SI{0.235}{\second} tới \SI{3.52}{\second}
-(bảng~\ref{tab:sklearn}). Bộ giải trực tiếp giải thẳng chính hệ phương trình mà
+(bảng~\ref{tab:sklearn}). Các bộ giải trực tiếp không có lịch sử vòng lặp nên
+hình~\ref{fig:sklearn-iter} chỉ đặt các phương pháp lặp tự cài đặt cạnh nhau, còn
+phép so đầy đủ nằm ở hình~\ref{fig:sklearn-time}, nơi mỗi cài đặt thư viện hiện
+ra thành một điểm. Bộ giải trực tiếp giải thẳng chính hệ phương trình mà
 một bước Newton giải, nên nó và phương pháp Newton tự cài đặt về bản chất làm
 cùng một việc; con số \SI{0.133}{\second} của bản tự cài đặt so với
 \SI{0.235}{\second} của thư viện không nói lên điều gì ngoài việc bản tự cài đặt

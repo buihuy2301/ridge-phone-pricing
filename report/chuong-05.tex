@@ -1,0 +1,224 @@
+% Bản nháp chương 5 theo dàn bài mới, viết với bộ mẫu ở style/mau/.
+% Chưa nối vào report.tex.
+% ===========================================================================
+\chapter{Cài đặt}
+\label{sec:algorithms}
+
+Năm thuật toán so sánh ở chương~\ref{sec:compare} đều do nhóm tự cài, dùng chung
+một chữ ký hàm và trả về chung một cấu trúc lịch sử. Chương này mô tả cập nhật
+của từng thuật toán cùng chi phí mỗi vòng lặp của nó, và trước hết là phần đo,
+vì mọi con số giây trong báo cáo chỉ so được với nhau khi phép đo giống nhau.
+
+\section{Giao diện chung và cách đo}
+\label{sec:recorder}
+
+Mọi thuật toán nhận cùng một bộ tham số gồm bài toán, điểm khởi đầu, ngân sách
+vòng lặp, quy tắc chọn độ dài bước, sai số dừng, tần suất ghi lịch sử và hạt
+giống ngẫu nhiên, rồi trả về một đối tượng chứa dãy vòng lặp, dãy giá trị hàm
+mục tiêu, dãy chuẩn gradient, dãy thời gian tích lũy, dãy số lần truy cập dữ
+liệu và trạng thái dừng. Nhờ vậy phần vẽ hình dùng lại được cho mọi phương pháp,
+và một cấu hình mới không kéo theo một nhánh riêng trong mã vẽ.
+
+Phần đo thời gian có ba chi tiết quyết định tính đúng của mọi biểu đồ theo trục
+giây. Thứ nhất, đồng hồ dừng trước khi tính $f(w_k)$ và chuẩn gradient rồi chạy
+lại sau đó, vì hai phép tính ấy tốn ngang một vòng lặp gradient nên ghi lịch sử
+dày sẽ thổi phồng thời gian nếu tính vào. Thứ hai, bộ đếm số lần đánh giá hàm và
+gradient được khôi phục sau mỗi lần ghi, nếu không thì cột chi phí ở
+chương~\ref{sec:mechanisms} sẽ đếm cả phần theo dõi. Thứ ba, mỗi lần đo chạy vài
+vòng khởi động rồi bỏ kết quả đi, vì lần gọi thư viện đại số tuyến tính đầu tiên
+mang theo chi phí khởi tạo.
+
+Ba chi tiết ấy loại được chi phí của phép theo dõi nhưng không loại được ảnh
+hưởng của nó lên phần cứng. Phép đo RMSE ở chương~\ref{sec:enough} quét ma trận
+kiểm tra \SI{85}{\mebi\byte} xen giữa các vòng lặp và đẩy ma trận huấn luyện
+\SI{342}{\mebi\byte} ra khỏi cache, làm lần chạy chậm đi 13\% dù đồng hồ đã dừng
+đúng lúc. Vì thế các thí nghiệm so sánh thời gian chạy không bật phép theo dõi
+ấy, và chương~\ref{sec:enough} chỉ báo số vòng lặp.
+
+Cuối cùng, một lần chạy dừng khi chuẩn gradient tương đối xuống dưới ngưỡng, khi
+hết ngân sách vòng lặp, khi hàm mục tiêu bùng lên quá $10^{12}$ lần giá trị đầu,
+hoặc khi nó không cải thiện quá một sai số tương đối $10^{-13}$ trong mười lần
+ghi liên tiếp. Tiêu chí cuối cùng có mặt vì một lý do đo được: trước khi thêm nó,
+một lần chạy backtracking đạt sai số $10^{-15}$ ở vòng lặp 115 rồi chạy tiếp tới
+vòng 250, và 98,7\% trong 72 giây của lần chạy ấy là thời gian chết. Tiêu chí này
+không áp cho các phương pháp ngẫu nhiên, vì hàm mục tiêu của chúng không đơn điệu
+và chỗ nằm ngang chính là kết quả cần trình bày.
+
+\section{Gradient descent}
+\label{sec:impl-gd}
+
+\begin{algorithm}[tp]
+  \caption{Gradient descent}
+  \label{alg:gd}
+  \begin{algorithmic}[1]
+    \Require objective $f$, initial point $w_0$, step size rule
+    \For{$k = 0, 1, 2, \dots$}
+      \State $g_k \gets \nabla f(w_k)$
+      \State choose $t_k$ (fixed, or by Armijo backtracking)
+      \State $w_{k+1} \gets w_k - t_k g_k$
+    \EndFor
+  \end{algorithmic}
+\end{algorithm}
+
+Thuật toán~\ref{alg:gd} dùng đúng một thông tin về hàm mục tiêu là gradient tại
+điểm hiện tại, nên mỗi vòng lặp tốn $\bigO(nd)$, bằng một lần quét toàn bộ ma
+trận thiết kế. Với hàm bậc hai lồi mạnh, phương pháp hội tụ khi $0 < t < 2/L$ và
+độ dài bước tối ưu là $t = 2/(L+\mu)$~\cite{nesterov2018lectures}. Hai mốc ấy đến
+thẳng từ \eqref{eq:lipschitz}: sai số theo hướng riêng ứng với trị riêng
+$\lambda_i$ nhân với $\abs{1 - t\lambda_i}$ mỗi vòng, nên điều kiện hội tụ là hệ
+số ấy nhỏ hơn 1 với mọi $\lambda_i \in [\mu, L]$, và độ dài bước tối ưu là giá
+trị làm cân bằng hai đầu khoảng. Chương~\ref{sec:mechanisms} đo cả hai mốc.
+
+\section{Backtracking theo điều kiện Armijo}
+\label{sec:impl-armijo}
+
+Xuất phát từ $t = t_0$, thu nhỏ $t \leftarrow \beta t$ cho tới
+khi~\cite{nocedal2006numerical}
+%
+\begin{equation}
+  \label{eq:armijo}
+  f\bigl( w + t p \bigr) \le f(w) + \alpha \, t \, \langle \nabla f(w), p \rangle ,
+\end{equation}
+%
+với $p$ là hướng giảm. Khi $p = -\nabla f(w)$, điều kiện trở thành
+$f(w - t \nabla f(w)) \le f(w) - \alpha t \norm{\nabla f(w)}_{2}^{2}$.
+
+Điều kiện \eqref{eq:armijo} không nhận mọi bước làm hàm giảm mà đòi mức giảm đạt
+ít nhất tỉ lệ $\alpha$ của mức giảm mà xấp xỉ tuyến tính hứa hẹn. Đòi hỏi ấy cần
+thiết vì một bước rất nhỏ luôn làm $f$ giảm chút ít, và nhận nó thì thuật toán bò
+mãi mà không tới đâu. Hai tham số vì thế đóng hai vai khác nhau: $\alpha$ định
+nghĩa thế nào là giảm đủ, còn $\beta$ định chi phí tìm kiếm vì nó quyết định mỗi
+lần thử thu nhỏ bước bao nhiêu. Chương~\ref{sec:mechanisms} cho thấy chỉ $\beta$
+đổi được số lần đánh giá hàm mỗi vòng lặp.
+
+\section{Stochastic gradient descent}
+\label{sec:impl-sgd}
+
+\begin{equation}
+  \label{eq:sgd}
+  g_k = \frac{1}{\abs{\Batch_k}} \sum_{i \in \Batch_k}
+        \bigl( x_i\trans w_k - y_i \bigr) x_i + \lambda w_k,
+  \qquad
+  w_{k+1} = w_k - \eta_k g_k .
+\end{equation}
+
+Ở đây $\Batch_k$ trong \eqref{eq:sgd} là một lô chỉ số lấy ngẫu nhiên, nên $g_k$
+là ước lượng không chệch của gradient đầy đủ và mỗi vòng lặp chỉ tốn $\bigO(Bd)$ thay vì
+$\bigO(nd)$. Đổi lại, $g_k$ mang phương sai không tắt theo $k$, và
+chương~\ref{sec:mechanisms} cho thấy chính phương sai ấy quyết định SGD dừng ở
+đâu.
+
+Nhóm thử bốn quy tắc chọn độ dài bước~\cite{bottou2018optimization}
+%
+\begin{equation}
+  \label{eq:schedules}
+  \eta_k = \eta_0, \qquad
+  \eta_k = \frac{\eta_0}{1 + \gamma k}, \qquad
+  \eta_k = \frac{\eta_0}{\sqrt{k+1}}, \qquad
+  \eta_k = \eta_0 \, 2^{-\lfloor k / p \rfloor} .
+\end{equation}
+
+Bốn quy tắc ở \eqref{eq:schedules} ấn định $\eta_k$ trước theo chỉ số vòng lặp và
+không đọc gì từ giá trị hàm mục tiêu, nên chúng là quy tắc tất định chứ không
+phải một dạng line search. Ba thuật toán còn lại của báo cáo đều có một biến thể
+dùng backtracking, riêng SGD thì không, và lý do đo được. Điều kiện Armijo
+\eqref{eq:armijo} đòi đánh giá $f$ trên toàn bộ tập huấn luyện ở mỗi lần thử độ
+dài bước, trong khi với $B = 64$ một lượt duyệt dữ liệu gồm \num{2500} lần cập
+nhật. Lấy \SI{23}{\milli\second} làm chi phí một lần quét toàn bộ dữ liệu thì
+riêng phần line search cần khoảng \SI{58}{\second} cho một lượt duyệt, còn cả
+lượt duyệt đo được chỉ mất \SI{0.087}{\second}, tức gấp hơn 600 lần. Con số
+\SI{58}{\second} là ước lượng suy ra từ hai đại lượng đo được và chưa tính số lần
+thu nhỏ bước trong mỗi lần gọi, nên chênh lệch thật chỉ có thể lớn hơn.
+
+Trở ngại thứ hai nằm ở phần bảo đảm. Áp \eqref{eq:armijo} lên $g_k$ chỉ bảo đảm
+giảm cho hàm mất mát của lô hiện tại chứ không cho $f$, nên một độ dài bước được
+chấp nhận trên lô này vẫn có thể làm $f$ tăng. Vì vậy độ dài bước ban đầu lấy
+theo hằng số trơn của lô, $\eta_0 = 1/L_B$.
+
+\section{Accelerated gradient descent}
+\label{sec:impl-agd}
+
+\begin{equation}
+  \label{eq:agd}
+  y_k = w_k + \beta_k (w_k - w_{k-1}), \qquad
+  w_{k+1} = y_k - t \nabla f(y_k) ,
+\end{equation}
+%
+với $\beta = (\sqrt{\kappa} - 1)/(\sqrt{\kappa} + 1)$ khi biết
+$\mu$~\cite{nesterov2018lectures}, hoặc $\beta_k = (k-1)/(k+2)$ khi
+không~\cite{beck2009fista}.
+
+So với thuật toán~\ref{alg:gd}, cập nhật \eqref{eq:agd} chỉ thêm một điểm nhớ là
+$w_{k-1}$, nên chi phí mỗi vòng vẫn là $\bigO(nd)$ và phần thêm chỉ là một phép
+cộng vector. Điểm khác nằm ở chỗ gradient được lấy tại điểm ngoại suy $y_k$ chứ
+không tại $w_k$, tức thuật toán đọc hàm mục tiêu ở phía trước hướng đang đi. Cơ
+chế khởi động lại đặt $k = 0$ mỗi khi $\nabla f(y_k)\trans (w_{k+1} - w_k) >
+0$~\cite{odonoghue2015restart}, tức mỗi khi bước vừa đi ngược hướng giảm, và
+chương~\ref{sec:mechanisms} đo tác dụng của nó.
+
+\section{Phương pháp Newton}
+\label{sec:impl-newton}
+
+Bước Newton giải hệ $\nabla^{2} f(w_k) p_k = -\nabla f(w_k)$ bằng phân rã
+Cholesky chứ không nghịch đảo ma trận~\cite{boyd2004convex}. Với hàm mục tiêu bậc
+hai và $w_0 = 0$,
+%
+\begin{equation}
+  \label{eq:newton-one-step}
+  w_1 = w_0 - \bigl( \nabla^{2} f \bigr)^{-1} \nabla f(w_0)
+      = \Bigl( \tfrac{1}{n} X\trans X + \lambda I \Bigr)^{-1}
+        \Bigl( \tfrac{1}{n} X\trans y \Bigr) = \wstar ,
+\end{equation}
+%
+nghĩa là phương pháp hội tụ sau đúng một vòng lặp và bước Newton trùng với nghiệm
+đóng \eqref{eq:closed-form}. Đẳng thức \eqref{eq:newton-one-step} là hệ quả trực
+tiếp của
+\eqref{eq:derivatives}: Hessian không phụ thuộc $w$ nên xấp xỉ bậc hai mà Newton
+dựng tại $w_0$ không phải xấp xỉ, nó chính là hàm mục tiêu.
+
+Phép so có ý nghĩa ở đây do đó không phải số vòng lặp mà là chi phí một vòng.
+Newton dùng toàn bộ Hessian nên nó phải lập ma trận Gram với chi phí $\bigO(nd^2)$
+rồi phân rã với chi phí $\bigO(d^3)$, đặt cạnh $\bigO(nd)$ của một vòng gradient.
+Với $n = \num{160000}$ và $d = 280$, số hạng $nd^2$ chi phối, và đó là lý do
+Newton mất \SI{0.133}{\second} chứ không phải vài mili giây. Trên bài toán phi
+tuyến, nơi Hessian thay đổi theo $w$ và mỗi bước Newton chỉ là một xấp xỉ địa
+phương, số vòng lặp trở lại thành đại lượng đáng so.
+
+\section{L-BFGS}
+\label{sec:impl-lbfgs}
+
+\begin{algorithm}[tp]
+  \caption{Two-loop recursion for the L-BFGS direction}
+  \label{alg:lbfgs}
+  \begin{algorithmic}[1]
+    \Require gradient $g_k$, memory of $m$ pairs $(s_j, y_j)$ with
+             $\rho_j = 1 / y_j\trans s_j$
+    \State $q \gets g_k$
+    \For{$j = k-1, \dots, k-m$}
+      \State $a_j \gets \rho_j \, s_j\trans q$; \quad $q \gets q - a_j y_j$
+    \EndFor
+    \State $r \gets \gamma_k \, q$
+      \Comment{$\gamma_k = s_{k-1}\trans y_{k-1} / y_{k-1}\trans y_{k-1}$}
+    \For{$j = k-m, \dots, k-1$}
+      \State $b \gets \rho_j \, y_j\trans r$; \quad $r \gets r + (a_j - b) s_j$
+    \EndFor
+    \State \Return $-r$
+  \end{algorithmic}
+\end{algorithm}
+
+L-BFGS không lập Hessian mà dựng xấp xỉ nghịch đảo của nó từ $m$ cặp hiệu gần
+nhất $s_j = w_{j+1} - w_j$ và $y_j = \nabla f(w_{j+1}) - \nabla f(w_j)$, qua đệ
+quy hai vòng ở thuật toán~\ref{alg:lbfgs}~\cite{nocedal2006numerical}. Mỗi vòng
+của đệ quy chỉ gồm tích vô hướng và phép cộng vector nên toàn bộ hướng đi tính
+được với chi phí $\bigO(md)$, cộng thêm $\bigO(nd)$ cho một lần lấy gradient.
+
+Đó là lý do L-BFGS nằm giữa hai nhóm về cả chi phí lẫn tốc độ. Nó dùng nhiều
+thông tin hơn gradient descent nên cần ít vòng lặp hơn, 8 thay vì 20 ở
+bảng~\ref{tab:summary}, nhưng nó không phải trả cái giá $\bigO(nd^2)$ của Newton
+vì nó không bao giờ chạm tới ma trận $d \times d$. Với $d$ lớn tới mức không lập
+nổi ma trận ấy, đây là phương pháp duy nhất trong báo cáo còn chạy được.
+
+Cả năm thuật toán đều đã qua bốn phép kiểm tra tính đúng đắn trước khi chạy lưới
+tham số, mô tả ở phụ lục~\ref{app:tests}. Ngoài năm thuật toán này nhóm còn cài
+Heavy ball, Newton-CG và Adam; phụ lục~\ref{app:cut} nói vì sao chúng không vào
+phần so sánh chính.
