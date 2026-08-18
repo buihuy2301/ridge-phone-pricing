@@ -1,0 +1,229 @@
+% Bản nháp phần phụ lục theo dàn bài mới. Chưa nối vào report.tex.
+% ===========================================================================
+\appendix
+
+\chapter{Kiểm thử tính đúng đắn}
+\label{app:tests}
+
+Trước khi chạy lưới tham số, 60 phép thử tự động kiểm tra toàn bộ cài đặt. Bài
+toán có sẵn nghiệm đóng và có sẵn biểu thức của gradient lẫn Hessian, nên phần
+lớn phép thử đối chiếu thẳng với một mốc giải tích chứ không so với một lần chạy
+trước đó.
+
+\begin{enumerate}
+  \item \textbf{Gradient giải tích so với sai phân trung tâm.} So sánh
+    $[\nabla f(w)]_i$ với
+    $\bigl(f(w + \eps e_i) - f(w - \eps e_i)\bigr) / (2\eps)$ tại
+    $\eps = 10^{-6}$. Sai số tương đối phải dưới $10^{-6}$.
+  \item \textbf{Hessian so với sai phân của gradient.} Cùng ngưỡng.
+  \item \textbf{Nghiệm đóng là điểm dừng.} $\norm{\nabla f(\wstar)} < 10^{-12}$.
+  \item \textbf{Mọi thuật toán cùng hội tụ về một nghiệm.} Trên bài toán tổng hợp
+    $n = 100$, $d = 5$, cả mười cấu hình tất định đều cho
+    $\norm{w_{\text{cuối}} - \wstar} < 10^{-6}$.
+\end{enumerate}
+
+Ngoài ra có bốn phép thử về mặt phương pháp luận, tức chúng kiểm chính cách đo
+chứ không kiểm công thức:
+
+\begin{itemize}
+  \item gradient descent phải phân kỳ khi $t > 2/L$, vì phép thử ngưỡng ổn định ở
+    mục~\ref{sec:mech-step} sẽ vô nghĩa nếu tiêu chí dừng theo đình trệ nuốt mất
+    trường hợp này;
+  \item SGD với độ dài bước hằng phải dừng lại cách $\fstar$ một khoảng dương;
+  \item momentum của phương pháp tăng tốc phải tính theo độ dài bước thực tế, kiểm
+    trên một bài toán có điều kiện xấu với line search bật;
+  \item ghi lịch sử dày hay thưa phải cho cùng số lần đánh giá hàm mục tiêu, tức
+    chi phí theo dõi không lẫn vào chi phí thuật toán.
+\end{itemize}
+
+Ba phép thử cuối cùng chạy trên chính nguồn LaTeX chứ không trên mã Python: chúng
+kiểm rằng mọi hình và bảng đều có nhãn và được nhắc tới, rằng không hình nào bị
+chèn hai lần, và rằng mọi mục trong thư mục tài liệu tham khảo đều được trích dẫn.
+Quy tắc về nhãn từng bị vi phạm ở 6 trên 10 bảng và 18 trên 22 hình khi chỉ kiểm
+bằng mắt, nên nó được chuyển thành phép thử.
+
+Các phép thử và chính các thí nghiệm đã bắt được ba lỗi có thật. Thứ nhất là cách
+nhận diện cột số có đơn vị, vốn biến cột \texttt{model} thành số và làm khối
+one-hot mất đi biến định tính nhiều mức nhất. Thứ hai là momentum không nhất quán
+với độ dài bước, đẩy hàm mục tiêu lên $1{,}47 \cdot 10^{4}$
+(mục~\ref{sec:mech-momentum}). Thứ ba là thiếu tiêu chí dừng theo đình trệ, khiến
+một lần chạy tiêu 98,7\% thời gian vào phần đã hết cải thiện
+(mục~\ref{sec:recorder}). Cả ba đều để chương trình chạy trót lọt và trả về một
+con số trông hợp lý, nên không phép thử nào đối chiếu với mốc giải tích thì chúng
+còn nguyên trong kết quả.
+
+\chapter{Ba thuật toán không đưa vào so sánh chính}
+\label{app:cut}
+
+Ngoài năm thuật toán ở chương~\ref{sec:algorithms}, nhóm cài thêm Heavy ball,
+Newton-CG và Adam. Cả ba đều qua bộ kiểm thử ở phụ lục~\ref{app:tests} nhưng
+không vào bảng~\ref{tab:summary}, và bảng~\ref{tab:cut} nói vì sao.
+
+\begin{table}[tp]
+  \centering
+  \caption{Ba thuật toán đã cài nhưng không đưa vào so sánh chính, đo trên cùng
+    một máy với cùng quy ước như bảng~\ref{tab:summary}.}
+  \label{tab:cut}
+  \begin{tabular}{lrrl}
+    \toprule
+    Cấu hình & Vòng lặp đạt $10^{-6}$ & Thời gian (s) & Đối chiếu \\
+    \midrule
+    Heavy ball, tham số tối ưu   & 55        & \num{1.35}  & GD thường cần 20 vòng \\
+    Newton-CG, \texttt{cg\_tol} $= 10^{-6}$ & 1 & \num{0.596} & Newton cần \num{0.133} \\
+    Adam, toàn bộ dữ liệu        & 115       & \num{3.50}  & GD cần \num{0.465} \\
+    Adam, $B = 64$               & không đạt & --          & dừng ở $3{,}1 \cdot 10^{-2}$ \\
+    \bottomrule
+  \end{tabular}
+\end{table}
+
+Heavy ball chỉ khác phương pháp tăng tốc ở thứ tự giữa bước ngoại suy và bước lấy
+gradient, nên nhóm cài nó để đặt cạnh Nesterov. Với bộ tham số tối ưu cho hàm bậc
+hai, $t = 4/(\sqrt{L}+\sqrt{\mu})^{2}$ và
+$\beta = \bigl((\sqrt{\kappa}-1)/(\sqrt{\kappa}+1)\bigr)^{2}$, nó cần 55 vòng lặp
+để đạt $10^{-6}$, tức nhiều hơn gradient descent thường. Kết quả này không mâu
+thuẫn với lý thuyết mà là ví dụ thứ ba của cùng một hiện tượng ở
+mục~\ref{sec:theory-early}: cả hai tham số đều tính từ $\kappa$ nên chúng chỉnh
+cho trường hợp phổ trải đều, còn phổ của bài toán này thì dồn về đầu lớn.
+
+Newton-CG giải hệ Newton bằng gradient liên hợp thay vì phân rã Cholesky, nên mỗi
+bước chỉ cần một tích Hessian nhân vector với chi phí $\bigO(nd)$ và không bao giờ
+phải lập ma trận $d \times d$. Ở $d = 280$ nó chậm hơn Newton khoảng 10 lần
+(mục~\ref{sec:mech-cost}), nhưng nó tồn tại đúng vì trường hợp $d$ lớn, tức đúng
+trường hợp mà báo cáo này không chạm tới.
+
+Adam chia bước theo căn bậc hai của moment bậc hai, cơ chế chỉ phát huy khi thang
+gradient lệch nhau nhiều giữa các tọa độ. Bước chuẩn hóa cột ở
+chương~\ref{sec:data} đã loại đúng chênh lệch ấy, nên trên bài toán này Adam
+không có lợi thế nào: bản toàn bộ dữ liệu cần 115 vòng lặp so với 20 của gradient
+descent, còn bản $B = 64$ không đạt $10^{-6}$ trong 400 vòng.
+
+\chapter{Quy đổi hàm mục tiêu của scikit-learn}
+\label{app:conversion}
+
+Phép so ở mục~\ref{sec:compare-sklearn} chỉ có nghĩa khi hai bên tối ưu cùng một
+hàm, và ba bộ ước lượng dùng ba cách chuẩn hóa hệ số khác nhau.
+
+\texttt{Ridge} cực tiểu hóa $\norm{Xw-y}_{2}^{2} + \alpha \norm{w}_{2}^{2}$, tức
+không có hệ số $\tfrac{1}{2n}$ lẫn $\tfrac{\lambda}{2}$ của
+\eqref{eq:objective}. Nhân \eqref{eq:objective} với $2n$ được
+$\norm{Xw-y}_{2}^{2} + \lambda n \norm{w}_{2}^{2}$, và vì nhân hàm mục tiêu với
+một hằng số dương không đổi nghiệm nên
+%
+\begin{equation}
+  \label{eq:alpha-ridge}
+  \alpha_{\texttt{Ridge}} = \lambda n .
+\end{equation}
+%
+Với $\lambda = \num{0.01}$ và $n = \num{160000}$ thì $\alpha = \num{1600}$.
+
+\texttt{SGDRegressor} với \texttt{loss="squared\_error"} và \texttt{penalty="l2"}
+cực tiểu hóa trung bình mất mát trên các mẫu cộng $\tfrac{\alpha}{2}\norm{w}^{2}$,
+tức trùng \eqref{eq:objective} ngay khi $\alpha = \lambda$. \texttt{LinearRegression}
+không có số hạng phạt nên nó ứng với $\lambda = 0$ và giải một bài toán khác;
+báo cáo đưa nó vào để có mốc tham chiếu chứ không để so tốc độ.
+
+Nhóm kiểm \eqref{eq:alpha-ridge} bằng số chứ không bằng suy luận trên giấy. Lấy
+$\hat{w}$ do \texttt{Ridge} với solver \texttt{cholesky} trả về, khoảng cách tới
+nghiệm đóng \eqref{eq:closed-form} là $1{,}5 \cdot 10^{-15}$, sai số tương đối
+$1{,}9 \cdot 10^{-15}$, và $f(\hat{w}) - \fstar$ bằng đúng 0 trong số học dấu
+phẩy động. Phép kiểm này nằm trong bộ kiểm thử chứ không phải một dòng in ra để
+đọc bằng mắt, vì mọi con số ở bảng~\ref{tab:sklearn} sẽ vô nghĩa nếu nó thất bại.
+
+\chapter{Dẫn xuất các công thức}
+\label{app:derivations}
+
+\section{Từ hàm mục tiêu tới nghiệm đóng}
+
+Viết $r(w) = Xw - y$. Vì
+$\norm{r}_{2}^{2} = r\trans r$ và $\partial r / \partial w = X$, quy tắc dây
+chuyền cho $\nabla_w \tfrac{1}{2n}\norm{r}^{2} = \tfrac{1}{n} X\trans r$. Đạo hàm
+của $\tfrac{\lambda}{2}\norm{w}^{2}$ là $\lambda w$, nên cộng lại được vế thứ
+nhất của \eqref{eq:derivatives}. Lấy đạo hàm lần nữa, $X\trans r$ tuyến tính theo
+$w$ với ma trận $X\trans X$, nên $\nabla^{2} f = \tfrac{1}{n} X\trans X + \lambda I$
+và nó không chứa $w$.
+
+Cho gradient bằng không được
+$\bigl(\tfrac{1}{n} X\trans X + \lambda I\bigr) w = \tfrac{1}{n} X\trans y$. Ma
+trận vế trái xác định dương với mọi $\lambda > 0$ vì $X\trans X$ nửa xác định
+dương, nên hệ có nghiệm duy nhất, đó là \eqref{eq:closed-form}.
+
+\section{Hằng số Lipschitz là chuẩn phổ của Hessian}
+
+Với $H = \nabla^{2} f$ hằng, $\nabla f(u) - \nabla f(v) = H(u-v)$ với mọi $u, v$.
+Do đó $\norm{\nabla f(u) - \nabla f(v)} = \norm{H(u-v)} \le \norm{H}_{2} \norm{u-v}$,
+tức \eqref{eq:lipschitz} đúng với $L = \norm{H}_{2}$. Chặn này đạt được khi
+$u - v$ nằm theo hướng riêng ứng với trị riêng lớn nhất, nên không lấy $L$ nhỏ
+hơn được. Vì $H$ đối xứng nửa xác định dương cộng $\lambda I$, chuẩn phổ của nó
+bằng trị riêng lớn nhất, và ta được \eqref{eq:constants}.
+
+\section{Hằng số trơn của một lô}
+
+Gọi $L_{\max}$ là hằng số trơn lớn nhất trong các mất mát một mẫu, ở đây
+$\norm{x_i}^{2} + \lambda$. Mất mát trên một lô $B$ mẫu lấy ngẫu nhiên là trung
+bình của $B$ hàm, và với $B$ mẫu độc lập thì phần phương sai giữa các mẫu chia
+cho $B$ còn phần chung giữ nguyên, nên hằng số trơn nội suy giữa hai đầu:
+$L_B \to L_{\max}$ khi $B = 1$ và $L_B \to L$ khi $B = n$. Dạng nội suy tuyến
+tính theo $1/B$ cho \eqref{eq:minibatch-smoothness}. Đây là xấp xỉ dùng làm quy
+tắc chọn bước chứ không phải đẳng thức chặt; điều duy nhất báo cáo dựa vào là
+$L_B$ giảm theo $B$, và mục~\ref{sec:mech-noise} kiểm điều đó bằng số.
+
+\section{Cận co rút của gradient descent trên hàm bậc hai}
+
+Với $H$ hằng và $t$ cố định, $w_{k+1} - \wstar = (I - tH)(w_k - \wstar)$. Khai
+triển theo cơ sở riêng của $H$, thành phần ứng với trị riêng $\lambda_i$ nhân với
+$1 - t\lambda_i$ mỗi vòng. Vì $f(w) - \fstar = \tfrac{1}{2}(w-\wstar)\trans H (w-\wstar)$,
+sai số hàm mục tiêu nhân với $(1 - t\lambda_i)^{2}$ theo từng thành phần. Hệ số
+tệ nhất là $\max_{\lambda_i \in [\mu, L]} \abs{1 - t\lambda_i}$, và giá trị $t$
+làm nó nhỏ nhất là $t = 2/(L+\mu)$, khi ấy hai đầu khoảng cho cùng một giá trị
+$(\kappa-1)/(\kappa+1)$. Bình phương lên được \eqref{eq:gd-rate}.
+
+Chú ý rằng lập luận này cũng cho luôn điều kiện hội tụ: cần
+$\abs{1 - t\lambda_i} < 1$ với mọi $i$, tức $0 < t < 2/L$, và tại $t = 2/L$ thì
+thành phần ứng với $\lambda_i = L$ có hệ số bằng đúng $-1$ nên nó không tắt. Đó
+là cơ chế mà mục~\ref{sec:mech-step} đo được.
+
+\chapter{Cấu hình và seed}
+\label{app:config}
+
+Mọi con số thời gian trong báo cáo đo trên cùng một máy, cấu hình ghi ở
+bảng~\ref{tab:config}, trong cùng một lượt chạy và không có tiến trình nặng nào
+khác. Đổi máy thì các tỉ số giữa các phương
+pháp cũng đổi, và mức đổi không đồng đều giữa các nhóm, nên không so trực tiếp
+với bất kỳ con số nào đo ở nơi khác.
+
+\begin{table}[tp]
+  \centering
+  \caption{Cấu hình phần cứng và phần mềm.}
+  \label{tab:config}
+  \begin{tabular}{ll}
+    \toprule
+    Hạng mục & Giá trị \\
+    \midrule
+    CPU        & Intel Core 7 150U, 10 nhân, 12 luồng \\
+    Bộ nhớ     & 31 GB \\
+    Hệ điều hành & Linux, glibc 2.39 \\
+    Python     & 3.12.3 \\
+    NumPy      & 2.5.2, liên kết OpenBLAS 0.3.34 đa luồng \\
+    SciPy      & 1.18.0 \\
+    scikit-learn & 1.9.0 \\
+    pandas     & 3.0.5 \\
+    matplotlib & 3.11.1 \\
+    \bottomrule
+  \end{tabular}
+\end{table}
+
+Mọi thành phần ngẫu nhiên dùng seed 0: phép lấy mẫu \num{200000} bản ghi từ một
+triệu, phép chia tập huấn luyện và tập kiểm tra, phép chia fold của
+cross-validation, và thứ tự lô của SGD. Bài toán đã chốt gồm $n = \num{160000}$
+điểm huấn luyện, $d = 280$ thuộc tính, $\num{40000}$ điểm kiểm tra và
+$\lambda = \num{0.01}$; ba hằng số $L$, $\mu$, $\kappa$ cùng $\fstar$ ghi ở
+bảng~\ref{tab:constants}.
+
+Mỗi cấu hình chạy ba lần và lấy trung vị theo thời gian. Chênh lệch giữa ba lần
+chạy của cùng một cấu hình nằm trong khoảng 5\% tới 25\% ở phần lớn các nhóm và
+lên tới 61\% ở trường hợp xấu nhất, nên chỉ những khoảng cách lớn hơn mức đó mới
+nên đọc thành thứ hạng.
+
+Kết quả từng nhóm ghi ra \texttt{results/raw/} dưới dạng JSON ngay khi nhóm ấy chạy
+xong, nên vẽ lại được mọi hình mà không cần chạy lại thí nghiệm, và một lần gián
+đoạn chỉ làm mất đúng nhóm đang chạy dở.
