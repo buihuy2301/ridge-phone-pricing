@@ -32,9 +32,28 @@ CITE_RE = re.compile(r"\\cite[a-z]*\{([^}]*)\}")
 BIB_ENTRY_RE = re.compile(r"^@\w+\{([^,]+),", re.MULTILINE)
 
 
+INPUT_RE = re.compile(r"^[^%\n]*\\input\{([^}]+)\}", re.MULTILINE)
+
+
+def expand_inputs(path: Path, seen: set[Path] | None = None) -> str:
+    """Text of `path` with every \\input expanded, recursively.
+
+    The body lives in one file per chapter, so reading the root file alone
+    would make every check below pass on an empty document.
+    """
+    seen = set() if seen is None else seen
+    if path in seen or not path.exists():
+        return ""
+    seen.add(path)
+    text = path.read_text(encoding="utf-8")
+    for name in INPUT_RE.findall(text):
+        text += "\n" + expand_inputs((path.parent / name).with_suffix(".tex"), seen)
+    return text
+
+
 def read_report() -> str:
-    """Source of report.tex."""
-    return REPORT_TEX.read_text(encoding="utf-8")
+    """Source of report.tex with every \\input expanded."""
+    return expand_inputs(REPORT_TEX)
 
 
 def declared_labels(text: str) -> list[str]:
@@ -94,9 +113,8 @@ def test_bibliography_is_used() -> None:
     """Every entry in refs.bib is cited, and every citation key exists."""
     cited: set[str] = set()
     for path in (REPORT_TEX, SLIDES_TEX):
-        if path.exists():
-            for group in CITE_RE.findall(path.read_text(encoding="utf-8")):
-                cited.update(key.strip() for key in group.split(","))
+        for group in CITE_RE.findall(expand_inputs(path)):
+            cited.update(key.strip() for key in group.split(","))
 
     entries = set(BIB_ENTRY_RE.findall(REFS_BIB.read_text(encoding="utf-8")))
     assert not cited - entries, f"cited but absent from refs.bib: {sorted(cited - entries)}"

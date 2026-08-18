@@ -1,4 +1,4 @@
-% Bản nháp phần phụ lục theo dàn bài mới. Chưa nối vào report.tex.
+% Bản nháp phần phụ lục theo dàn bài mới.
 % ===========================================================================
 \appendix
 
@@ -76,8 +76,8 @@ không vào bảng~\ref{tab:summary}, và bảng~\ref{tab:cut} nói vì sao.
   \end{tabular}
 \end{table}
 
-Heavy ball chỉ khác phương pháp tăng tốc ở thứ tự giữa bước ngoại suy và bước lấy
-gradient, nên nhóm cài nó để đặt cạnh Nesterov. Với bộ tham số tối ưu cho hàm bậc
+Heavy ball~\cite{polyak1964heavyball} chỉ khác phương pháp tăng tốc ở thứ tự giữa
+bước ngoại suy và bước lấy gradient, nên nhóm cài nó để đặt cạnh Nesterov. Với bộ tham số tối ưu cho hàm bậc
 hai, $t = 4/(\sqrt{L}+\sqrt{\mu})^{2}$ và
 $\beta = \bigl((\sqrt{\kappa}-1)/(\sqrt{\kappa}+1)\bigr)^{2}$, nó cần 55 vòng lặp
 để đạt $10^{-6}$, tức nhiều hơn gradient descent thường. Kết quả này không mâu
@@ -91,7 +91,7 @@ phải lập ma trận $d \times d$. Ở $d = 280$ nó chậm hơn Newton khoả
 (mục~\ref{sec:mech-cost}), nhưng nó tồn tại đúng vì trường hợp $d$ lớn, tức đúng
 trường hợp mà báo cáo này không chạm tới.
 
-Adam chia bước theo căn bậc hai của moment bậc hai, cơ chế chỉ phát huy khi thang
+Adam~\cite{kingma2015adam} chia bước theo căn bậc hai của moment bậc hai, cơ chế chỉ phát huy khi thang
 gradient lệch nhau nhiều giữa các tọa độ. Bước chuẩn hóa cột ở
 chương~\ref{sec:data} đã loại đúng chênh lệch ấy, nên trên bài toán này Adam
 không có lợi thế nào: bản toàn bộ dữ liệu cần 115 vòng lặp so với 20 của gradient
