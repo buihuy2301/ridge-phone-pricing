@@ -1,0 +1,276 @@
+% Bản nháp chương 6 theo dàn bài mới, viết với bộ mẫu ở style/mau/.
+% Chưa nối vào report.tex.
+% ===========================================================================
+\chapter{Ba cơ chế giải thích mọi chênh lệch}
+\label{sec:mechanisms}
+
+Chương~\ref{sec:compare} để lại câu hỏi vì sao các đường lại nằm ở đúng những chỗ
+đó. Nhóm đã quét bảy lưới tham số để trả lời, nhưng bảy lưới ấy không cho bảy bài
+học rời rạc: mọi chênh lệch đo được trong báo cáo đều quy về ba cơ chế. Chương
+này trình bày theo ba cơ chế đó thay vì theo bảy thuật toán, và mỗi mục dùng đúng
+lưới tham số nào chiếu sáng cơ chế của nó.
+
+\section{Cơ chế thứ nhất: độ dài bước so với ngưỡng \texorpdfstring{$2/L$}{2/L}}
+\label{sec:mech-step}
+
+\resultfig{gd_fixed_iter}
+  {Gradient descent với các độ dài bước cố định, theo số vòng lặp.}
+  {fig:gd-fixed-iter}
+\resultfig{gd_fixed_time}
+  {Gradient descent với các độ dài bước cố định, theo thời gian chạy.}
+  {fig:gd-fixed-time}
+
+\begin{table}[tp]
+  \centering
+  \caption{Gradient descent với độ dài bước cố định. Ngưỡng ổn định là
+    $2/L = \num{0.745}$.}
+  \label{tab:gd-fixed}
+  \begin{tabular}{lrrl}
+    \toprule
+    Độ dài bước & Vòng lặp đạt $10^{-6}$ & Thời gian (s) & Kết cục \\
+    \midrule
+    $t = 2.1/L$      & không đạt & --           & phân kỳ, $f$ lên $5{,}4 \cdot 10^{11}$ \\
+    $t = 2/L$        & 20        & \num{0.465}  & dừng ở $4{,}9 \cdot 10^{-8}$ \\
+    $t = 1.9/L$      & 20        & \num{0.478}  & hội tụ \\
+    $t = 2/(L+\mu)$  & 20        & \num{0.729}  & hội tụ \\
+    $t = 1/L$        & 40        & \num{1.181}  & hội tụ \\
+    $t = 0.5/L$      & 80        & \num{2.402}  & hội tụ \\
+    $t = 0.1/L$      & 380       & \num{10.13}  & hội tụ \\
+    $t = 0.01/L$     & không đạt & --           & 1200 vòng mới xuống $3{,}7 \cdot 10^{-4}$ \\
+    \bottomrule
+  \end{tabular}
+\end{table}
+
+Với $t = 2.1/L$ hàm mục tiêu tăng tới $5{,}4 \cdot 10^{11}$, còn với $t = 1.9/L$
+phương pháp hội tụ sau 20 vòng lặp, dù hai độ dài bước chỉ cách nhau 10\%
+(bảng~\ref{tab:gd-fixed}). Ngưỡng $2/L$ vì thế là một ranh giới thật chứ không
+phải một cận an toàn nới rộng. Sai số của thành phần ứng với trị riêng
+$\lambda_i$ của Hessian nhân với $\abs{1 - t\lambda_i}$ mỗi vòng lặp, nên hệ số
+của thành phần ứng với $\lambda_{\max} = L$ vượt quá 1 ngay khi $t$ vượt $2/L$.
+Đúng tại ngưỡng, hệ số đó bằng 1 nên thành phần này đứng yên, và đó là lý do
+$t = 2/L$ dừng ở $4{,}9 \cdot 10^{-8}$ thay vì đi tiếp tới giới hạn số học.
+
+Trong vùng ổn định, giảm $t$ đi một nửa thì số vòng lặp tăng gấp đôi, thấy rõ ở
+dãy 20, 40, 80 ứng với $t = 1.9/L$, $1/L$ và $0.5/L$ trên
+hình~\ref{fig:gd-fixed-iter}. Quan hệ tỉ lệ nghịch ấy chỉ đọc được khi ngân sách
+vòng lặp còn đủ: $t = 0.01/L$ chạy hết 1200 vòng vẫn dừng ở
+$3{,}7 \cdot 10^{-4}$ nên nó không cho một con số để đặt vào dãy trên. Thứ tự các
+đường giữ nguyên khi đổi trục hoành sang thời gian chạy
+(hình~\ref{fig:gd-fixed-time}), vì mọi cấu hình ở đây gọi gradient đúng một lần
+mỗi vòng lặp nên thời gian chỉ là số vòng lặp nhân với một hằng số.
+
+\subsection{Khi độ dài bước do line search chọn}
+\label{sec:mech-backtracking}
+
+\resultfig{gd_backtracking_iter}
+  {Ảnh hưởng của $\alpha$ và $\beta$ tới gradient descent với backtracking, theo
+   số vòng lặp.}
+  {fig:gd-bt-iter}
+\resultfig{gd_backtracking_time}
+  {Cùng các cấu hình ấy theo thời gian chạy. Hai trục tách nhau ở đây, khác với
+   hình~\ref{fig:gd-fixed-time}, vì số lần đánh giá hàm mỗi vòng lặp không còn
+   giống nhau giữa các cấu hình.}
+  {fig:gd-bt-time}
+
+Backtracking bỏ được nhu cầu biết $L$, và cái giá phải trả nằm ở số lần đánh giá
+hàm. Trong chín cấu hình đã quét, số lần đánh giá hàm mỗi vòng lặp chỉ phụ thuộc
+$\beta$: nó bằng \num{2.40} với $\beta = 0.5$, khoảng \num{3.45} với
+$\beta = 0.8$ và khoảng \num{5.1} với $\beta = 0.9$, gần như không đổi khi
+$\alpha$ chạy từ \num{0.1} tới \num{0.5}. Điều đó khớp với vai trò của hai tham
+số ở \eqref{eq:armijo}: $\beta$ quyết định mỗi lần thử thu nhỏ bước bao nhiêu nên
+nó định số lần thử, còn $\alpha$ chỉ dịch ngưỡng chấp nhận nên nó hiếm khi đổi
+được số lần thử thêm một đơn vị.
+
+Chú ý rằng một trong ba con số ấy là chi phí bắt buộc: mỗi vòng lặp phải đánh giá
+$f$ ít nhất một lần để so với điều kiện Armijo, nên phần thực sự do line search
+sinh ra là \num{1.40}, \num{2.45} và \num{4.1} lần. Đây cũng là lý do
+hình~\ref{fig:gd-bt-time} không còn là hình~\ref{fig:gd-bt-iter} vẽ lại trên
+thang khác, khác hẳn cặp hình của bước cố định.
+
+\subsection{Momentum phải khớp với độ dài bước thực tế}
+\label{sec:mech-momentum}
+
+\resultfig{agd_iter}
+  {Các cấu hình momentum của phương pháp tăng tốc, theo số vòng lặp.}
+  {fig:agd-iter}
+\resultfig{agd_time}
+  {Các cấu hình momentum theo thời gian chạy.}
+  {fig:agd-time}
+
+Ghép backtracking với momentum là chỗ cơ chế thứ nhất lộ ra rõ nhất, vì hai thành
+phần ấy phải nói về cùng một độ dài bước. Công thức
+$\beta = (\sqrt{\kappa}-1)/(\sqrt{\kappa}+1)$ chỉ đúng khi $t = 1/L$, trong khi
+line search chấp nhận bước lớn hơn nhiều mỗi khi gradient nằm theo hướng phẳng.
+Bản cài đặt đầu tiên của nhóm ghép bước do line search chọn với momentum tính cho
+$1/L$, và hàm mục tiêu bùng lên $1{,}47 \cdot 10^{4}$. Nhóm viết lại thành
+%
+\begin{equation}
+  \label{eq:momentum-from-step}
+  \beta = \frac{1 - \sqrt{t\mu}}{1 + \sqrt{t\mu}} ,
+\end{equation}
+%
+tức tính theo bước thực tế, và giữ một phép kiểm tra trong bộ kiểm thử để lỗi ấy
+không quay lại.
+
+Sửa \eqref{eq:momentum-from-step} vẫn chưa đủ. Trong ba cấu hình backtracking đã
+quét, cấu hình $\alpha = 0.5$ với $t_0 = 1$ đạt $10^{-6}$ sau 20 vòng lặp và cấu
+hình $\alpha = 0.3$ với $t_0 = 1/L$ đạt sau 35 vòng, còn cấu hình $\alpha = 0.3$
+với $t_0 = 1$ thì không đạt và dừng ở $5{,}5 \cdot 10^{-5}$
+(hình~\ref{fig:agd-iter}). Với $\alpha = 1/2$, điều kiện Armijo trở thành đúng bổ
+đề giảm
+%
+\begin{equation}
+  \label{eq:descent-lemma}
+  f\bigl(y - t \nabla f(y)\bigr) \le f(y) - \frac{t}{2} \norm{\nabla f(y)}^{2} ,
+\end{equation}
+%
+tức chính bất đẳng thức mà chứng minh hội tụ của phương pháp tăng tốc dựa vào.
+Nói cách khác, với $\alpha < 1/2$ thì line search chấp nhận những bước mà
+\eqref{eq:descent-lemma} không bảo đảm, và phần chứng minh mất chỗ dựa. Khởi tạo
+$t_0 = 1/L$ là cách xử lý còn lại, vì khi ấy line search chỉ có thể thu nhỏ từ một
+giá trị vốn đã an toàn.
+
+Khởi động lại là phần cải thiện lớn nhất trong nhóm này và nó không tốn gì. Với
+công thức $\beta_k = (k-1)/(k+2)$, thêm khởi động lại đưa tổng thời gian từ
+\SI{6.67}{\second} còn \SI{2.97}{\second} mà số vòng lặp đạt $10^{-6}$ giữ nguyên
+ở 20, vì momentum tăng dần gây dao động ở phần đuôi và điều kiện
+$\nabla f(y_k)\trans (w_{k+1} - w_k) > 0$ cắt đúng các dao động ấy
+(hình~\ref{fig:agd-time}).
+
+\section{Cơ chế thứ hai: nhiễu của gradient ngẫu nhiên}
+\label{sec:mech-noise}
+
+\resultfig{sgd_common_step_epoch}
+  {SGD với cùng một độ dài bước cho mọi kích thước lô, theo số lượt duyệt dữ
+   liệu.}
+  {fig:sgd-common-epoch}
+\resultfig{sgd_common_step_time}
+  {Cùng thí nghiệm ấy theo thời gian chạy.}
+  {fig:sgd-common-time}
+
+Hằng số Lipschitz của mất mát một mẫu là $\norm{x_i}^{2} + \lambda$, đo được là
+\num{3109.7} so với $L = \num{2.683}$, tức lớn hơn 1159 lần. Hệ quả là một độ dài
+bước an toàn cho gradient đầy đủ không an toàn cho gradient một mẫu. Dùng chung
+$\eta = 0.1/L = \num{0.0373}$ cho mọi kích thước lô thì $B = 1$ phân kỳ hẳn, còn
+sai số cuối giảm đều theo kích thước lô, từ $2{,}5 \cdot 10^{-2}$ với $B = 16$
+xuống $1{,}1 \cdot 10^{-4}$ với $B = 1024$ (hình~\ref{fig:sgd-common-epoch} và
+hình~\ref{fig:sgd-common-time}). Mỗi kích thước lô vì thế phải nhận độ dài bước
+riêng, lấy theo hằng số trơn của lô
+%
+\begin{equation}
+  \label{eq:minibatch-smoothness}
+  L_B = L + \frac{L_{\max} - L}{B} ,
+\end{equation}
+%
+nội suy giữa $L_{\max}$ khi $B = 1$ và $L$ khi $B = n$.
+
+\subsection{Bước hằng dừng ở một lân cận}
+\label{sec:mech-schedule}
+
+\resultfig{sgd_schedule_epoch}
+  {Bốn quy tắc chọn độ dài bước của SGD với $B = 64$, theo số lượt duyệt dữ liệu.}
+  {fig:sgd-schedule-epoch}
+\resultfig{sgd_schedule_time}
+  {Bốn quy tắc ấy theo thời gian chạy.}
+  {fig:sgd-schedule-time}
+
+Bốn quy tắc ở \eqref{eq:schedules} chạy cùng $B = 64$, cùng 30 lượt duyệt dữ liệu
+và cùng chi phí tính toán trong khoảng \SI{2.59}{\second} tới
+\SI{2.65}{\second}, nhưng dừng ở bốn mức sai số khác nhau hẳn: bước hằng dừng ở
+$9{,}6 \cdot 10^{-4}$, quy tắc $\eta_0/\sqrt{k+1}$ ở $1{,}5 \cdot 10^{-4}$, quy
+tắc $\eta_0/(1+\gamma k)$ ở $2{,}9 \cdot 10^{-5}$, còn giảm theo bậc thang ở
+$5{,}8 \cdot 10^{-6}$, tức tốt hơn bước hằng 165 lần với cùng ngân sách
+(hình~\ref{fig:sgd-schedule-epoch}).
+
+Cơ chế nằm ở chỗ phương sai của $g_k$ trong \eqref{eq:sgd} không tắt theo $k$.
+Gần $\wstar$ thì gradient đầy đủ tiến về không nhưng gradient của một lô thì
+không, nên bước cập nhật cuối cùng chỉ còn là nhiễu nhân với $\eta$, và nghiệm
+dao động trong một lân cận có bán kính tỉ lệ với $\eta$. Muốn sai số tiếp tục
+giảm thì phải để $\eta_k$ tắt thay, và ba quy tắc giảm dần khác nhau ở chỗ chúng
+tắt nhanh chậm ra sao. Hình~\ref{fig:sgd-schedule-time} không thêm thông tin so
+với hình~\ref{fig:sgd-schedule-epoch}, vì bốn quy tắc chỉ khác nhau ở một phép
+nhân vô hướng nên chi phí mỗi lượt duyệt như nhau.
+
+\subsection{Kích thước lô và thời gian chạy}
+\label{sec:mech-batch}
+
+\resultfig{sgd_batch_epoch}
+  {SGD với các kích thước lô khác nhau, mỗi lô dùng độ dài bước $1/L_B$ riêng,
+   theo số lượt duyệt dữ liệu.}
+  {fig:sgd-batch-epoch}
+\resultfig{sgd_batch_time}
+  {Cùng thí nghiệm ấy theo thời gian chạy, nơi lô nhỏ phải trả giá cho số lần cập
+   nhật.}
+  {fig:sgd-batch-time}
+
+Khi mỗi kích thước lô nhận độ dài bước $1/L_B$ riêng theo
+\eqref{eq:minibatch-smoothness}, năm cấu hình cho sai số cuối gần như nhau, trải
+từ $8{,}2 \cdot 10^{-4}$ tới $1{,}2 \cdot 10^{-3}$
+(hình~\ref{fig:sgd-batch-epoch}). Chênh lệch dồn hết sang thời gian chạy:
+$B = 1$ mất \SI{34.5}{\second} cho 30 lượt duyệt còn $B = 256$ chỉ mất
+\SI{1.86}{\second}, tức nhanh hơn 18 lần với cùng số lần chạm vào dữ liệu
+(hình~\ref{fig:sgd-batch-time}). Lô nhỏ trả giá không phải vì tính nhiều hơn mà
+vì nó chia cùng khối lượng tính toán thành nhiều lần gọi hơn, và chi phí cố định
+của mỗi lần gọi không giảm theo kích thước lô.
+
+\section{Cơ chế thứ ba: chi phí mỗi vòng lặp}
+\label{sec:mech-cost}
+
+\resultfig{newton_iter}
+  {Các biến thể của phương pháp Newton, theo số vòng lặp.}
+  {fig:newton-iter}
+\resultfig{newton_time}
+  {Cùng các biến thể ấy theo thời gian chạy. Đây là trục duy nhất phân biệt được
+   chúng.}
+  {fig:newton-time}
+
+Hai cơ chế trên nói về việc mỗi vòng lặp cắt được bao nhiêu sai số. Cơ chế thứ ba
+nói về việc vòng lặp ấy đắt bao nhiêu, và nó là lý do thứ hạng trên trục vòng lặp
+khác thứ hạng trên trục thời gian.
+
+Ba biến thể Newton đều hội tụ sau đúng một vòng lặp theo
+\eqref{eq:newton-one-step} nên hình~\ref{fig:newton-iter} không phân biệt được
+chúng; chỉ hình~\ref{fig:newton-time} phân biệt được. Phân rã lại Hessian mỗi
+vòng tốn \SI{0.136}{\second} còn dùng lại phân rã cũ tốn \SI{0.133}{\second}, tức
+gần như không khác, đúng như phải thế khi cả hai chỉ chạy một vòng. Bản damped
+thêm backtracking mất \SI{0.168}{\second} vì nó đánh giá $f$ ba lần thay vì hai,
+và line search ở đây không có việc gì để làm: bước đầy đủ $t = 1$ luôn thỏa điều
+kiện Armijo trên một hàm bậc hai.
+
+Newton-CG thay phân rã Cholesky bằng gradient liên hợp nên mỗi bước chỉ cần một
+tích Hessian nhân vector với chi phí $\bigO(nd)$, không bao giờ phải lập ma trận
+$d \times d$. Đổi lại nó mất \SI{1.28}{\second} tới \SI{1.32}{\second}, tức chậm
+hơn Newton khoảng 10 lần ở $d = 280$. Cân bằng chỉ đảo khi $d$ đủ lớn để số hạng
+$\bigO(d^3)$ vượt hẳn chi phí của vài chục bước gradient liên hợp, và
+$d = 280$ còn xa mức đó.
+
+\resultfig{lbfgs_iter}
+  {L-BFGS với các kích thước bộ nhớ, theo số vòng lặp.}
+  {fig:lbfgs-iter}
+\resultfig{lbfgs_time}
+  {L-BFGS với các kích thước bộ nhớ, theo thời gian chạy.}
+  {fig:lbfgs-time}
+
+L-BFGS nằm giữa hai nhóm và bốn kích thước bộ nhớ đã thử đều đạt $10^{-6}$ sau
+đúng 8 vòng lặp (hình~\ref{fig:lbfgs-iter}), trong khi tổng thời gian trải từ
+\SI{1.38}{\second} với $m = 10$ tới \SI{1.97}{\second} với $m = 3$
+(hình~\ref{fig:lbfgs-time}). Bộ nhớ lớn hơn không mua thêm vòng lặp nào vì bài
+toán là hàm bậc hai và tám cặp hiệu đã đủ dựng lại phần phổ mà thuật toán cần,
+còn chênh lệch thời gian giữa bốn cấu hình nằm trong khoảng dao động giữa các lần
+chạy nên không nên đọc thành thứ hạng.
+
+\section{Ba cơ chế, đọc lại bảng tổng hợp}
+\label{sec:mech-summary}
+
+Ba cơ chế trên giải thích đủ bảng~\ref{tab:summary} mà không cần thêm gì. Ba
+phương pháp bậc một bám nhau ở phần đầu vì chúng cùng bị ngưỡng $2/L$ chặn và
+cùng cắt các hướng có độ cong lớn với tốc độ như nhau, rồi tách nhau ở phần đuôi
+vì chỉ momentum mới đổi được hệ số co rút khi $\mu$ lên tiếng. Hai cấu hình SGD
+lệch nhau 87,1 đơn vị tiền không phải vì kích thước lô mà vì một bản để $\eta_k$
+tắt còn bản kia không, tức vì cơ chế thứ hai. Và Newton dẫn đầu bảng dù chỉ chạy
+một vòng lặp là vì cơ chế thứ ba: vòng lặp ấy đắt gấp nhiều lần một vòng gradient
+nhưng vẫn rẻ hơn hai chục vòng gradient cộng lại.
+
+Cả ba cơ chế đều được đo ở đúng một giá trị $\lambda$, tức ở đúng một số điều
+kiện. Chương~\ref{sec:theory} đối chiếu chúng với tốc độ mà lý thuyết dự đoán, và
+chương~\ref{sec:lambda} kiểm xem chúng có giữ nguyên khi $\kappa$ đổi hay không.
