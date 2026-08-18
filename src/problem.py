@@ -15,6 +15,8 @@ variable block w and no unpenalized coordinate.
 
 from __future__ import annotations
 
+from collections.abc import Callable
+
 import numpy as np
 from scipy.linalg import cho_factor, cho_solve, eigvalsh
 
@@ -47,6 +49,12 @@ class RidgeProblem:
         # Evaluation counters. Reset them before a run if they are reported.
         self.n_f_evals = 0
         self.n_grad_evals = 0
+
+        # Optional per-iteration measurement, evaluated by the Recorder inside
+        # the window where the clock is already paused, so its cost stays out
+        # of the reported running time. Chapter 3 of the report uses it for the
+        # test RMSE.
+        self.monitor: Callable[[np.ndarray], float] | None = None
 
         # Lazily computed quantities.
         self._gram: np.ndarray | None = None

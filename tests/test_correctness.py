@@ -286,3 +286,32 @@ def test_result_is_json_serializable(problem: RidgeProblem) -> None:
     """`to_dict` must survive json.dumps, since results are cached on disk."""
     result = gradient_descent(problem, max_iter=10)
     json.dumps(result.to_dict())
+
+
+def test_recorder_collects_monitor_values(problem: RidgeProblem) -> None:
+    """An optional monitor runs once per recorded point.
+
+    Chapter 3 of the report plots the test RMSE against the optimization gap,
+    which needs a per-iteration quantity that the problem itself does not know
+    about. The recorder evaluates it inside the window where the clock is
+    already paused, so the reported running time is unaffected.
+    """
+    problem.monitor = lambda w: float(np.linalg.norm(w))
+
+    result = gradient_descent(
+        problem,
+        w0=np.zeros(problem.d),
+        max_iter=10,
+        record_every=1,
+        patience=None,
+    )
+
+    assert len(result.metric_hist) == len(result.f_hist)
+    assert result.metric_hist[0] == 0.0
+    assert result.metric_hist[-1] > 0.0
+
+
+def test_monitor_is_optional(problem: RidgeProblem) -> None:
+    """Without a monitor the history is empty rather than absent."""
+    result = gradient_descent(problem, max_iter=10)
+    assert result.metric_hist == []

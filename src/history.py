@@ -27,6 +27,7 @@ class OptimizeResult:
     gnorm_hist: list[float] = field(default_factory=list)
     time_hist: list[float] = field(default_factory=list)
     access_hist: list[int] = field(default_factory=list)
+    metric_hist: list[float] = field(default_factory=list)
     status: str = "max_iter"
     n_f_evals: int = 0
     n_grad_evals: int = 0
@@ -76,6 +77,7 @@ class OptimizeResult:
             "gnorm_hist": self.gnorm_hist,
             "time_hist": self.time_hist,
             "access_hist": self.access_hist,
+            "metric_hist": self.metric_hist,
             "w_final_norm": float(np.linalg.norm(self.w_final)),
             "w_final": self.w_final.tolist(),
         }
@@ -93,6 +95,8 @@ class OptimizeResult:
             gnorm_hist=list(payload["gnorm_hist"]),
             time_hist=list(payload["time_hist"]),
             access_hist=list(payload["access_hist"]),
+            # Result files written before the monitor existed have no entry.
+            metric_hist=list(payload.get("metric_hist", [])),
             status=payload["status"],
             n_f_evals=payload["n_f_evals"],
             n_grad_evals=payload["n_grad_evals"],
@@ -144,6 +148,7 @@ class Recorder:
         self.gnorm_hist: list[float] = []
         self.time_hist: list[float] = []
         self.access_hist: list[int] = []
+        self.metric_hist: list[float] = []
 
         self._elapsed = 0.0
         self._clock_start: float | None = None
@@ -205,6 +210,10 @@ class Recorder:
         self.time_hist.append(self._elapsed)
         self.access_hist.append(int(accesses))
 
+        monitor = getattr(self.problem, "monitor", None)
+        if monitor is not None:
+            self.metric_hist.append(float(monitor(w)))
+
         f_first = self._f_first
         if f_first is None:
             f_first = float(f_value)
@@ -236,6 +245,7 @@ class Recorder:
             gnorm_hist=self.gnorm_hist,
             time_hist=self.time_hist,
             access_hist=self.access_hist,
+            metric_hist=self.metric_hist,
             status="diverged" if self.diverged else status,
             n_f_evals=self.problem.n_f_evals,
             n_grad_evals=self.problem.n_grad_evals,
