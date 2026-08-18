@@ -333,148 +333,48 @@ Không còn lượt rà riêng.
 
 ## 7. Giai đoạn B: thí nghiệm E1
 
-Ghi RMSE trên tập kiểm tra tại từng lần ghi lịch sử, cho mọi thuật toán ở cấu hình
-tốt nhất. Đây là thí nghiệm mới duy nhất, và chương 3 của báo cáo phụ thuộc vào nó.
+- [x] Đã xong ngày 2026-08-18. Kết quả ở `results/raw/rmse_tracking.json`, số
+  dẫn xuất ở `results/raw/rmse_threshold.json`, hai hình ở `results/figures/`.
 
-**File:**
-- Sửa: `src/history.py`, lớp `Recorder` và lớp `OptimizeResult`
-- Sửa: `src/problem.py`, lớp `RidgeProblem.__init__`
-- Sửa: `src/plotting.py`, thêm hai hàm vẽ
-- Sửa: `notebooks/05_comparison_all.ipynb`
-- Test: `tests/test_correctness.py`, dùng fixture `problem` đã có ở đó, tức
-  `make_synthetic_ridge(n=100, d=5, lam=1e-2, seed=0)`
+**Cách làm.** `RidgeProblem` có thêm thuộc tính `monitor`, và `Recorder.record`
+gọi nó trong đúng cửa sổ đã dừng đồng hồ, nên không hàm thuật toán nào phải đổi
+chữ ký và thời gian đo không bị ảnh hưởng. `OptimizeResult` có thêm trường
+`metric_hist`, `from_dict` mặc định rỗng nên các file JSON cũ vẫn đọc được.
+Script chạy lại đúng cấu hình tốt nhất của bảy nhóm, xác định từ chính các file
+kết quả đã có.
 
-**Giao diện:**
-- Dùng: `baselines.rmse(problem, w, X_test, y_test)` đã có ở `src/baselines.py:146`
-- Tạo ra: thuộc tính `RidgeProblem.monitor`, trường `OptimizeResult.metric_hist`,
-  khóa `metric_hist` trong JSON, hai hàm `plot_rmse_vs_gap` và `plot_rmse_vs_time`
+**Kết quả chính.** Gộp 268 điểm ghi của sáu cấu hình hội tụ, sai lệch giá lớn
+nhất so với nghiệm đóng theo từng mức sai số tối ưu hóa:
 
-Thiết kế: gắn hàm đo vào đối tượng `problem` thay vì thêm tham số cho tám hàm
-thuật toán. `Recorder` đã nhận `problem` và đã dừng đồng hồ trong `record`, nên
-chỉ cần đọc thuộc tính ở đúng cửa sổ đã dừng đồng hồ. Không hàm thuật toán nào
-phải đổi chữ ký.
+| $f - \fstar$ dưới | Sai lệch giá lớn nhất, đơn vị tiền trên máy trung vị |
+| --- | --- |
+| $10^{-2}$ | 634,4 |
+| $10^{-3}$ | 108,7 |
+| $10^{-4}$ | 12,4 |
+| $10^{-5}$ | 1,6 |
+| $10^{-6}$ | 0,61 |
+| $10^{-8}$ | 0,04 |
 
-- [ ] **Bước 1: viết test hỏng**
+Ngưỡng $\eps_{\text{app}}$ do đó là $1{,}8 \cdot 10^{-6}$ nếu chấp nhận sai lệch
+dưới 1 đơn vị tiền, và $4{,}0 \cdot 10^{-5}$ nếu chấp nhận dưới 10 đơn vị.
 
-Thêm vào `tests/test_correctness.py`. Các import cần dùng đã có sẵn ở đầu file đó.
+**Dự đoán trong spec đã sai và cần ghi lại.** Spec đoán RMSE bão hòa từ khoảng
+$10^{-4}$; thực tế ở mức đó sai lệch giá còn tới 12,4 đơn vị tiền, tức lệch hai
+bậc so với dự đoán. Ngưỡng $10^{-6}$ mà báo cáo vốn chọn theo quy ước hóa ra rất
+sát ngưỡng có căn cứ từ bài toán ứng dụng, nhưng trước E1 thì không ai biết điều
+đó.
 
-```python
-def test_recorder_collects_monitor_values(problem: RidgeProblem) -> None:
-    """The monitor runs once per recorded point, inside the paused window."""
-    problem.monitor = lambda w: float(np.linalg.norm(w))
+**Ngoại lệ.** SGD với bước hằng dừng ở sai số $8{,}2 \cdot 10^{-4}$ và lệch 87,7
+đơn vị tiền, tức nó là cấu hình duy nhất mà lựa chọn thuật toán đổi được chất
+lượng định giá.
 
-    result = gradient_descent(
-        problem,
-        w0=np.zeros(problem.d),
-        max_iter=10,
-        record_every=1,
-        patience=None,
-    )
-
-    assert len(result.metric_hist) == len(result.f_hist)
-    assert result.metric_hist[0] == 0.0
-    assert result.metric_hist[-1] > 0.0
-```
-
-- [ ] **Bước 2: chạy test để xác nhận nó hỏng**
-
-Chạy: `pytest tests/test_correctness.py::test_recorder_collects_monitor_values -v`
-Kết quả mong đợi: FAIL với `AttributeError`, vì `OptimizeResult` chưa có
-`metric_hist`.
-
-- [ ] **Bước 3: thêm thuộc tính `monitor` cho `RidgeProblem`**
-
-Thêm `from collections.abc import Callable` vào đầu `src/problem.py`, rồi trong
-`RidgeProblem.__init__`, cạnh phần khai báo bộ đếm:
-
-```python
-        # Optional callable evaluated by the Recorder inside its paused
-        # window, so its cost stays out of the reported running time.
-        self.monitor: Callable[[np.ndarray], float] | None = None
-```
-
-- [ ] **Bước 4: thêm `metric_hist` cho `OptimizeResult`**
-
-Thêm trường cạnh `access_hist`:
-
-```python
-    metric_hist: list[float] = field(default_factory=list)
-```
-
-Thêm `"metric_hist": self.metric_hist` vào `to_dict`, và
-`metric_hist=list(payload.get("metric_hist", []))` vào `from_dict`. Dùng `get` với
-mặc định rỗng để các file JSON cũ vẫn đọc được.
-
-- [ ] **Bước 5: gọi monitor trong `Recorder.record`**
-
-Trong `src/history.py`, thêm `self.metric_hist: list[float] = []` vào `__init__`,
-rồi trong `record`, ngay sau khi khôi phục bộ đếm và trước phần `append`:
-
-```python
-        monitor = getattr(self.problem, "monitor", None)
-        if monitor is not None:
-            self.metric_hist.append(float(monitor(w)))
-```
-
-Truyền `metric_hist=self.metric_hist` trong `finish`.
-
-- [ ] **Bước 6: chạy test để xác nhận nó xanh**
-
-Chạy: `pytest tests/ -v`
-Kết quả mong đợi: PASS, và các test cũ vẫn xanh. Các file JSON cũ trong
-`results/raw/` vẫn đọc được nhờ `payload.get("metric_hist", [])` ở bước 4.
-
-- [ ] **Bước 7: commit**
-
-```bash
-git add src/history.py src/problem.py tests/test_correctness.py
-git commit -m "feat: record an optional per-iteration metric without timing it"
-```
-
-- [ ] **Bước 8: chạy lại các nhóm thí nghiệm để sinh trường mới**
-
-Trong `notebooks/05_comparison_all.ipynb`, trước khi chạy lưới:
-
-```python
-X_test = np.load(PROCESSED / "X_test.npy")
-y_test = np.load(PROCESSED / "y_test.npy")
-problem.monitor = lambda w: rmse(problem, w, X_test, y_test)
-```
-
-Xóa các file JSON tương ứng trong `results/raw/` để `run_or_load` chạy lại thật,
-giữ nguyên seed đã ghi trong kết quả cũ. Xác nhận cột `time_to_1e-06_s` trong
-`summary_all_methods.csv` không đổi quá 20% so với bản cũ; lệch nhiều hơn nghĩa là
-monitor đang bị tính vào thời gian.
-
-- [ ] **Bước 9: vẽ hai hình mới**
-
-Thêm vào `src/plotting.py` hai hàm dùng bảng màu chung đã có:
-
-  - `plot_rmse_vs_gap(results, f_star)`, trục hoành $f(w_k) - f^*$ thang log đảo
-    chiều, trục tung RMSE, mỗi thuật toán một đường.
-  - `plot_rmse_vs_time(results)`, trục hoành giây, trục tung RMSE.
-
-Lưu ra `results/figures/rmse_vs_gap.{pdf,png}` và `rmse_vs_time.{pdf,png}`.
-
-- [ ] **Bước 10: đọc kết quả và ghi ngưỡng $\eps_{\text{app}}$**
-
-Tìm giá trị $f - f^*$ mà từ đó RMSE ngừng cải thiện. Ghi con số này vào
-`results/raw/` dưới dạng một khóa trong file JSON tóm tắt, vì chương 3 và chương 4
-đều dùng nó.
-
-**Dự đoán chưa kiểm chứng:** RMSE bão hòa từ khoảng $10^{-4}$ trở xuống. Nếu kết
-quả cho thấy RMSE tiếp tục giảm tới tận $10^{-8}$ thì kết luận của chương 3 đảo
-chiều, và chương phải viết theo hướng ngược lại. Không viết chương 3 trước khi có
-số này.
-
-- [ ] **Bước 11: commit**
-
-```bash
-git add src/plotting.py notebooks/05_comparison_all.ipynb results/
-git commit -m "feat: add test-RMSE curves against optimization gap and wall time"
-```
-
----
+**Cảnh báo về máy đo.** E1 chạy trên Linux với OpenBLAS, còn
+`summary_all_methods.csv` đo trên macOS. Đường cong RMSE theo sai số không phụ
+thuộc máy vì dãy lặp trùng nhau, nhưng thời gian thì có: máy Linux này nhanh hơn
+khoảng 25 tới 40 phần trăm, chẳng hạn L-BFGS đạt $10^{-6}$ sau
+\SI{0.316}{\second} thay vì \SI{0.448}{\second}. Trước khi viết chương 4 phải
+chọn một trong hai: chạy lại toàn bộ lưới trên cùng một máy, hoặc chạy E1 lại
+trên máy đã đo bảng cũ.
 
 ## 8. Giai đoạn C: viết lại báo cáo
 

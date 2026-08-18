@@ -86,11 +86,11 @@ tiền trên máy có giá trung vị 18.555.
 Từ chương 4 trở đi, mọi bảng báo cáo hai mốc: thời gian đạt $\eps_{\text{app}}$
 và thời gian đạt $10^{-6}$.
 
-**Dự đoán chưa kiểm chứng:** RMSE bão hòa từ khoảng $10^{-4}$ trở xuống. Nếu thí
-nghiệm E1 cho thấy RMSE tiếp tục giảm tới tận $10^{-8}$ thì kết luận của chương
-đảo chiều, và chương phải viết theo hướng ngược lại, tức mọi chữ số của sai số
-tối ưu hóa đều mua được độ chính xác cho bài toán định giá. Không được viết
-chương này trước khi có số.
+**Dự đoán đã kiểm chứng, và đã sai.** Spec đoán RMSE bão hòa từ khoảng
+$10^{-4}$. E1 chạy ngày 2026-08-18 cho thấy ở mức đó sai lệch giá còn tới 12,4
+đơn vị tiền trên máy giá trung vị, và ngưỡng thật là $1{,}8 \cdot 10^{-6}$ với
+dung sai 1 đơn vị tiền. Kết luận của chương không đảo chiều, nhưng con số thì
+lệch hai bậc so với dự đoán. Chi tiết ở mục 7 của `KE_HOACH_TRIEN_KHAI.md`.
 
 ### 4.2. Chương 6, ba cơ chế
 

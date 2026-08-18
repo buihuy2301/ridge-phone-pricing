@@ -1,0 +1,35 @@
+{
+ "note": "Derived from results/raw/rmse_tracking.json by experiment E1.",
+ "median_price": 18555,
+ "rmse_at_closed_form": 0.20601409359799253,
+ "price_error_at_closed_form": 4244.837029606054,
+ "currency_per_unit_rmse": 22799.837029606053,
+ "n_pooled_points": 268,
+ "worst_price_deviation_by_gap": {
+  "1e-02": 634.3952355937754,
+  "1e-03": 108.7464435208858,
+  "1e-04": 12.419242218954423,
+  "1e-05": 1.561531962990557,
+  "1e-06": 0.606220614544327,
+  "1e-07": 0.1182002399555131,
+  "1e-08": 0.03763481071291608
+ },
+ "eps_app_within_1_currency_unit": 1.7604041822293082e-06,
+ "eps_app_within_10_currency_units": 4.044725334180488e-05,
+ "sgd_constant_step": {
+  "label": "SGD ($B = 256$, $\\eta = 1/L_B = 0.0675$)",
+  "final_gap": 0.0008237336079430675,
+  "final_rmse": 0.20985518955486718,
+  "price_deviation": 87.74477199398916
+ },
+ "time_to_reach_1e-6_s": {
+  "GD ($t = 2/(L+\\mu)$)": 0.5717523009952856,
+  "GD bt ($\\alpha = 0.5$, $\\beta = 0.5$)": 0.5230299159957212,
+  "SGD ($B = 256$, $\\eta = 1/L_B = 0.0675$)": null,
+  "SGD ($B = 64$, $\\eta_k = \\eta_0 \\cdot 2^{-\\lfloor k/5 \\rfloor}$)": null,
+  "AGD ($\\beta_k = (k-1)/(k+2)$) + restart": 0.6038650639966363,
+  "Newton ($t = 1$, cached factor)": 0.06620441300037783,
+  "L-BFGS ($m = 3$)": 0.31564049900043756
+ },
+ "machine": "linux, numpy 2.5.2 + OpenBLAS; the committed summary_all_methods.csv was measured on macOS"
+}

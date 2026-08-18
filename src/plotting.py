@@ -247,6 +247,125 @@ def save_figure(fig, name: str, figure_dir: Path | None = None) -> list[Path]:
     return paths
 
 
+
+def plot_rmse_vs_gap(
+    results: Sequence,
+    f_star: float,
+    stem: str = "rmse_vs_gap",
+    title: str = "",
+    reference: float | None = None,
+    color_by: str = "method",
+    ylim: tuple[float, float] | None = None,
+    save: bool = True,
+    figure_dir: Path | None = None,
+):
+    """Held-out RMSE against the optimization gap it was measured at.
+
+    The horizontal axis runs from a large gap on the left to a small one on the
+    right, so the reader follows the runs in the direction they progress. The
+    curve answers how small f(w_k) - f* has to be before the prediction error
+    stops improving, which is a question about the application rather than
+    about the optimizer.
+
+    `ylim` defaults to a window just above `reference`, because the whole point
+    is the tail: on the full range every curve is flat against the bottom axis.
+    Runs enter the panel from the top edge, which is expected.
+    """
+    fig, ax = plt.subplots(figsize=DEFAULT_FIGSIZE)
+    styles = _series_style(results, color_by)
+
+    for result, style in zip(results, styles):
+        if not result.metric_hist:
+            continue
+        gap = np.maximum(np.asarray(result.f_hist, dtype=float) - f_star, 1e-18)
+        # A method that finishes in a couple of iterations would otherwise be
+        # drawn as a long straight line between two distant points.
+        marker = "o" if len(result.metric_hist) <= 5 else None
+        ax.semilogx(
+            gap,
+            result.metric_hist,
+            label=result.params.get("label", result.method),
+            marker=marker,
+            markersize=4,
+            **style,
+        )
+
+    if reference is not None:
+        ax.axhline(reference, color="#666666", linewidth=0.8, linestyle=":",
+                   label="closed-form solution")
+        if ylim is None:
+            ylim = (reference - 2e-4, reference + 6e-3)
+
+    ax.invert_xaxis()
+    if ylim is not None:
+        ax.set_ylim(*ylim)
+    ax.set_xlabel(r"Optimization gap $f(w_k) - f^*$")
+    ax.set_ylabel("Test RMSE (log price)")
+    if title:
+        ax.set_title(title)
+    ax.grid(True, which="both", alpha=0.3)
+    ax.legend(fontsize=7, loc="upper right")
+    fig.tight_layout()
+    if save:
+        save_figure(fig, stem, figure_dir=figure_dir)
+    return fig
+
+
+def plot_rmse_vs_time(
+    results: Sequence,
+    stem: str = "rmse_vs_time",
+    title: str = "",
+    reference: float | None = None,
+    color_by: str = "method",
+    xlim: tuple[float, float] | None = None,
+    ylim: tuple[float, float] | None = None,
+    save: bool = True,
+    figure_dir: Path | None = None,
+):
+    """Held-out RMSE against wall-clock time.
+
+    This is the panel a practitioner reads: given a budget in seconds, which
+    method has the lowest prediction error by then.
+    """
+    fig, ax = plt.subplots(figsize=DEFAULT_FIGSIZE)
+    styles = _series_style(results, color_by)
+
+    for result, style in zip(results, styles):
+        if not result.metric_hist:
+            continue
+        marker = "o" if len(result.metric_hist) <= 5 else None
+        ax.plot(
+            result.time_hist,
+            result.metric_hist,
+            label=result.params.get("label", result.method),
+            marker=marker,
+            markersize=4,
+            **style,
+        )
+
+    if reference is not None:
+        ax.axhline(reference, color="#666666", linewidth=0.8, linestyle=":",
+                   label="closed-form solution")
+        if ylim is None:
+            ylim = (reference - 2e-4, reference + 6e-3)
+
+    ax.set_xscale("log")
+    if xlim is not None:
+        ax.set_xlim(*xlim)
+    if ylim is not None:
+        ax.set_ylim(*ylim)
+    ax.set_xlabel("Wall-clock time (s)")
+    ax.set_ylabel("Test RMSE (log price)")
+    if title:
+        ax.set_title(title)
+    ax.grid(True, which="both", alpha=0.3)
+    ax.legend(fontsize=7, loc="upper right")
+    fig.tight_layout()
+    if save:
+        save_figure(fig, stem, figure_dir=figure_dir)
+    return fig
+
+
 def plot_theoretical_rate(ax, f0_gap: float, kappa: float, n_iter: int, kind: str = "gd") -> None:
     """Overlay the textbook linear rate for a strongly convex quadratic.
 
