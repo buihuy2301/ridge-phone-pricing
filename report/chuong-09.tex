@@ -1,0 +1,148 @@
+% Bản nháp chương 9 theo dàn bài mới, viết với bộ mẫu ở style/mau/.
+% Chưa nối vào report.tex.
+% ===========================================================================
+\chapter{Kết luận}
+\label{sec:conclusion}
+
+Chương~\ref{sec:problem} đặt câu hỏi gồm hai vế: huấn luyện mô hình định giá là
+giải một bài toán tối ưu hóa, vậy giải bằng cách nào và giải tới mức nào thì
+dừng. Chương này trả lời cả hai, và mỗi câu trả lời đi kèm điều kiện mà nó không
+còn đúng, vì mọi kết luận trong báo cáo đều đo trên một bài toán bậc hai với
+$d = 280$ và $\kappa = \num{268.31}$.
+
+\section{Giải tới mức nào}
+\label{sec:conclusion-how-far}
+
+Sai số $10^{-6}$ là đủ, và từ chương~\ref{sec:enough} thì con số ấy có nghĩa cụ
+thể thay vì là một quy ước: dưới mức đó, sai lệch giá so với nghiệm đóng không
+quá một đơn vị tiền trên một chiếc máy giá trung vị. Ngưỡng có căn cứ đo được là
+$1{,}35 \cdot 10^{-6}$, tức quy ước quen dùng chỉ chặt hơn 1,35 lần.
+
+Kết luận đảo chiều theo dung sai chứ không theo thuật toán. Nếu chấp nhận sai
+lệch mười đơn vị tiền, ngưỡng nới ra thành $4{,}0 \cdot 10^{-5}$, và khi đó SGD
+bậc thang từ chỗ không đạt trở thành đạt sau 21 lượt duyệt dữ liệu. Dung sai của
+bài toán ứng dụng, chứ không phải bản thân thuật toán, quyết định phương pháp nào
+được coi là dùng được.
+
+Chiều ngược lại cũng cần nói. Chạy chính xác hơn mức cần không mua thêm gì: từ
+$10^{-8}$ trở xuống, sai lệch giá còn dưới \num{0.02} đơn vị tiền, và gradient
+descent dừng ở $4{,}9 \cdot 10^{-8}$ còn cho RMSE thấp hơn nghiệm đóng một chút
+vì $\wstar$ cực tiểu hàm mục tiêu trên tập huấn luyện chứ không trên tập kiểm
+tra.
+
+\section{Giải bằng cách nào}
+\label{sec:conclusion-how}
+
+Trên bài toán này, câu trả lời là giải thẳng. Bước Newton chính là nghiệm đóng
+theo \eqref{eq:newton-one-step}, nên toàn bộ lời giải mất \SI{0.133}{\second},
+nhanh hơn 3,5 lần so với thời gian gradient descent cần chỉ để chạm ngưỡng, và
+bộ giải trực tiếp của scikit-learn làm đúng việc ấy trong \SI{0.235}{\second}.
+Phương pháp lặp không có lý do tồn tại ở quy mô này.
+
+Điều kiện đảo chiều là quy mô. Newton tốn $\bigO(nd^{2} + d^{3})$ mỗi vòng và
+phải lập ma trận $d \times d$; khi $d$ lớn tới mức không lập nổi ma trận ấy thì
+L-BFGS là phương pháp duy nhất trong báo cáo còn chạy được, vì nó chỉ giữ $m$ cặp
+hiệu và tốn $\bigO(md)$ ngoài một lần lấy gradient. Ở $d = 280$ thì Newton-CG
+chậm hơn Newton 10 lần, nhưng nó tồn tại đúng vì lý do ấy và cân bằng sẽ đảo ở
+$d$ đủ lớn.
+
+Điều kiện đảo chiều thứ hai là dữ liệu. Cả bảy cấu hình trong báo cáo đều giả
+định toàn bộ ma trận thiết kế nằm trong bộ nhớ. Với dữ liệu đến theo dòng hoặc
+lớn hơn bộ nhớ, SGD lấy lại chỗ đứng không phải vì nó hội tụ tốt hơn mà vì các
+phương pháp còn lại không chạy được.
+
+\section{Chọn tham số}
+\label{sec:conclusion-parameters}
+
+Ba lời khuyên rút từ chương~\ref{sec:mechanisms}, mỗi lời kèm bằng chứng và giới
+hạn.
+
+Chọn độ dài bước sát ngưỡng $2/L$ nhưng đừng chạm vào nó. Chênh 10\% quanh ngưỡng
+đủ để lật từ hội tụ sau 20 vòng sang phân kỳ với $f$ lên $5{,}4 \cdot 10^{11}$,
+và đúng tại ngưỡng thì một thành phần đứng yên nên lần chạy dừng ở
+$4{,}9 \cdot 10^{-8}$. Lời khuyên này đòi biết $L$; khi không biết thì
+backtracking thay thế được với cái giá là số lần đánh giá hàm, và cái giá ấy do
+$\beta$ quyết định chứ không do $\alpha$, từ \num{1.40} lần thêm mỗi vòng với
+$\beta = 0.5$ lên \num{4.1} lần với $\beta = 0.9$.
+
+Giữ momentum nhất quán với độ dài bước thực tế. Công thức
+$\beta = (\sqrt{\kappa}-1)/(\sqrt{\kappa}+1)$ chỉ đúng ở $t = 1/L$, và ghép nó
+với bước do line search chọn làm hàm mục tiêu bùng lên $1{,}47 \cdot 10^{4}$.
+Dùng \eqref{eq:momentum-from-step} theo bước thực tế, và thêm vào đó điều kiện
+Armijo phải lấy $\alpha = 1/2$ để trùng bổ đề giảm \eqref{eq:descent-lemma}, hoặc
+phải khởi tạo $t_0 = 1/L$.
+
+Cho mỗi kích thước lô một độ dài bước riêng. Hằng số trơn của mất mát một mẫu lớn
+hơn $L$ tới 1159 lần, nên một bước an toàn cho gradient đầy đủ làm SGD với lô một
+mẫu phân kỳ. Và nếu muốn sai số tiếp tục giảm thì phải để $\eta_k$ tắt dần, vì
+bước hằng chỉ đưa nghiệm tới một lân cận quanh $\wstar$; giảm theo bậc thang cho
+kết quả tốt hơn bước hằng 165 lần với cùng ngân sách.
+
+\section{Lý thuyết dùng được vào việc gì}
+\label{sec:conclusion-theory}
+
+Cận co rút \eqref{eq:gd-rate} mô tả đúng phần đuôi tới năm chữ số thập phân nhưng
+lệch 93 lần ở giai đoạn đầu, vì phổ Hessian dồn về phía đầu lớn: 269 trong 280
+trị riêng nằm trên $L/10$ và chỉ 8 trị nằm dưới $10\mu$. Hệ quả thực dụng là dùng
+cận để ước lượng chạy thêm bao lâu thì được, dùng nó để lập ngân sách vòng lặp từ
+đầu thì lãng phí gần hai bậc, và dùng nó để chọn cấu hình thì sai, vì momentum
+hằng tính từ $\kappa$ vốn tối ưu theo lý thuyết lại chậm hơn momentum tăng dần
+trên bài toán này.
+
+Chỗ cận có ích nhất hóa ra là làm phép kiểm tra tính đúng đắn. Hệ số co rút quan
+sát được nằm trên cận là dấu hiệu lỗi cài đặt chứ không phải bài toán khó, vì cận
+đúng cho mọi hàm trong lớp, và nhóm đã dùng đúng phép kiểm ấy khi truy lỗi
+momentum.
+
+\section{Kết luận nào là sản phẩm của dạng bậc hai}
+\label{sec:conclusion-quadratic}
+
+Một phần kết quả trong báo cáo gắn với việc hàm mục tiêu là hàm bậc hai và sẽ đổi
+trên bài toán phi tuyến, nên cần tách ra.
+
+Chuyện Newton hội tụ sau đúng một vòng lặp là hệ quả trực tiếp của
+\eqref{eq:derivatives}, rằng Hessian không phụ thuộc $w$, nên xấp xỉ bậc hai mà
+Newton dựng không phải xấp xỉ. Trên hàm phi tuyến, Hessian đổi theo $w$, Newton
+cần nhiều vòng và số vòng lặp trở lại thành đại lượng đáng so. Cùng lý do ấy làm
+backtracking cho Newton không có việc gì để làm ở đây, vì bước đầy đủ luôn thỏa
+điều kiện Armijo.
+
+Việc phân rã lại Hessian mỗi vòng hay dùng lại phân rã cũ cho cùng một thời gian
+cũng là sản phẩm của dạng bậc hai, vì cả hai chỉ chạy một vòng. Trên bài toán phi
+tuyến đây là hai lựa chọn khác hẳn nhau về chi phí.
+
+Ngược lại, ba cơ chế ở chương~\ref{sec:mechanisms} không phụ thuộc dạng bậc hai.
+Ngưỡng ổn định theo hằng số trơn, phương sai của gradient ngẫu nhiên, và chi phí
+mỗi vòng lặp đều là những đại lượng có mặt ở mọi bài toán trơn, chỉ khác là $L$
+và $\mu$ khi ấy phải ước lượng địa phương thay vì đọc từ phổ của một ma trận cố
+định.
+
+\section{Tỉ lệ đáng nhớ nhất}
+\label{sec:conclusion-scale}
+
+Nếu chỉ giữ lại một con số từ báo cáo này thì nên giữ tỉ lệ sau. Mô hình định giá
+sai trung bình \num{4245} đơn vị tiền trên một chiếc máy giá trung vị. Khoảng
+cách giữa cấu hình tối ưu hóa tốt nhất và tệ nhất mà nhóm tự cài là \num{87.7}
+đơn vị, tức khoảng 2\% của con số trên. Một quyết định về hệ số hiệu chỉnh thì
+đắt hơn, \num{302} đơn vị, dù nó chỉ là một dòng trong phần chuẩn bị dữ liệu.
+
+Nói cách khác, trên bài toán này toàn bộ phần tối ưu hóa quyết định khoảng 2\%
+sai số cuối cùng, còn 98\% còn lại thuộc về việc chọn mô hình và chuẩn bị dữ
+liệu. Điều đó không làm phần tối ưu hóa bớt đáng học, vì nó là phần quyết định
+mất \SI{0.133}{\second} hay \SI{40}{\second} để có mô hình, và vì nó là phần duy
+nhất trong toàn bộ quy trình có thể sai theo kiểu không nhận ra được: một cấu
+hình phân kỳ thì thấy ngay, còn một cấu hình dừng ở $8{,}2 \cdot 10^{-4}$ vẫn trả
+về một bộ trọng số trông hoàn toàn bình thường và chỉ đắt thêm \num{87.7} đơn vị
+tiền mỗi máy.
+
+\section{Phạm vi của các kết luận}
+\label{sec:conclusion-scope}
+
+Bốn giới hạn cần ghi rõ. Mọi con số thời gian đo trên một máy duy nhất, và
+chênh lệch giữa các lần chạy của cùng một cấu hình lên tới 61\% ở trường hợp xấu
+nhất, nên chỉ những khoảng cách lớn hơn mức đó mới nên đọc thành thứ hạng. Thứ
+hạng giữa các thuật toán chỉ đo ở một giá trị $\kappa$, và
+mục~\ref{sec:lambda-scope} nói rõ vì sao đó vẫn là dự đoán. Hàm mục tiêu là hàm
+bậc hai, với các hệ quả đã tách ở mục~\ref{sec:conclusion-quadratic}. Và toàn bộ
+báo cáo làm việc ở $d = 280$, tức ở quy mô mà bộ giải trực tiếp còn thắng, nên nó
+không nói được gì về vùng mà phương pháp lặp thực sự cần thiết.
