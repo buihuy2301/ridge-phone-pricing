@@ -12,6 +12,7 @@ results/raw rather than recomputing anything.
 
 from __future__ import annotations
 
+import json
 from pathlib import Path
 
 import matplotlib
@@ -24,10 +25,19 @@ matplotlib.use("Agg")
 import matplotlib.pyplot as plt
 
 from .data import load_problem
-from .plotting import plot_convergence, save_figure, set_style
+from .plotting import (
+    plot_convergence,
+    plot_rmse_vs_gap,
+    plot_rmse_vs_time,
+    plot_theoretical_rate,
+    save_figure,
+    set_style,
+)
 from .runner import best_result, load_results
 
-SLIDE_DIR = Path(__file__).resolve().parents[1] / "results" / "figures" / "slides"
+ROOT = Path(__file__).resolve().parents[1]
+SLIDE_DIR = ROOT / "results" / "figures" / "slides"
+RAW_DIR = ROOT / "results" / "raw"
 
 SLIDE_FIGSIZE = (9.0, 4.0)
 
@@ -116,6 +126,82 @@ def render_all_methods(problem) -> None:
         plt.close(fig)
 
 
+def _to_slide_size(fig, stem: str) -> None:
+    """Save a figure that was laid out at report size as a slide-width copy.
+
+    The two RMSE panels build their own figure rather than drawing into an axis
+    handed to them, so widening happens after the fact. Tick and axis labels
+    already carry the slide font sizes from the rcParams above; only the legend
+    sets its own size inside the plotting helper, so it is bumped here.
+    """
+    fig.set_size_inches(*SLIDE_FIGSIZE)
+    legend = fig.axes[0].get_legend()
+    if legend is not None:
+        for text in legend.get_texts():
+            text.set_fontsize(10)
+    fig.tight_layout()
+    save_figure(fig, stem, figure_dir=SLIDE_DIR)
+    plt.close(fig)
+
+
+def render_rmse_panels(problem) -> None:
+    """The two panels that read the runs in price units instead of gap units."""
+    runs, _ = load_results("rmse_tracking")
+    derived = json.loads((RAW_DIR / "rmse_threshold.json").read_text())
+    reference = derived["rmse_at_closed_form"]
+
+    fig = plot_rmse_vs_gap(
+        runs,
+        problem.f_star,
+        title="Test RMSE against the optimization gap",
+        reference=reference,
+        save=False,
+    )
+    _to_slide_size(fig, "rmse_vs_gap")
+
+    fig = plot_rmse_vs_time(
+        runs,
+        title="Test RMSE against wall-clock time",
+        reference=reference,
+        # Same window as the report figure. The first history point lands a few
+        # microseconds in, so the full log axis would spend five decades on the
+        # gap before any run starts.
+        xlim=(1e-2, 40.0),
+        save=False,
+    )
+    _to_slide_size(fig, "rmse_vs_time")
+
+
+def render_theory(problem) -> None:
+    """Observed convergence against the two textbook bounds.
+
+    Same construction as the report figure: the best fixed-step run and the
+    best accelerated run, with both bounds started from the same initial gap.
+    """
+    best_gd = best_result(load_results("gd_fixed")[0], problem.f_star)
+    best_agd = best_result(load_results("agd")[0], problem.f_star)
+
+    fig, ax = plt.subplots(figsize=SLIDE_FIGSIZE)
+    for result in (best_gd, best_agd):
+        ax.semilogy(
+            result.iter_hist,
+            result.suboptimality(problem.f_star),
+            label=result.params["label"],
+        )
+
+    gap0 = best_gd.f_hist[0] - problem.f_star
+    n_show = min(best_gd.n_iter, 1200)
+    plot_theoretical_rate(ax, gap0, problem.kappa, n_show, kind="gd")
+    plot_theoretical_rate(ax, gap0, problem.kappa, n_show, kind="agd")
+    ax.set_xlabel("Iteration")
+    ax.set_ylabel(r"$f(w_k) - f^*$")
+    ax.set_title("Observed convergence against the theoretical bounds")
+    ax.legend(loc="best")
+    fig.tight_layout()
+    save_figure(fig, "theory_vs_practice", figure_dir=SLIDE_DIR)
+    plt.close(fig)
+
+
 def main() -> None:
     """Render every slide figure for which cached results exist."""
     _style_for_slides()
@@ -130,6 +216,13 @@ def main() -> None:
 
     render_all_methods(problem)
     print("[ok]   all_methods")
+
+    for label, render in (("rmse panels", render_rmse_panels), ("theory_vs_practice", render_theory)):
+        try:
+            render(problem)
+            print(f"[ok]   {label}")
+        except FileNotFoundError:
+            print(f"[skip] {label}: no cached results")
     print(f"\nwritten to {SLIDE_DIR}")
 
 

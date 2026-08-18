@@ -445,13 +445,24 @@ chương, quy trình giống nhau:
 
 ## 9. Giai đoạn D: viết lại slide
 
-- [ ] Dựng lại `report/slides.tex` theo sáu phần ở mục 4, mỗi phần bám đúng chương
-  tương ứng của báo cáo.
-- [ ] Chuyển phần khảo sát tham số chi tiết, ba thuật toán đã cắt, phần kiểm thử
+- [x] Dựng lại `report/slides.tex` theo sáu phần ở mục 4, mỗi phần bám đúng chương
+  tương ứng của báo cáo. Bản mới gồm 20 frame chính cho suất 20 phút và 14 frame
+  phụ lục, mỗi frame có `\note{}` riêng.
+- [x] Chuyển phần khảo sát tham số chi tiết, ba thuật toán đã cắt, phần kiểm thử
   và quy đổi hàm mục tiêu xuống phụ lục slide.
-- [ ] Kiểm tra bản riêng cho slide ở `results/figures/slides/`: hình nào cần bớt
-  đường hoặc phóng to chữ thì lưu vào đó, giữ nguyên tên file.
-- [ ] Cập nhật `report/slides-notes.tex`.
+- [x] Kiểm tra bản riêng cho slide ở `results/figures/slides/`. `src/slide_figures.py`
+  nhận thêm ba hình mà mạch chính mới dùng tới, gồm `rmse_vs_gap`, `rmse_vs_time`
+  và `theory_vs_practice`, vẽ lại từ kết quả trong `results/raw/` chứ không chạy
+  lại thí nghiệm. Ba hình chỉ xuất hiện ở phụ lục slide là `lambda_cv`,
+  `normalization_iter` và `sklearn_time` thì vẫn dùng bản của báo cáo.
+- [x] Cập nhật `report/slides-notes.tex`. File này chỉ bật cờ `\shownotes` rồi
+  `\input` slides.tex nên nó không phải sửa, và đó chính là điều kiện để bản nói
+  không lệch khỏi bản chiếu.
+
+Còn nợ một việc không làm được trên máy này: `latexmk -xelatex slides.tex` chưa
+chạy vì máy chưa cài TeX. Sáu phép kiểm của `tests/test_style.py` và
+`tests/test_report.py` đều xanh, nhưng phần tràn frame thì chỉ trình biên dịch
+mới thấy, nên lần đầu biên dịch cần soát các frame có bảng dày.
 
 ---
 
