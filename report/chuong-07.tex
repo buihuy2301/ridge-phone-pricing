@@ -1,0 +1,147 @@
+% Bản nháp chương 7 theo dàn bài mới, viết với bộ mẫu ở style/mau/.
+% Chưa nối vào report.tex.
+% ===========================================================================
+\chapter{Lý thuyết so với thực nghiệm}
+\label{sec:theory}
+
+Ba cơ chế ở chương~\ref{sec:mechanisms} đều rút ra từ số đo. Lý thuyết tối ưu hóa
+lồi cũng nói về đúng những đại lượng ấy, và nói trước khi chạy bất kỳ thí nghiệm
+nào. Chương này đặt hai bên cạnh nhau để xem cận lý thuyết mô tả đúng chỗ nào,
+lỏng ở chỗ nào, và dùng được vào việc gì.
+
+Bài toán ở đây cho phép làm phép đối chiếu ấy chặt hơn thường lệ. Vì $\fstar$
+tính được trước từ \eqref{eq:closed-form} nên hệ số co rút quan sát được đo bằng
+một cái thước tuyệt đối, chứ không phải ước lượng từ giá trị tốt nhất mà thuật
+toán tình cờ đạt tới.
+
+\section{Cận lý thuyết}
+\label{sec:theory-bound}
+
+Với hàm bậc hai lồi mạnh và độ dài bước $t = 2/(L+\mu)$,
+%
+\begin{equation}
+  \label{eq:gd-rate}
+  f(w_k) - \fstar \le \Bigl( \frac{\kappa - 1}{\kappa + 1} \Bigr)^{2k}
+                      \bigl( f(w_0) - \fstar \bigr) ,
+\end{equation}
+%
+còn phương pháp tăng tốc có hệ số co rút cỡ $1 - \kappa^{-1/2}$~\cite{nesterov2018lectures}.
+
+Đọc \eqref{eq:gd-rate} thành lời thì mỗi vòng lặp nhân sai số với một hệ số cố
+định nhỏ hơn 1, và hệ số ấy tiến về 1 khi $\kappa$ lớn. Nó đến thẳng từ cơ chế
+thứ nhất ở mục~\ref{sec:mech-step}: sai số theo hướng riêng ứng với trị riêng
+$\lambda_i$ nhân với $\abs{1 - t\lambda_i}$ mỗi vòng, và với $t = 2/(L+\mu)$ thì
+giá trị lớn nhất của $\abs{1 - t\lambda_i}$ trên khoảng $[\mu, L]$ đạt được ở cả
+hai đầu và bằng $(\kappa-1)/(\kappa+1)$. Cận cho $f$ vì thế là bình phương của
+con số đó, tức \num{0.985202} với $\kappa = \num{268.31}$.
+
+Điểm cần giữ trong đầu khi đọc phần sau: \eqref{eq:gd-rate} là cận cho trường hợp
+xấu nhất trong lớp hàm lồi mạnh có $\kappa$ cho trước, không phải dự đoán cho một
+hàm cụ thể. Một bài toán riêng lẻ được phép nhanh hơn cận, và câu hỏi đáng hỏi là
+nhanh hơn bao nhiêu và vì sao.
+
+\section{Hệ số co rút ở phần đuôi}
+\label{sec:theory-tail}
+
+\resultfig{theory_vs_practice}
+  {Đường hội tụ thực nghiệm đặt cạnh hai cận lý thuyết. Hình này chỉ có bản theo
+   số vòng lặp, vì cận lý thuyết phát biểu theo vòng lặp và không có tương ứng
+   trên trục thời gian.}
+  {fig:theory}
+
+Nhóm ước lượng hệ số co rút thực nghiệm bằng cách khớp đường thẳng vào phần tuyến
+tính ở đuôi của đồ thị $\log_{10}\bigl(f(w_k) - \fstar\bigr)$ theo $k$, rồi đối
+chiếu với cận trong bảng~\ref{tab:rates}.
+
+\begin{table}[tp]
+  \centering
+  \caption{Hệ số co rút mỗi vòng lặp trên $f$, quan sát được ở phần đuôi so với
+    cận lý thuyết.}
+  \label{tab:rates}
+  \begin{tabular}{lrr}
+    \toprule
+    Phương pháp & Quan sát & Cận lý thuyết \\
+    \midrule
+    GD, $t = 2/(L+\mu)$                     & \num{0.98520} & \num{0.98520} \\
+    GD, $t = 2/L$                           & \num{0.99999} & --            \\
+    AGD, $\beta$ hằng tính từ $\kappa$      & \num{0.78894} & \num{0.93895} \\
+    AGD, $\beta_k$ tăng dần + khởi động lại & \num{0.65455} & \num{0.93895} \\
+    \bottomrule
+  \end{tabular}
+\end{table}
+
+Với gradient descent ở độ dài bước mà \eqref{eq:gd-rate} nhắm tới, hệ số quan sát
+được là \num{0.98520} và trùng với cận tới năm chữ số thập phân
+(bảng~\ref{tab:rates}, hình~\ref{fig:theory}). Cận không chỉ đúng mà còn chặt, vì
+ở giai đoạn đuôi đúng thành phần ứng với trị riêng nhỏ nhất chi phối sai số, và
+tốc độ tắt của thành phần đó chính là $(\kappa-1)/(\kappa+1)$.
+
+Dòng thứ hai của bảng là phép thử ngược cho cùng một cơ chế. Với $t = 2/L$, hệ số
+quan sát được là \num{0.99999}, tức thực tế bằng 1, đúng như dự đoán từ
+mục~\ref{sec:mech-step} rằng thành phần ứng với $\lambda_{\max} = L$ đứng yên ở
+độ dài bước ấy. Cận \eqref{eq:gd-rate} không áp cho cấu hình này vì nó phát biểu
+cho $t = 2/(L+\mu)$, nên ô tương ứng để trống.
+
+Với phương pháp tăng tốc, hệ số quan sát được là \num{0.65455} so với cận
+\num{0.93895}, tức tốt hơn cận rất nhiều nhưng không mâu thuẫn với nó, vì cận là
+cận trên. Điều đáng chú ý hơn nằm ở hai dòng cuối bảng: công thức momentum hằng
+tính từ $\kappa$, vốn là công thức tối ưu về mặt lý thuyết, cho hệ số
+\num{0.78894}, kém hơn công thức tăng dần kèm khởi động lại. Cấu hình được lý
+thuyết chỉ định không phải cấu hình chạy nhanh nhất trên bài toán này, và mục sau
+giải thích vì sao.
+
+\section{Vì sao cận nói rất ít về giai đoạn đầu}
+\label{sec:theory-early}
+
+Chênh lệch lớn nhất không nằm ở hệ số co rút mà nằm ở số vòng lặp. Gradient
+descent đạt $10^{-6}$ sau 20 vòng lặp (bảng~\ref{tab:gd-fixed}), trong khi ước
+lượng từ \eqref{eq:gd-rate} cho khoảng $\tfrac{1}{2}\kappa \ln(10^{6}) \approx
+1850$ vòng, tức lệch 93 lần.
+
+Nguyên nhân đo được, và nó nằm ở phổ của Hessian. Cận \eqref{eq:gd-rate} là chặt
+khi khối lượng sai số ban đầu trải đều trên toàn khoảng $[\mu, L]$, vì khi ấy
+thành phần chậm nhất chiếm phần đáng kể ngay từ đầu. Trên bài toán này thì không:
+trong 280 trị riêng của Hessian, 269 trị nằm trên $L/10$ và chỉ 8 trị nằm dưới
+$10\mu$, còn trị riêng trung vị bằng \num{0.377} lần $L$. Nói cách khác, phổ dồn
+về phía đầu lớn, và tám hướng phẳng mà $\lambda$ tạo ra ở
+\eqref{eq:mu-equals-lambda} chỉ chiếm một phần rất nhỏ của sai số ban đầu.
+
+Hệ quả là hai giai đoạn tách hẳn nhau. Trong vài chục vòng đầu, sai số do 269
+hướng cong chi phối và chúng tắt với hệ số cỡ $\abs{1 - tL}$ chứ không phải
+$(\kappa-1)/(\kappa+1)$, nên tốc độ nhanh hơn cận nhiều bậc. Chỉ khi các hướng ấy
+đã tắt gần hết thì tám hướng phẳng mới lộ ra, và từ đó trở đi cận mô tả đúng tới
+năm chữ số thập phân như bảng~\ref{tab:rates} cho thấy.
+
+Cùng lý do đó giải thích hai dòng AGD. Công thức momentum hằng tính từ $\kappa$
+được thiết kế để cân bằng đúng trường hợp xấu nhất, tức trường hợp phổ trải đều,
+nên trên một phổ dồn về đầu lớn nó hãm phần nhanh lại nhiều hơn mức cần. Công
+thức tăng dần không giả định gì về $\kappa$ nên nó không mắc lỗi ấy, và khởi động
+lại cắt nốt phần dao động mà momentum tăng dần sinh ra ở đuôi. Trên một bài toán
+có phổ trải đều giữa $\mu$ và $L$, cả hai chênh lệch này đều thu hẹp lại.
+
+\section{Cận dùng được vào việc gì}
+\label{sec:theory-use}
+
+Đối chiếu ở trên cho ba kết luận thực dụng.
+
+Cận \eqref{eq:gd-rate} dự đoán đúng hành vi ở phần đuôi và có thể dùng để trả lời
+câu hỏi chạy thêm bao lâu thì cắt thêm được một bậc sai số, một khi thuật toán đã
+vào vùng tuyến tính. Ngược lại, nó không dùng được để lập ngân sách vòng lặp từ
+đầu: con số 1850 vòng lặp lớn hơn thực tế 93 lần, và lập kế hoạch theo nó thì
+đúng nhưng lãng phí gần hai bậc.
+
+Cận cũng không dùng được để chọn cấu hình. Momentum hằng tính từ $\kappa$ là lựa
+chọn tối ưu theo lý thuyết nhưng chậm hơn momentum tăng dần trên bài toán này,
+nên việc chọn tham số vẫn phải dựa vào lưới thí nghiệm ở
+chương~\ref{sec:mechanisms} chứ không dựa vào công thức.
+
+Cuối cùng, chỗ cận thực sự có ích là làm phép kiểm tra tính đúng đắn. Một hệ số
+co rút quan sát được nằm trên cận, chẳng hạn lớn hơn \num{0.98520} với cấu hình ở
+dòng đầu bảng~\ref{tab:rates}, là dấu hiệu của lỗi cài đặt chứ không phải của một
+bài toán khó, vì cận đúng cho mọi hàm trong lớp. Nhóm dùng đúng phép kiểm ấy khi
+truy lỗi momentum ở mục~\ref{sec:mech-momentum}.
+
+Mọi con số trong chương này đo ở đúng một giá trị $\lambda$, tức ở đúng một
+$\kappa$. Vì $\kappa$ có mặt trong cả hai cận, chương~\ref{sec:lambda} kiểm xem
+mức độ khớp giữa lý thuyết và thực nghiệm có giữ nguyên khi đổi $\kappa$ hay
+không.
