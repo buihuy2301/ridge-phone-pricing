@@ -15,9 +15,18 @@ nghiệm riêng, và câu trả lời ấy đặt ra ngưỡng dừng cho toàn 
 
 Nhóm ghi RMSE trên tập kiểm tra tại từng điểm ghi lịch sử của từng lần chạy, cho
 cấu hình tốt nhất của bảy nhóm thí nghiệm. Phép đo này nằm trong cửa sổ mà đồng
-hồ đã dừng, cùng chỗ với phép tính $f(w_k)$ và chuẩn gradient, nên nó không rơi
-vào thời gian chạy được báo cáo; bộ đếm số lần đánh giá hàm cũng được khôi phục
-sau mỗi lần ghi. Chi tiết cài đặt nằm ở mục~\ref{sec:recorder}.
+hồ đã dừng, cùng chỗ với phép tính $f(w_k)$ và chuẩn gradient, nên chi phí của
+nó không bị tính vào thời gian chạy; bộ đếm số lần đánh giá hàm cũng được khôi
+phục sau mỗi lần ghi. Chi tiết cài đặt nằm ở mục~\ref{sec:recorder}.
+
+Loại trừ chi phí ấy vẫn chưa đủ để thời gian đo được giữ nguyên. Mỗi lần ghi,
+phép tính RMSE quét toàn bộ ma trận kiểm tra \SI{85}{\mebi\byte} xen vào giữa
+các vòng lặp và đẩy ma trận huấn luyện \SI{342}{\mebi\byte} ra khỏi cache, nên
+các vòng lặp ngay sau đó chạy chậm hơn. Đo trực tiếp trên gradient descent, bật
+monitor làm thời gian chạy tăng 13\%, từ \SI{5.72}{\second} lên
+\SI{6.47}{\second}. Vì thế chương này chỉ dùng số vòng lặp, vốn không bị ảnh
+hưởng, còn mọi con số thời gian đều lấy từ chương~\ref{sec:compare}, nơi thí
+nghiệm chạy không có monitor.
 
 Cụ thể, sáu cấu hình hội tụ cho 153 cặp giá trị gồm sai số tối ưu hóa và RMSE
 tương ứng. SGD với độ dài bước hằng không hội tụ nên nó nằm ngoài phần dựng
@@ -97,33 +106,33 @@ quen.
 
 \begin{table}[tp]
   \centering
-  \caption{Thời gian đạt hai ngưỡng, đo trên cùng một máy. Cột giữa ứng với dung
-    sai mười đơn vị tiền, cột phải ứng với một đơn vị.}
+  \caption{Số vòng lặp cần để đạt hai ngưỡng. Cột giữa ứng với dung sai mười đơn
+    vị tiền, cột phải ứng với một đơn vị. Với SGD, một vòng lặp ở đây là một lượt
+    duyệt dữ liệu.}
   \label{tab:two-thresholds}
-  \begin{tabular}{lrrrr}
+  \begin{tabular}{lrr}
     \toprule
-    & \multicolumn{2}{c}{$\eps_{\text{app}} = 4{,}0 \cdot 10^{-5}$}
-    & \multicolumn{2}{c}{$\eps_{\text{app}} = 1{,}35 \cdot 10^{-6}$} \\
-    \cmidrule(lr){2-3} \cmidrule(lr){4-5}
-    Thuật toán & Vòng lặp & Thời gian (s) & Vòng lặp & Thời gian (s) \\
+    Thuật toán
+      & $\eps_{\text{app}} = 4{,}0 \cdot 10^{-5}$
+      & $\eps_{\text{app}} = 1{,}35 \cdot 10^{-6}$ \\
     \midrule
-    Newton ($t = 1$)                  & 1  & \num{0.054} & 1  & \num{0.054} \\
-    L-BFGS ($m = 20$)                 & 6  & \num{0.217} & 8  & \num{0.282} \\
-    GD ($t = 2/L$)                    & 10 & \num{0.246} & 20 & \num{0.456} \\
-    GD backtracking                   & 10 & \num{0.326} & 15 & \num{0.491} \\
-    AGD + restart                     & 15 & \num{0.432} & 20 & \num{0.577} \\
-    SGD bậc thang ($B = 64$)          & 21 & \num{1.703} & \multicolumn{2}{c}{không đạt} \\
+    Newton ($t = 1$)         & 1  & 1  \\
+    L-BFGS ($m = 20$)        & 6  & 8  \\
+    GD ($t = 2/L$)           & 10 & 20 \\
+    GD backtracking          & 10 & 15 \\
+    AGD + restart            & 15 & 20 \\
+    SGD bậc thang ($B = 64$) & 21 & không đạt \\
     \bottomrule
   \end{tabular}
 \end{table}
 
-Nới dung sai từ một đơn vị lên mười đơn vị rút thời gian của các phương pháp bậc
-một xuống khoảng một nửa, chẳng hạn gradient descent đi từ \SI{0.456}{\second}
-còn \SI{0.246}{\second} (bảng~\ref{tab:two-thresholds}). Nhưng thay đổi đáng kể
-hơn nằm ở dòng cuối: SGD bậc thang đạt ngưỡng nới sau 21 lượt duyệt dữ liệu,
-trong khi ở ngưỡng chặt nó không đạt trong toàn bộ ngân sách 30 lượt. Nói cách
-khác, chính dung sai đặt ra ở chương này quyết định SGD có được coi là phương
-pháp dùng được hay không, chứ không phải bản thân thuật toán.
+Nới dung sai từ một đơn vị lên mười đơn vị cắt số vòng lặp của các phương pháp
+bậc một xuống khoảng một nửa, chẳng hạn gradient descent đi từ 20 vòng còn 10
+(bảng~\ref{tab:two-thresholds}). Nhưng thay đổi đáng kể hơn nằm ở dòng cuối: SGD
+bậc thang đạt ngưỡng nới sau 21 lượt duyệt dữ liệu, trong khi ở ngưỡng chặt nó
+không đạt trong toàn bộ ngân sách 30 lượt. Nói cách khác, chính dung sai đặt ra ở
+chương này quyết định SGD có được coi là phương pháp dùng được hay không, chứ
+không phải bản thân thuật toán.
 
 \section{Hai quan sát ngoài lề}
 \label{sec:enough-sgd}

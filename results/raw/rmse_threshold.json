@@ -37,5 +37,57 @@
   "rmse": 0.206011594984053,
   "better_than_closed_form_by": 0.05697603491262271
  },
- "reference_note": "RMSE is measured at w*, not at the lowest value observed: a run that stalls short of w* can land on a slightly better test error."
+ "reference_note": "RMSE is measured at w*, not at the lowest value observed: a run that stalls short of w* can land on a slightly better test error.",
+ "repeats": 3,
+ "two_threshold_table": [
+  {
+   "label": "GD ($t = 2/L$)",
+   "iters_loose": 10,
+   "time_loose": 0.34224298199114855,
+   "iters_strict": 20,
+   "time_strict": 0.5666194319928763
+  },
+  {
+   "label": "GD bt ($\\alpha = 0.5$, $\\beta = 0.5$)",
+   "iters_loose": 10,
+   "time_loose": 0.4620494899863843,
+   "iters_strict": 15,
+   "time_strict": 0.6734402589863748
+  },
+  {
+   "label": "SGD ($B = 256$, $\\eta = 1/L_B = 0.0675$)",
+   "iters_loose": null,
+   "time_loose": null,
+   "iters_strict": null,
+   "time_strict": null
+  },
+  {
+   "label": "SGD ($B = 64$, $\\eta_k = \\eta_0 \\cdot 2^{-\\lfloor k/5 \\rfloor}$)",
+   "iters_loose": 21,
+   "time_loose": 1.9851022020011442,
+   "iters_strict": null,
+   "time_strict": null
+  },
+  {
+   "label": "AGD ($\\beta_k = (k-1)/(k+2)$) + restart",
+   "iters_loose": 15,
+   "time_loose": 0.46531572999083437,
+   "iters_strict": 20,
+   "time_strict": 0.6223330269858707
+  },
+  {
+   "label": "Newton ($t = 1$, cached factor)",
+   "iters_loose": 1,
+   "time_loose": 0.1449052309981198,
+   "iters_strict": 1,
+   "time_strict": 0.1449052309981198
+  },
+  {
+   "label": "L-BFGS ($m = 20$)",
+   "iters_loose": 6,
+   "time_loose": 0.2858101499878103,
+   "iters_strict": 8,
+   "time_strict": 0.380023440993682
+  }
+ ]
 }

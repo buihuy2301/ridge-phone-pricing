@@ -1,0 +1,201 @@
+% Bản nháp chương 4 theo dàn bài mới, viết với bộ mẫu ở style/mau/.
+% Chưa nối vào report.tex.
+% ===========================================================================
+\chapter{Thuật toán nào về đích trước}
+\label{sec:compare}
+
+Chương~\ref{sec:enough} chốt đích cần tới: sai số $10^{-6}$, ứng với sai lệch
+giá dưới một đơn vị tiền trên một chiếc máy giá trung vị. Chương này đặt bảy cấu
+hình tốt nhất của bảy nhóm thí nghiệm lên cùng một đường chạy tới đích ấy, rồi
+đặt cả nhóm cạnh các cài đặt mặc định của scikit-learn.
+
+Câu trả lời gọn nằm ngay ở đây. Newton về đích sau \SI{0.133}{\second}, nhanh hơn
+gradient descent 3,5 lần; năm cấu hình tất định còn lại đều cho cùng một RMSE, và
+khoảng cách giữa chúng chỉ là chuyện chờ lâu hay chóng. Phần còn lại của chương
+nói rõ khoảng cách ấy thay đổi thế nào khi đổi mức chính xác yêu cầu, và vì sao
+một cấu hình về đích sớm chưa chắc đi xa được.
+
+\section{Ba cách nhìn cùng một dữ liệu}
+\label{sec:compare-figures}
+
+\resultfig{all_methods_iter}
+  {So sánh các thuật toán ở cấu hình tốt nhất, theo số vòng lặp. Trục hoành cắt
+   ở 200 vòng lặp cho dễ đọc.}
+  {fig:all-iter}
+\resultfig{all_methods_time}
+  {So sánh các thuật toán ở cấu hình tốt nhất, theo thời gian chạy. Trục hoành
+   cắt ở 6 giây.}
+  {fig:all-time}
+\resultfig{rmse_vs_time}
+  {RMSE trên tập kiểm tra theo thời gian chạy. Đây là hình trả lời trực tiếp câu
+   hỏi của người dùng mô hình: với một ngân sách tính toán cho trước thì phương
+   pháp nào cho sai số giá thấp nhất.}
+  {fig:rmse-vs-time}
+
+Ba hình cùng dựng từ một bộ dữ liệu nhưng trả lời ba câu khác nhau.
+Hình~\ref{fig:all-iter} cho biết mỗi vòng lặp cắt được bao nhiêu sai số, tức nó
+đo chất lượng của hướng đi mà thuật toán chọn. Hình~\ref{fig:all-time} cho biết
+mỗi vòng lặp ấy đắt bao nhiêu, nên thứ hạng trên nó khác thứ hạng trên hình
+trước bất cứ khi nào chi phí mỗi vòng chênh nhau, đúng trường hợp của Newton so
+với các phương pháp bậc một. Hình~\ref{fig:rmse-vs-time} bỏ hẳn trục sai số tối
+ưu hóa và vẽ thẳng sai số giá theo giây, nên nó đọc được mà không cần biết
+$\fstar$ là gì.
+
+\section{Bảng tổng hợp}
+\label{sec:compare-table}
+
+\begin{table}[tp]
+  \centering
+  \caption{Bảy cấu hình tốt nhất, đo trên cùng một máy, mỗi cấu hình chạy ba lần
+    lấy trung vị. Cột \emph{tổng thời gian} là thời gian chạy tới khi thuật toán
+    dừng, vì hội tụ, vì đình trệ, hoặc vì hết ngân sách vòng lặp.}
+  \label{tab:summary}
+  \begin{tabular}{llrrr}
+    \toprule
+    Thuật toán & Cấu hình & Vòng lặp đạt $10^{-6}$ & Thời gian (s) & Tổng (s) \\
+    \midrule
+    Newton   & $t = 1$, phân rã một lần          & 1         & \num{0.133} & \num{0.133} \\
+    L-BFGS   & $m = 20$                          & 8         & \num{0.282} & \num{1.49}  \\
+    GD       & $t = 2/L$                         & 20        & \num{0.465} & \num{4.99}  \\
+    AGD      & $\beta_k$ tăng dần, có khởi động lại & 20     & \num{0.548} & \num{2.97}  \\
+    GD       & backtracking $\alpha = \beta = 0.5$ & 15      & \num{0.563} & \num{7.23}  \\
+    SGD      & $B = 64$, giảm bậc thang          & không đạt & --          & \num{2.61}  \\
+    SGD      & $B = 256$, bước hằng              & không đạt & --          & \num{1.86}  \\
+    \bottomrule
+  \end{tabular}
+\end{table}
+
+\paragraph{Newton.} Toàn bộ lời giải mất \SI{0.133}{\second}
+(bảng~\ref{tab:summary}), tức nhanh hơn 3,5 lần so với thời gian gradient descent
+cần chỉ để chạm $10^{-6}$, và nhanh hơn 37 lần so với thời gian nó chạy tới lúc
+dừng hẳn. Khoảng cách ấy đến từ chỗ hàm mục tiêu là hàm bậc hai nên bước Newton
+chính là nghiệm
+đóng \eqref{eq:closed-form}, chứ không đến từ một tính chất nào của phương pháp
+áp dụng được cho bài toán khác. Với hàm phi tuyến, Newton cần nhiều vòng lặp và
+mỗi vòng vẫn tốn $\bigO(nd^{2} + d^{3})$, nên kết luận này không chuyển sang được.
+
+\paragraph{Các phương pháp bậc một ở mức chính xác vừa phải.} Ba cấu hình GD, AGD
+và GD với backtracking chạm $10^{-6}$ trong khoảng \SI{0.465}{\second} đến
+\SI{0.563}{\second}, chênh nhau 21\%, và ba đường của chúng bám sát nhau suốt
+phần đầu hình~\ref{fig:all-iter}. Giai đoạn đầu do các hướng có độ cong lớn chi
+phối, mà mọi phương pháp bậc một đều cắt các hướng ấy nhanh như nhau, nên ở mức
+chính xác vừa phải thì chọn phương pháp nào cũng gần như không khác nhau. Chênh
+lệch 21\% ấy không nên đọc thành thứ hạng, vì ba lần chạy của cùng một cấu hình
+đã dao động 5\% tới 25\% ở phần lớn các nhóm và tới 61\% ở trường hợp xấu nhất.
+Chính khoảng dao động đó, chứ không phải bản thân thuật toán, quyết định cấu hình
+nào được chọn khi hai cấu hình hòa nhau về số vòng lặp; $t = 2/L$ được chọn thay
+cho $t = 2/(L+\mu)$ ở bảng~\ref{tab:summary} đúng theo cách ấy.
+
+\paragraph{Phần đuôi, và chuyện cấu hình tốt nhất phụ thuộc dung sai.} Cấu hình
+gradient descent về đích sớm nhất lại là cấu hình không đi xa được. Với
+$t = 2/L$, hệ số co rút của thành phần ứng với trị riêng $L$ bằng đúng 1 nên
+thành phần đó đứng yên mãi, và lần chạy dừng ở sai số $4{,}9 \cdot 10^{-8}$ thay
+vì đi tiếp tới giới hạn số học. Muốn đi tới giới hạn ấy thì phải đổi cấu hình:
+$t = 1{,}9/L$ hội tụ hẳn sau \SI{6.04}{\second}, còn $t = 2/(L+\mu)$ chạy hết
+ngân sách 1200 vòng trong \SI{40.1}{\second} và dừng ở $8{,}3 \cdot 10^{-16}$. So
+với hai con số đó, AGD chạm giới hạn số học sau \SI{2.97}{\second}, tức nhanh hơn
+2 lần và 13,5 lần. Lợi thế của gia tốc vì thế chỉ hiện ra ở phần đuôi, nơi $\mu$
+chi phối tốc độ hội tụ chứ không còn là các hướng có độ cong lớn.
+
+Nói cách khác, câu "cấu hình nào tốt nhất" không có nghĩa nếu chưa nói tốt cho
+mức chính xác nào. Ở dung sai của chương~\ref{sec:enough} thì $t = 2/L$ là lựa
+chọn đúng, và việc nó không xuống được dưới $5 \cdot 10^{-8}$ hoàn toàn không
+quan trọng vì mức ấy đã nằm sâu dưới ngưỡng mà bài toán định giá phân biệt được.
+
+\paragraph{Hai cấu hình SGD.} Cả hai đều không đạt $10^{-6}$ trong ngân sách 30
+lượt duyệt dữ liệu, nhưng chúng dừng ở hai chỗ rất khác nhau. Bản giảm theo bậc
+thang dừng ở $5{,}8 \cdot 10^{-6}$, tức chỉ lệch \num{0.6} đơn vị tiền so với
+nghiệm đóng, còn bản bước hằng dừng ở $8{,}2 \cdot 10^{-4}$ và lệch \num{87.7}
+đơn vị. Chênh lệch giữa hai bản nằm ở quy tắc chọn độ dài bước chứ không ở kích
+thước lô, và chương~\ref{sec:mechanisms} truy nguyên nhân.
+
+\section{Đặt cạnh thư viện}
+\label{sec:compare-sklearn}
+
+Phép so chỉ có nghĩa khi hai bên tối ưu cùng một hàm. Bộ ước lượng
+\texttt{Ridge} của scikit-learn~\cite{pedregosa2011scikit} cực tiểu hóa
+$\norm{Xw-y}_{2}^{2} + \alpha \norm{w}_{2}^{2}$ nên quan hệ với
+\eqref{eq:objective} là $\alpha = \lambda n$, còn \texttt{SGDRegressor} với
+\texttt{penalty="l2"} trùng hàm mục tiêu ngay khi $\alpha = \lambda$. Cách quy
+đổi đầy đủ nằm ở phụ lục~\ref{app:conversion}.
+
+Nhóm kiểm phép quy đổi bằng số chứ không bằng suy luận trên giấy: với
+$\alpha = \lambda n = \num{1600}$, nghiệm mà \texttt{Ridge} trả về cách nghiệm
+đóng \eqref{eq:closed-form} một khoảng $1{,}5 \cdot 10^{-15}$, sai số tương đối
+$1{,}9 \cdot 10^{-15}$, và chênh lệch hàm mục tiêu bằng đúng 0 trong số học dấu
+phẩy động. Phép kiểm này viết thành một khẳng định trong bộ kiểm thử, vì mọi so
+sánh phía sau sẽ vô nghĩa nếu nó thất bại.
+
+\begin{table}[tp]
+  \centering
+  \caption{Cài đặt mặc định của scikit-learn, chấm bằng hàm mục tiêu
+    \eqref{eq:objective} của bài toán. Cột \emph{sai lệch giá} tính theo
+    \eqref{eq:rmse-to-price} trên một chiếc máy giá trung vị.}
+  \label{tab:sklearn}
+  \begin{tabular}{lrrrr}
+    \toprule
+    Bộ ước lượng & $f(\hat{w}) - \fstar$ & Thời gian (s) & RMSE test & Sai lệch giá \\
+    \midrule
+    \texttt{Ridge(solver='auto')}     & \num{0}       & \num{0.235} & \num{0.20601} & \num{0}    \\
+    \texttt{Ridge(solver='cholesky')} & \num{0}       & \num{0.340} & \num{0.20601} & \num{0}    \\
+    \texttt{Ridge(solver='lsqr')}     & \num{2.3e-9}  & \num{0.447} & \num{0.20601} & \num{0}    \\
+    \texttt{Ridge(solver='sag')}      & \num{4.9e-9}  & \num{3.524} & \num{0.20601} & \num{0}    \\
+    \texttt{SGDRegressor} (mặc định)  & \num{1.16e-3} & \num{0.637} & \num{0.21202} & \num{137}  \\
+    \texttt{LinearRegression}         & \num{3.5e-5}  & \num{1.590} & \num{0.20579} & \num{-5}   \\
+    \bottomrule
+  \end{tabular}
+\end{table}
+
+\resultfig{sklearn_iter}
+  {So sánh các phương pháp lặp tự cài đặt, theo số vòng lặp.}
+  {fig:sklearn-iter}
+\resultfig{sklearn_time}
+  {So sánh mã tự viết với thư viện, theo thời gian chạy. Các bộ giải trực tiếp
+   không có lịch sử vòng lặp nên hiện ra thành một điểm trên mặt phẳng thời gian
+   và sai số.}
+  {fig:sklearn-time}
+
+Bốn bộ giải \texttt{Ridge} đều đạt $\fstar$ ở mức sai số máy và đều cho cùng một
+RMSE, nhưng thời gian trải từ \SI{0.235}{\second} tới \SI{3.52}{\second}
+(bảng~\ref{tab:sklearn}). Bộ giải trực tiếp giải thẳng chính hệ phương trình mà
+một bước Newton giải, nên nó và phương pháp Newton tự cài đặt về bản chất làm
+cùng một việc; con số \SI{0.133}{\second} của bản tự cài đặt so với
+\SI{0.235}{\second} của thư viện không nói lên điều gì ngoài việc bản tự cài đặt
+không phải kiểm tra tham số đầu vào và không dựng lại ma trận Gram. Phương pháp
+lặp chỉ lấy lại chỗ đứng khi $d$ lớn tới mức không phân rã nổi ma trận
+$d \times d$.
+
+Ở tham số mặc định, \texttt{SGDRegressor} dừng cách $\fstar$ một khoảng
+$1{,}16 \cdot 10^{-3}$, tức xa hơn 200 lần so với sai số $5{,}8 \cdot 10^{-6}$ mà
+cấu hình SGD tự cài đặt đạt được. Hệ quả đo được trên bài toán ứng dụng là
+\num{137} đơn vị tiền mỗi máy, con số lớn nhất trong toàn bộ báo cáo và lớn hơn
+cả \num{87.7} đơn vị của cấu hình SGD tệ nhất mà nhóm tự cài. Quy tắc chọn độ dài
+bước mặc định của bộ ước lượng này không tính theo $L_B$ của bài toán, nên nó rơi
+đúng vào lân cận mà chương~\ref{sec:mechanisms} mô tả. Nhận xét chỉ áp cho bộ ước
+lượng này ở tham số mặc định, không áp cho thư viện nói chung, và ba dòng
+\texttt{Ridge} phía trên là bằng chứng ngược lại.
+
+Dòng cuối bảng đáng chú ý theo hướng ngược lại. \texttt{LinearRegression} không
+hiệu chỉnh nên nó không giải bài toán \eqref{eq:objective}, và sai lệch hàm mục
+tiêu $3{,}5 \cdot 10^{-5}$ phản ánh đúng điều đó. Nhưng RMSE của nó là
+\num{0.20579}, tức tốt hơn nghiệm đóng \num{5} đơn vị tiền, vì quy tắc một sai số
+chuẩn ở mục~\ref{sec:choose-lambda} cố ý chọn mức hiệu chỉnh mạnh hơn mức tối ưu
+về dự báo. Khoản đổi lấy là số điều kiện nhỏ hơn 100 lần.
+
+\section{Ba câu còn nợ}
+\label{sec:compare-open}
+
+Bảng~\ref{tab:summary} trả lời câu hỏi ai về đích trước nhưng chưa giải thích
+được câu nào trong ba câu sau, và ba chương tiếp theo nhận lấy từng câu.
+
+Thứ nhất, vì sao ba phương pháp bậc một bám nhau ở đầu rồi tách hẳn ở đuôi, và vì
+sao một cấu hình SGD lệch 0,6 đơn vị tiền còn cấu hình kia lệch 87,7. Cả hai đều
+quy về ba cơ chế ở chương~\ref{sec:mechanisms}.
+
+Thứ hai, các con số này khớp tới đâu với tốc độ mà lý thuyết dự đoán. Cận co rút
+cho gradient descent phụ thuộc $\kappa$, và chương~\ref{sec:theory} đối chiếu hệ
+số co rút quan sát được với cận ấy.
+
+Thứ ba, bảng này đo ở đúng một giá trị $\lambda$, tức ở đúng một độ khó. Đổi
+$\lambda$ là đổi $\kappa$ theo \eqref{eq:mu-equals-lambda}, và
+chương~\ref{sec:lambda} kiểm xem thứ hạng có đổi theo không.
