@@ -1,0 +1,163 @@
+% Bản nháp chương 3 theo dàn bài mới, viết với bộ mẫu ở style/mau/.
+% Chưa nối vào report.tex.
+% ===========================================================================
+\chapter{Tối ưu tới mức nào là đủ}
+\label{sec:enough}
+
+Mọi biểu đồ hội tụ trong báo cáo đo bằng $f(w_k) - \fstar$, còn cửa hàng định
+giá thì chỉ quan tâm sai số giá. Hai đại lượng ấy chưa gặp nhau ở chỗ nào, nên
+câu hỏi hiển nhiên nhất vẫn còn treo: giải bài toán tối ưu hóa tới mức nào thì
+lời giải ngừng tốt lên đối với người dùng nó. Chương này trả lời bằng một thí
+nghiệm riêng, và câu trả lời ấy đặt ra ngưỡng dừng cho toàn bộ phần còn lại.
+
+\section{Cách đo}
+\label{sec:enough-method}
+
+Nhóm ghi RMSE trên tập kiểm tra tại từng điểm ghi lịch sử của từng lần chạy, cho
+cấu hình tốt nhất của bảy nhóm thí nghiệm. Phép đo này nằm trong cửa sổ mà đồng
+hồ đã dừng, cùng chỗ với phép tính $f(w_k)$ và chuẩn gradient, nên nó không rơi
+vào thời gian chạy được báo cáo; bộ đếm số lần đánh giá hàm cũng được khôi phục
+sau mỗi lần ghi. Chi tiết cài đặt nằm ở mục~\ref{sec:recorder}.
+
+Cụ thể, sáu cấu hình hội tụ cho 153 cặp giá trị gồm sai số tối ưu hóa và RMSE
+tương ứng. SGD với độ dài bước hằng không hội tụ nên nó nằm ngoài phần dựng
+ngưỡng và được xét riêng ở mục~\ref{sec:enough-sgd}.
+
+Mốc để so là RMSE tại nghiệm đóng $\wstar$, bằng \num{0.2060141}, ứng với sai số
+giá \num{4245} đơn vị tiền trên một chiếc máy giá trung vị theo
+\eqref{eq:rmse-to-price}. Quanh mức ấy, một đơn vị RMSE đổi được khoảng
+\num{22800} đơn vị tiền, nên chênh lệch RMSE ở chữ số thập phân thứ năm đã nằm
+dưới một đồng và không còn ý nghĩa với người bán máy.
+
+\section{RMSE ngừng cải thiện từ đâu}
+\label{sec:enough-curve}
+
+\resultfig{rmse_vs_gap}
+  {RMSE trên tập kiểm tra theo sai số tối ưu hóa tại chính điểm đo. Trục hoành
+   chạy từ sai số lớn bên trái sang sai số nhỏ bên phải, tức theo chiều các
+   thuật toán tiến. Trục tung cắt sát mức của nghiệm đóng nên các đường đi vào
+   khung từ mép trên.}
+  {fig:rmse-vs-gap}
+
+Hình~\ref{fig:rmse-vs-gap} cho thấy cả sáu đường đều phẳng lại và nằm chồng lên
+mức của nghiệm đóng, nhưng chúng phẳng ở những chỗ khác nhau. Ở cùng một mức sai
+số tối ưu hóa, các thuật toán không cho cùng một RMSE, vì $f(w_k) - \fstar$ chỉ
+là một số vô hướng còn hai điểm có cùng giá trị hàm mục tiêu vẫn nằm ở hai chỗ
+khác nhau trong không gian tham số. Ngưỡng cần tìm vì thế phải lấy theo trường
+hợp xấu nhất trong cả sáu đường, không lấy theo một đường riêng.
+
+Bảng~\ref{tab:app-threshold} ghi kết quả gộp: với mỗi mức sai số tối ưu hóa, cột
+thứ hai là sai lệch giá lớn nhất trong mọi điểm ghi có sai số dưới mức đó.
+
+\begin{table}[tp]
+  \centering
+  \caption{Sai lệch giá lớn nhất so với nghiệm đóng, gộp 153 điểm ghi của sáu
+    cấu hình hội tụ, tính trên một chiếc máy giá trung vị \num{18555}.}
+  \label{tab:app-threshold}
+  \begin{tabular}{lr}
+    \toprule
+    Sai số tối ưu hóa dưới & Sai lệch giá lớn nhất \\
+    \midrule
+    $10^{-2}$ & \num{634.4} \\
+    $10^{-3}$ & \num{108.8} \\
+    $10^{-4}$ & \num{12.4}  \\
+    $10^{-5}$ & \num{1.56}  \\
+    $10^{-6}$ & \num{0.61}  \\
+    $10^{-7}$ & \num{0.12}  \\
+    $10^{-8}$ & \num{0.02}  \\
+    \bottomrule
+  \end{tabular}
+\end{table}
+
+Sai lệch giá giảm chậm hơn sai số tối ưu hóa. Khớp một hàm lũy thừa vào 85 điểm
+ghi trải từ $10^{-12}$ tới $10^{-1}$ cho số mũ \num{0.68}, tức cắt sai số tối ưu
+hóa đi 10 lần chỉ giảm được sai lệch giá khoảng 5 lần. Hai dự đoán đơn giản đều
+không đúng hẳn: vì $f$ là hàm bậc hai nên $f(w_k) - \fstar$ tỉ lệ với
+$\norm{w_k - \wstar}^{2}$, do đó số mũ phải bằng \num{0.5} nếu sai lệch giá tỉ lệ
+với $\norm{w_k - \wstar}$ và bằng 1 nếu nó tỉ lệ với bình phương khoảng cách ấy.
+Giá trị đo được nằm giữa hai mức, nên không quy về một trong hai bức tranh đó
+được. Điều dùng được là hệ quả thực dụng: mỗi chữ số chính xác thêm về phía tối
+ưu hóa mua được ngày càng ít về phía bài toán ứng dụng.
+
+\section{Ngưỡng đủ dùng}
+\label{sec:enough-threshold}
+
+Đặt $\eps_{\text{app}}$ là sai số tối ưu hóa lớn nhất mà từ đó trở xuống, mọi
+điểm ghi đều cho sai lệch giá nằm trong một dung sai định trước. Bảng~\ref{tab:app-threshold} cho ngay
+hai giá trị. Với dung sai một đơn vị tiền trên máy giá trung vị,
+$\eps_{\text{app}} = 1{,}35 \cdot 10^{-6}$. Với dung sai mười đơn vị, tức khoảng
+hai phần nghìn của khoản sai số mà bản thân mô hình vốn mắc phải,
+$\eps_{\text{app}} = 4{,}0 \cdot 10^{-5}$.
+
+Con số thứ nhất đáng chú ý vì một lý do ngoài dự kiến. Ngưỡng $10^{-6}$ mà báo
+cáo dùng từ đầu là một quy ước, chọn vì nó tròn và vì nó nằm đủ xa giới hạn số
+học; hóa ra nó chỉ chặt hơn ngưỡng có căn cứ từ bài toán ứng dụng 1,35 lần. Quy
+ước ấy vì thế không cần đổi, nhưng từ chương này nó có một lý do thay cho thói
+quen.
+
+\begin{table}[tp]
+  \centering
+  \caption{Thời gian đạt hai ngưỡng, đo trên cùng một máy. Cột giữa ứng với dung
+    sai mười đơn vị tiền, cột phải ứng với một đơn vị.}
+  \label{tab:two-thresholds}
+  \begin{tabular}{lrrrr}
+    \toprule
+    & \multicolumn{2}{c}{$\eps_{\text{app}} = 4{,}0 \cdot 10^{-5}$}
+    & \multicolumn{2}{c}{$\eps_{\text{app}} = 1{,}35 \cdot 10^{-6}$} \\
+    \cmidrule(lr){2-3} \cmidrule(lr){4-5}
+    Thuật toán & Vòng lặp & Thời gian (s) & Vòng lặp & Thời gian (s) \\
+    \midrule
+    Newton ($t = 1$)                  & 1  & \num{0.054} & 1  & \num{0.054} \\
+    L-BFGS ($m = 20$)                 & 6  & \num{0.217} & 8  & \num{0.282} \\
+    GD ($t = 2/L$)                    & 10 & \num{0.246} & 20 & \num{0.456} \\
+    GD backtracking                   & 10 & \num{0.326} & 15 & \num{0.491} \\
+    AGD + restart                     & 15 & \num{0.432} & 20 & \num{0.577} \\
+    SGD bậc thang ($B = 64$)          & 21 & \num{1.703} & \multicolumn{2}{c}{không đạt} \\
+    \bottomrule
+  \end{tabular}
+\end{table}
+
+Nới dung sai từ một đơn vị lên mười đơn vị rút thời gian của các phương pháp bậc
+một xuống khoảng một nửa, chẳng hạn gradient descent đi từ \SI{0.456}{\second}
+còn \SI{0.246}{\second} (bảng~\ref{tab:two-thresholds}). Nhưng thay đổi đáng kể
+hơn nằm ở dòng cuối: SGD bậc thang đạt ngưỡng nới sau 21 lượt duyệt dữ liệu,
+trong khi ở ngưỡng chặt nó không đạt trong toàn bộ ngân sách 30 lượt. Nói cách
+khác, chính dung sai đặt ra ở chương này quyết định SGD có được coi là phương
+pháp dùng được hay không, chứ không phải bản thân thuật toán.
+
+\section{Hai quan sát ngoài lề}
+\label{sec:enough-sgd}
+
+Chạy tiếp sau $\wstar$ không cải thiện thêm, và có lúc còn hơi quá đà. Gradient
+descent với $t = 2/L$ dừng ở sai số $4{,}9 \cdot 10^{-8}$ và cho RMSE
+\num{0.2060116}, tức thấp hơn mức của nghiệm đóng \num{0.06} đơn vị tiền. Điều
+này không mâu thuẫn với \eqref{eq:closed-form}: $\wstar$ cực tiểu hàm mục tiêu
+trên tập huấn luyện chứ không cực tiểu sai số trên tập kiểm tra, nên một điểm
+dừng sớm vẫn có thể nằm hơi tốt hơn về mặt dự báo. Mức chênh ở đây quá nhỏ để
+khai thác, nhưng nó là dạng thu gọn của hiện tượng dừng sớm quen thuộc trong học
+máy.
+
+Chỉ duy nhất SGD với độ dài bước hằng là ngoại lệ thật sự. Nó dừng ở sai số
+$8{,}2 \cdot 10^{-4}$, không phải vì hết ngân sách mà vì bước hằng chỉ đưa nghiệm
+tới một lân cận quanh $\wstar$ rồi dao động trong đó, cơ chế được trình bày ở
+chương~\ref{sec:mechanisms}. Sai số ấy nằm trên cả hai ngưỡng, và hệ quả đo được
+là RMSE \num{0.20986} so với \num{0.20601}, tức đắt thêm \num{87.7} đơn vị tiền
+trên mỗi chiếc máy giá trung vị. Đây là cấu hình duy nhất trong báo cáo mà lựa
+chọn thuật toán đổi được con số cửa hàng đưa ra cho khách.
+
+\section{Hệ quả cho phần còn lại}
+\label{sec:enough-consequence}
+
+Từ chương này trở đi, một thuật toán được gọi là đủ tốt khi nó đưa sai số xuống
+dưới $10^{-6}$, và con số ấy giờ có nghĩa cụ thể: sai lệch giá dưới một đơn vị
+tiền trên một chiếc máy giá trung vị, tức dưới hai phần vạn của khoản sai số
+\num{4245} mà bản thân mô hình vốn đã mắc phải.
+
+Điều đó cũng đặt lại tỉ lệ cho mọi so sánh về sau. Khoảng cách giữa mô hình tốt
+nhất và mô hình tệ nhất trong báo cáo, xét theo chất lượng định giá, là 87,7 đơn
+vị tiền của SGD bước hằng, trong khi bản thân mô hình sai trung bình \num{4245}
+đơn vị. Nói cách khác, toàn bộ phần tối ưu hóa quyết định khoảng 2\% sai số cuối
+cùng, còn 98\% còn lại thuộc về việc chọn mô hình và chuẩn bị dữ liệu.
+Chương~\ref{sec:compare} so sánh các thuật toán trong đúng khung tỉ lệ ấy: không
+phải để tìm thuật toán dự đoán giá đúng hơn, mà để tìm thuật toán tới đích rẻ
+hơn.

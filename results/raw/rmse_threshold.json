@@ -2,18 +2,18 @@
  "note": "Derived from results/raw/rmse_tracking.json by experiment E1.",
  "machine": "Intel Core 7 150U, OpenBLAS 0.3.34 multithreaded; the whole grid was re-measured here",
  "median_price": 18555,
- "rmse_at_closed_form": 0.206011594984053,
- "price_error_at_closed_form": 4244.780061686606,
- "currency_per_unit_rmse": 22799.780061686604,
+ "rmse_at_closed_form": 0.2060140939539365,
+ "price_error_at_closed_form": 4244.837037721519,
+ "currency_per_unit_rmse": 22799.837037721518,
  "n_pooled_points": 153,
  "worst_price_deviation_by_gap": {
-  "1e-02": 634.4522035132231,
-  "1e-03": 108.80341144033355,
-  "1e-04": 12.476210138402166,
-  "1e-05": 1.6184998824383001,
-  "1e-06": 0.66318853399207,
-  "1e-07": 0.17516815940325614,
-  "1e-08": 0.07595141471574607
+  "1e-02": 634.3952274783105,
+  "1e-03": 108.74643540542093,
+  "1e-04": 12.419234103489543,
+  "1e-05": 1.5615238475256774,
+  "1e-06": 0.6062124990794473,
+  "1e-07": 0.11819212449063343,
+  "1e-08": 0.01897537980312336
  },
  "eps_app_within_1_currency_unit": 1.3454921787385554e-06,
  "eps_app_within_10_currency_units": 4.044462718329894e-05,
@@ -21,7 +21,7 @@
   "label": "SGD ($B = 256$, $\\eta = 1/L_B = 0.0675$)",
   "final_gap": 0.0008237336079430675,
   "final_rmse": 0.20985518955486718,
-  "price_deviation": 87.8017399134369
+  "price_deviation": 87.74476387852428
  },
  "time_to_reach_1e-6_s": {
   "GD ($t = 2/L$)": 0.4562938529998064,
@@ -31,5 +31,11 @@
   "AGD ($\\beta_k = (k-1)/(k+2)$) + restart": 0.5765474820000236,
   "Newton ($t = 1$, cached factor)": 0.053745690995128825,
   "L-BFGS ($m = 20$)": 0.2824837709995336
- }
+ },
+ "lowest_rmse_observed": {
+  "label": "GD ($t = 2/L$)",
+  "rmse": 0.206011594984053,
+  "better_than_closed_form_by": 0.05697603491262271
+ },
+ "reference_note": "RMSE is measured at w*, not at the lowest value observed: a run that stalls short of w* can land on a slightly better test error."
 }
